@@ -41,7 +41,10 @@ export default function Login() {
       toast.success(data.message);
       setLoggedInUser({
         UserName : data.funame ,
-        Role : data.urole
+        Role : data.urole,
+        Address : data.uaddr,
+        Phone : data.uphone,
+        Email : data.uemail
       })
       navigate("/dashboard");
     }else{

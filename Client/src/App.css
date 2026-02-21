@@ -35,6 +35,25 @@ p {
   color: #000;
 }
 
+.global-page-anim{
+  animation: pagefade 0.4s linear;
+} 
+
+@keyframes pagefade {
+  from 0%{
+    opacity: 0;
+  }
+  to
+  100%{
+    opacity: 1;
+  }
+}
+
+.custom-text{
+  font-weight: 500;
+  font-size: 18px;
+}
+
 .custom-toast {
   font-family: 'Montserrat', sans-serif !important;
   font-weight: 600 !important;
@@ -129,24 +148,111 @@ input[type="checkbox"] {
   top: 50%;
   transform: translateY(-50%);
   border-radius: 10px;
+  padding: 17px;
+  gap: 20px;
 }
 
 .dash-cont-outer {
   height: 100vh;
   width: 100vw;
   padding: 10px;
+  background-color: #e5f5f3;
 }
 
 .dash-login-info{
   height: 8%;
-  box-shadow: 5px 5px 10px #a19f9f;
+  box-shadow: 2px 2px 5px #a19f9f;
   border-radius: 5px;
   display: flex;
   align-items: center;
   justify-content: space-between;
+  background-color: #fff;
 }
 
 .loginusername{
   font-weight: 500;
   margin: 0;
+}
+
+a.text-white.adminnavbtn {
+  text-decoration: none;
+}
+
+.active-comp-admin{
+  font-weight: 500;
+  font-size : 1.2rem;
+}
+
+
+
+.outlet-cont{
+  height : 89.5%;
+  box-shadow: 2px 2px 5px #a19f9f;
+  border-radius: 5px;
+  padding: 10px;
+  background-color: #fff;
+}
+
+.nav-item-active{
+  background-color: #fff;
+  text-decoration: none;
+  padding: 5px;
+  padding-left: 10px;
+  border-radius: 5px;
+}
+
+.adminnavbtn {
+  padding: 5px;
+  display: flex;
+  align-items: center;
+}
+
+/* profile */
+
+.profile-pic-cont{
+  height: 200px;
+  width: 200px;
+}
+
+.profile-pic-cont img{
+  object-fit: cover;
+  width: 100%;
+}
+
+.profile-role-text{
+      font-weight: 500;
+      color: #484141;
+}
+
+.formdivs{
+  width: 46%;
+}
+
+.profile-info-cont{
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5%;
+}
+
+.profile-fields {
+  width: 100%;
+  height: 38px;
+  border-radius: 5px;
+  border: 2px solid #afa9a9;
+}
+
+.profile-fields:focus{
+  outline: none;
+}
+.edit-prof-btn {
+  position: relative;
+  left: 83%;
+  background-color: var(--primary);
+  color : #fff;
+  border-radius: 5px;
+  padding: 5px;
+}
+
+.edit-prof-btn:hover{
+  background-color: #1853e9;
 }

@@ -35,6 +35,9 @@ export async function HandleLogin(Uname, Pass) {
         success: true,
         funame: rows[0].runame,
         urole: rows[0].role,
+        uemail : rows[0].email,
+        uaddr : rows[0].address,
+        uphone : rows[0].phone,
         message: "Login Successfull",
       };
     }else{
