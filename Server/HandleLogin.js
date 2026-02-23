@@ -31,6 +31,8 @@ export async function HandleLogin(Uname, Pass) {
   }
   if (rows.length > 0) {
     if (Uname == rows[0].username && Pass == rows[0].password) {
+      console.log(rows[0]);
+      
       return {
         success: true,
         funame: rows[0].runame,
@@ -38,6 +40,7 @@ export async function HandleLogin(Uname, Pass) {
         uemail : rows[0].email,
         uaddr : rows[0].address,
         uphone : rows[0].phone,
+        databaseUserName : rows[0].username,
         message: "Login Successfull",
       };
     }else{

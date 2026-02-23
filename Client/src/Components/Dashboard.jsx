@@ -24,7 +24,6 @@ export default function Dashboard() {
       "Manage Equipments":FaTools,
       "CMS" :FaNewspaper
   }
-  console.log("Logged user:", loggedInUser);
   const location = useLocation(); 
   const permissions = {
     Admin: [

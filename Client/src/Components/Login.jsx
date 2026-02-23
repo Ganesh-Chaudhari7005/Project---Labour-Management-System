@@ -35,17 +35,16 @@ export default function Login() {
     );
 
     const data = await request.json();
-    console.log(data.success);
     if(data.success){
-      console.log(data);
       toast.success(data.message);
       setLoggedInUser({
-        UserName : data.funame ,
-        Role : data.urole,
-        Address : data.uaddr,
-        Phone : data.uphone,
-        Email : data.uemail
-      })
+        UserName: data.funame,
+        Role: data.urole,
+        Address: data.uaddr,
+        Phone: data.uphone,
+        Email: data.uemail,
+        DataBaseUser: data.databaseUserName,
+      });
       navigate("/dashboard");
     }else{
       toast.error(data.message)
@@ -108,7 +107,7 @@ export default function Login() {
                         setShowPass((prev) => !prev);
                       }}
                     />
-                    <label htmlFor="" className="loginlabel mx-2 mb-5">
+                    <label className="loginlabel mx-2 mb-5">
                       Show Password
                     </label>
                     <br />
