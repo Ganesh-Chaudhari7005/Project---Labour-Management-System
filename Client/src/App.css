@@ -326,3 +326,17 @@ a.text-white.adminnavbtn {
   padding: 5px;
   gap: 5px;
 }
+
+
+/*Media Queries for responsiveness*/
+
+@media (max-width: 480px){
+  /*login page*/
+  .login-inner-cont{
+    width: 100%;
+  }
+
+  .loginbtn{
+    width: 45%;
+  }
+}

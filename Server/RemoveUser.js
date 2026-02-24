@@ -1,10 +1,9 @@
 import mysql from "mysql2";
 import { db_details } from "./dbconfig.js";
-async function RemoveUser(removeusername) {
+async function RemoveUser(removeuseremail) {
   let db;
   try {
     db = await mysql.createConnection(db_details);
-    console.log("Database Connected Successfully");
   } catch (err) {
     console.log("Failed to Connect Database");
     return {
@@ -14,8 +13,8 @@ async function RemoveUser(removeusername) {
   }
   let removeRes;
   try {
-    removeRes = await db.execute("DELETE FROM users WHERE username = ?", [
-      removeusername,
+    removeRes = await db.execute("DELETE FROM users WHERE email = ?", [
+      removeuseremail,
     ]);
     return {
       success: true,

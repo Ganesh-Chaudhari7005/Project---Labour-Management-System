@@ -5,37 +5,35 @@ import LoginContext from "../Context/LoginContext";
 import { useNavigate } from "react-router-dom";
 export default function Login() {
   const navigate = useNavigate();
-  const [username, setUsername] = useState("");
+  const [userEmail, setUserEmial] = useState("");
   const [userPassword, setUserPassword] = useState("");
   const [showPass, setShowPass] = useState(false);
   const { setLoggedInUser } = useContext(LoginContext);
 
-  const validateDetails = (e)=>{
+  const validateDetails = (e) => {
     e.preventDefault();
-    const trimuser = username.trim();
+    const trimuserEmail = userEmail.trim();
     const trimpass = userPassword.trim();
-    if(!trimuser || !trimpass){
+    if (!trimuserEmail || !trimpass) {
       toast.error("Enter Credentials");
-    }else{
-      handleLogin();
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimuserEmail)) {
+      toast.error("Please enter a valid email address.");
+    } else {
+      handleLogin(trimuserEmail, trimpass);
     }
-     
-  }
+  };
 
-  const handleLogin = async()=>{
-    const request = await fetch(
-      'http://localhost:3000/login',
-      {
-        method : 'POST',
-        headers : {
-          "Content-Type" : "application/json"
-        },
-        body : JSON.stringify({username , userPassword})
-      }
-    );
+  const handleLogin = async (loginUserEmail, loginUserPassword) => {
+    const request = await fetch("http://localhost:3000/login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ loginUserEmail, loginUserPassword }),
+    });
 
     const data = await request.json();
-    if(data.success){
+    if (data.success) {
       toast.success(data.message);
       setLoggedInUser({
         UserName: data.funame,
@@ -43,14 +41,12 @@ export default function Login() {
         Address: data.uaddr,
         Phone: data.uphone,
         Email: data.uemail,
-        DataBaseUser: data.databaseUserName,
       });
       navigate("/dashboard");
-    }else{
-      toast.error(data.message)
+    } else {
+      toast.error(data.message);
     }
-
-  }
+  };
   return (
     <>
       <ToastContainer
@@ -59,8 +55,8 @@ export default function Login() {
       />
       <div className="login-container">
         <div className="container-fluid h-100 w-100">
-          <div className="row h-100 w-100">
-            <div className="col-lg-6 h-100 login-left">
+          <div className="row h-100">
+            <div className="col-lg-6 h-100 login-left d-none d-lg-block">
               <div className="h-100 d-flex flex-column justify-content-center">
                 {/* <h1 className="text-white">Royal Enterprises</h1> */}
                 <h3 className="text-white">
@@ -74,7 +70,7 @@ export default function Login() {
                   <h1 className="text-center">Login</h1>
                   <form className="p-5" onSubmit={validateDetails}>
                     <label className="loginlabel pb-3" htmlFor="loginuser101">
-                      Enter Username :
+                      Enter Email :
                     </label>
                     <br />
                     <input
@@ -82,8 +78,8 @@ export default function Login() {
                       id="loginuser101"
                       type="text"
                       required={true}
-                      value={username}
-                      onChange={(e) => setUsername(e.target.value)}
+                      value={userEmail}
+                      onChange={(e) => setUserEmial(e.target.value)}
                     />
                     <br />
                     <label className="loginlabel py-3" htmlFor="loginpass12">

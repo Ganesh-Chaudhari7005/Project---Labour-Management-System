@@ -5,18 +5,14 @@ export async function HandleProfileUpdate(
   profileEmail,
   profilePhone,
   profileAddr,
-  username,
+  userEmail,
 ) 
  
 {
-    console.log(profilename, profileEmail, username
-
-    );
     
   let db;
   try {
     db = await mysql.createConnection(db_details);
-    console.log("Database Connected Successfully");
   } catch (err) {
     console.log("Failed to Connect Database");
     return {
@@ -33,8 +29,8 @@ export async function HandleProfileUpdate(
              phone = ?,
              email =?,
             address = ?
-            WHERE username = ? `,
-            [profilename, profilePhone, profileEmail, profileAddr, username]
+            WHERE Email = ? `,
+            [profilename, profilePhone, profileEmail, profileAddr,userEmail]
     );
 
     if(result.affectedRows ===0){

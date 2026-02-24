@@ -5,6 +5,7 @@ import cors from 'cors'
 import { HandleProfileUpdate } from './HandleProfileUpdate.js';
 import FetchUsers from './FetchUsers.js';
 import RemoveUser from './RemoveUser.js';
+import { AddUserHandler } from './AddNewUsersHandler.js';
 const app = express();
 
 app.use(express.json());
@@ -13,8 +14,8 @@ app.use(cors());
  
 
 app.post("/login", async(req,res)=>{
-    let {username, userPassword} = req.body;
-    let result = await HandleLogin(username, userPassword)
+    let { loginUserEmail, loginUserPassword } = req.body;
+    let result = await HandleLogin(loginUserEmail, loginUserPassword);
     res.json(result)
     
     // res.json(result);
@@ -26,7 +27,7 @@ app.post("/update-profile", async(req,res)=>{
       profileEmail,
       profilePhone,
       profileAddr,
-      currentUser,
+      currentUserEmail,
     } = req.body;
     
     let profileUpdateRes = await HandleProfileUpdate(
@@ -34,16 +35,15 @@ app.post("/update-profile", async(req,res)=>{
       profileEmail,
       profilePhone,
       profileAddr,
-      currentUser,
+      currentUserEmail,
     );
     res.json(profileUpdateRes);
 })
 
 app.post("/remove-user", async(req, res)=>{
-    let {remusername} = req.body;
-    console.log(remusername);
+    let { remuseremail } = req.body;
     
-    let removeStatus = await RemoveUser(remusername);
+    let removeStatus = await RemoveUser(remuseremail);
     console.log(removeStatus);
     
     res.json(removeStatus);
@@ -54,4 +54,19 @@ app.get("/fetch-users",async(req, res)=>{
     res.json(AllUsers);
 })
 
+
+app.post("/add-new-user", async (req, res)=>{
+    let { addUName, addUEmail, addUNumber, addUPass, addURole } = req.body;
+    console.log(addURole);
+    
+    let AddUserStatus = await AddUserHandler(
+      addUName,
+      addUEmail,
+      addUNumber,
+      addUPass,
+      addURole,
+    );
+
+    res.json(AddUserStatus);
+})
 app.listen(3000, ()=>console.log("Server Running on Port : 3000"));

@@ -18,19 +18,20 @@ export default function ViewAllUsers() {
     FetchUsersFromDB();
   }, []);
 
-  const removeUser = async (remusername) => {
-    console.log(remusername);
+  const removeUser = async (remuseremail) => {
     let reqRemoveUser = await fetch(`${ApiRoute}remove-user`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ remusername }),
+      body: JSON.stringify({ remuseremail }),
     });
 
     let remuserResponce = await reqRemoveUser.json();
     if (remuserResponce.success) {
+      console.log(remuserResponce.message);
       toast.success(remuserResponce.message);
+       FetchUsersFromDB();
       FetchUsersFromDB();
     } else {
       toast.error(remuserResponce.message);
@@ -43,6 +44,10 @@ export default function ViewAllUsers() {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
     >
+      <ToastContainer
+              toastClassName="custom-toast"
+              bodyClassName="custom-toast-body"
+            />
       <div className="container remuser-cont p-3">
         <h4 className="mb-5 d-inline-block">All Users</h4>
         <NavLink to="add-user">
@@ -67,11 +72,11 @@ export default function ViewAllUsers() {
                   <td>{user.runame}</td>
                   <td>{user.email}</td>
                   <td>{user.role}</td>
-                  <td>{user.username}</td>
+                  <td>{user.created_at}</td>
                   <td>
                     <button
                       className="btn btn-danger"
-                      onClick={() => removeUser(user.username)}
+                      onClick={() => removeUser(user.email)}
                     >
                       Remove
                     </button>

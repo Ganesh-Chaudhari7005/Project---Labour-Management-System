@@ -32,7 +32,7 @@ export default function Profile() {
   };
 
   const HandleProfileUpdate = async () => {
-    const currentUser = loggedInUser.DataBaseUser;
+    const currentUserEmail = loggedInUser.Email;
 
     const reqProfileUpdate = await fetch(
       `
@@ -47,7 +47,7 @@ export default function Profile() {
           profileEmail,
           profilePhone,
           profileAddr,
-          currentUser,
+          currentUserEmail,
         }),
       },
     );
