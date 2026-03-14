@@ -6,28 +6,52 @@ import { HandleProfileUpdate } from './HandleProfileUpdate.js';
 import FetchUsers from './FetchUsers.js';
 import RemoveUser from './RemoveUser.js';
 import { AddUserHandler } from './AddNewUsersHandler.js';
+import multer from 'multer';
+import path from 'path';
+import { fileURLToPath } from "url";
+
 const app = express();
 
 app.use(express.json());
 app.use(cors());
 
- 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, "uploads/profile-pictures"); 
+  },
+  filename: (req, file, cb) => {
+    cb(null, Date.now() + "-" + file.originalname);
+  },
+});
+
+const upload = multer({ storage: storage });
+
 
 app.post("/login", async(req,res)=>{
     let { loginUserEmail, loginUserPassword } = req.body;
     let result = await HandleLogin(loginUserEmail, loginUserPassword);
     res.json(result)
-    
-    // res.json(result);
 })
 
-app.post("/update-profile", async(req,res)=>{
+app.post("/update-profile", upload.single("profileimage"), async(req,res)=>{
+    let filepath = null;
+
+    if(req.file){
+      filepath = req.file.path.replace(/\\/g, "/");  
+    } 
+    console.log(filepath);
+      
     let {
       profilename,
       profileEmail,
       profilePhone,
       profileAddr,
       currentUserEmail,
+      roleInfo
     } = req.body;
     
     let profileUpdateRes = await HandleProfileUpdate(
@@ -36,6 +60,8 @@ app.post("/update-profile", async(req,res)=>{
       profilePhone,
       profileAddr,
       currentUserEmail,
+      roleInfo,
+      filepath
     );
     res.json(profileUpdateRes);
 })

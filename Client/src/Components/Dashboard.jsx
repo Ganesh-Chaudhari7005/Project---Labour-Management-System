@@ -18,7 +18,7 @@ export default function Dashboard() {
   const featureIcons ={
     "Profile" : FaUserCircle,
       "Manage Users" : FaUsers,
-      "Project" : FaFolderOpen,
+      "Project Management" : FaFolderOpen,
       "Manage Labours" :FaHardHat,
       "Attendance" : FaCalendarCheck,
       "Manage Equipments":FaTools,
@@ -29,7 +29,7 @@ export default function Dashboard() {
     Admin: [
       "Profile",
       "Manage Users",
-      "Project",
+      "Project Management",
       "Manage Labours",
       "Attendance",
       "Manage Equipments",

@@ -9,7 +9,6 @@ export default function Login() {
   const [userPassword, setUserPassword] = useState("");
   const [showPass, setShowPass] = useState(false);
   const { setLoggedInUser } = useContext(LoginContext);
-
   const validateDetails = (e) => {
     e.preventDefault();
     const trimuserEmail = userEmail.trim();
@@ -41,8 +40,11 @@ export default function Login() {
         Address: data.uaddr,
         Phone: data.uphone,
         Email: data.uemail,
+        ProfileImage: data.profileimgpath
       });
       navigate("/dashboard");
+  
+  
     } else {
       toast.error(data.message);
     }

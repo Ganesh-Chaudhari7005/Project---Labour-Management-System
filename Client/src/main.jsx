@@ -19,6 +19,8 @@ import LabourManagement from './Components/LabourManagement.jsx';
 import AddUser from './Components/ViewAllUser.jsx';
 import ViewAllUsers from './Components/ViewAllUser.jsx';
 import AddUsers from './Components/AddUsers.jsx';
+import CreateProject from './Components/CreateProject.jsx';
+import ProjectManagement from './Components/ProjectManagement.jsx';
 const router = createBrowserRouter(
   createRoutesFromElements(
     <>
@@ -34,7 +36,10 @@ const router = createBrowserRouter(
           </ProtectedRoute>
         }
       >
-        <Route path="project" element={<Project />} />
+        <Route path="project-management" element={<ProjectManagement />}>
+          <Route index element={<Project/>}/>
+          <Route path="create-project" element={<CreateProject/>}/>
+        </Route>
         <Route path="attendance" element={<Attendance />} />
         <Route path="manage-users" element={<UserManagement />}>
           <Route index element={<ViewAllUsers />} />

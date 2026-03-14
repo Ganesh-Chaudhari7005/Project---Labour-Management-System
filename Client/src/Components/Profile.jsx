@@ -3,6 +3,7 @@ import LoginContext from "../Context/LoginContext";
 import { motion } from "framer-motion";
 import { toast, ToastContainer } from "react-toastify";
 import { ApiRoute } from "./ApiConfig";
+import { uploadUrl } from "../uploadConfig";
 export default function Profile() {
   const { loggedInUser, setLoggedInUser } = useContext(LoginContext);
   const [isdisabled, setDisabled] = useState(true);
@@ -11,6 +12,7 @@ export default function Profile() {
   const [profileEmail, setProfileEmail] = useState(loggedInUser.Email);
   const [profilePhone, setProfilePhone] = useState(loggedInUser.Phone);
   const [profileAddr, setProfileAddr] = useState(loggedInUser.Address);
+  const[profileImage2 , setProfileImage] = useState('');
   const HandleFormStatus = () => {
     setDisabled((prev) => !prev);
   };
@@ -33,36 +35,49 @@ export default function Profile() {
 
   const HandleProfileUpdate = async () => {
     const currentUserEmail = loggedInUser.Email;
+    let roleInfo = loggedInUser.Role;
 
+    const formData = new FormData();
+
+    formData.append("profilename", profilename);
+    formData.append("profileEmail", profileEmail);
+    formData.append("profilePhone", profilePhone);
+    formData.append("profileAddr", profileAddr);
+    formData.append("currentUserEmail", currentUserEmail);
+    formData.append("roleInfo", roleInfo);
+
+    formData.append("profileimage", profileImage2);
     const reqProfileUpdate = await fetch(
       `
       ${ApiRoute}update-profile`,
       {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          profilename,
-          profileEmail,
-          profilePhone,
-          profileAddr,
-          currentUserEmail,
-        }),
+        body : formData
+       
       },
     );
 
     const resjsondata = await reqProfileUpdate.json();
-    console.log(resjsondata.message);
+    console.log(resjsondata);
     if (resjsondata.success) {
-
+      if (resjsondata.UpdatedImgPath){    
       setLoggedInUser({
         ...loggedInUser,
         UserName: profilename,
         Address: profileAddr,
         Phone: profilePhone,
-        Email: profileEmail
+        Email: profileEmail,
+        ProfileImage: resjsondata.UpdatedImgPath,
       });
+      }else{
+        setLoggedInUser({
+          ...loggedInUser,
+          UserName: profilename,
+          Address: profileAddr,
+          Phone: profilePhone,
+          Email: profileEmail,
+        });
+      } 
       toast.success(resjsondata.message);
     } else {
       toast.error(resjsondata.message);
@@ -83,11 +98,11 @@ export default function Profile() {
         bodyClassName="custom-toast-body"
       />
       <div className="h-100 w-100 admin-comp-def global-page-anim">
-        <div className="container">
+        <div className="container p-3">
           <div className="row">
-            <div className="col-lg-2">
+            <div className="col-lg-2 d-flex justify-content-center">
               <div className="profile-pic-cont">
-                <img src="/defaultprofile.png" />
+                <img src={`${uploadUrl}${loggedInUser.ProfileImage}`} />
               </div>
             </div>
             <div className="col-lg-10">
@@ -104,7 +119,7 @@ export default function Profile() {
             </div>
           </div>
           <div className="profile-det-from px-5">
-            <form onSubmit={() => ValProfileUpdate(e)}>
+            <form onSubmit={ValProfileUpdate}>
               <div className="profile-info-cont">
                 <div className="formdivs">
                   <label className="loginlabel pb-2">Full Name:</label>
@@ -164,6 +179,24 @@ export default function Profile() {
                     type="text"
                     value={profileAddr}
                     className="mb-2 p-2 custom-text profile-fields"
+                  />
+                </div>
+                <div className="formdivs">
+                  <label className="loginlabel pb-2">Profile Picture :</label>
+                  <br />
+                  <input
+                    onChange={(e) => {
+                      setProfileImage(e.target.files[0]);
+                      setSaveBtnState();
+                    }}
+                    style={{
+                      paddingTop: "4px",
+                      paddingLeft: "4px",
+                      height: "40px",
+                    }}
+                    disabled={isdisabled}
+                    type="file"
+                    className="custom-text profile-fields"
                   />
                 </div>
               </div>

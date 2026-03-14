@@ -31,7 +31,7 @@ export default function ViewAllUsers() {
     if (remuserResponce.success) {
       console.log(remuserResponce.message);
       toast.success(remuserResponce.message);
-       FetchUsersFromDB();
+      FetchUsersFromDB();
       FetchUsersFromDB();
     } else {
       toast.error(remuserResponce.message);
@@ -45,13 +45,13 @@ export default function ViewAllUsers() {
       transition={{ duration: 0.3 }}
     >
       <ToastContainer
-              toastClassName="custom-toast"
-              bodyClassName="custom-toast-body"
-            />
+        toastClassName="custom-toast"
+        bodyClassName="custom-toast-body"
+      />
       <div className="container remuser-cont p-3">
         <h4 className="mb-5 d-inline-block">All Users</h4>
         <NavLink to="add-user">
-          <button className="adduserbnt px-2">+ Add User</button>
+          <button className="defbtn px-2">+ Add User</button>
         </NavLink>
         <div className="table-responsive table-wrapper">
           <table className="table cust-table table-bordered">
@@ -61,7 +61,6 @@ export default function ViewAllUsers() {
                 <th className="tbl-head">User Name</th>
                 <th className="tbl-head">Email</th>
                 <th className="tbl-head">Role</th>
-                <th className="tbl-head">Created On</th>
                 <th className="tbl-head">Action</th>
               </tr>
             </thead>
@@ -69,10 +68,9 @@ export default function ViewAllUsers() {
               {AllUsers.map((user, index) => (
                 <tr>
                   <td>{index + 1}</td>
-                  <td>{user.runame}</td>
-                  <td>{user.email}</td>
-                  <td>{user.role}</td>
-                  <td>{user.created_at}</td>
+                  <td>{user.User_Name}</td>
+                  <td>{user.User_Email}</td>
+                  <td>{user.User_Role}</td>
                   <td>
                     <button
                       className="btn btn-danger"
