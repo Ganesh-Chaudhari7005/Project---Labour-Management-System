@@ -8,7 +8,12 @@ import RemoveUser from './RemoveUser.js';
 import { AddUserHandler } from './AddNewUsersHandler.js';
 import multer from 'multer';
 import path from 'path';
+
+
 import { fileURLToPath } from "url";
+import { GetProfilePictureHandler } from './GetProfilePictureHandler.js';
+import { authenticateToken } from './middleware/authenticate.js';
+import { log } from 'console';
 
 const app = express();
 
@@ -37,7 +42,13 @@ app.post("/login", async(req,res)=>{
     res.json(result)
 })
 
-app.post("/update-profile", upload.single("profileimage"), async(req,res)=>{
+app.get("/me", authenticateToken, async (req, res) => {
+  const user = req.user.userId;
+  res.json({ user });
+});
+
+
+app.post("/update-profile",authenticateToken, upload.single("profileimage"), async(req,res)=>{
     let filepath = null;
 
     if(req.file){
@@ -54,6 +65,17 @@ app.post("/update-profile", upload.single("profileimage"), async(req,res)=>{
       roleInfo
     } = req.body;
     
+    console.log("Therse sare");
+    
+    console.log(
+      profilename,
+      profileEmail,
+      profilePhone,
+      profileAddr,
+      currentUserEmail,
+      roleInfo,
+    );
+    
     let profileUpdateRes = await HandleProfileUpdate(
       profilename,
       profileEmail,
@@ -67,9 +89,9 @@ app.post("/update-profile", upload.single("profileimage"), async(req,res)=>{
 })
 
 app.post("/remove-user", async(req, res)=>{
-    let { remuseremail } = req.body;
+    let { remuseremail , role} = req.body;
     
-    let removeStatus = await RemoveUser(remuseremail);
+    let removeStatus = await RemoveUser(remuseremail, role);
     console.log(removeStatus);
     
     res.json(removeStatus);
@@ -82,17 +104,22 @@ app.get("/fetch-users",async(req, res)=>{
 
 
 app.post("/add-new-user", async (req, res)=>{
-    let { addUName, addUEmail, addUNumber, addUPass, addURole } = req.body;
+    let { addUName, addUEmail, addUPass, addURole } = req.body;
     console.log(addURole);
     
     let AddUserStatus = await AddUserHandler(
       addUName,
       addUEmail,
-      addUNumber,
       addUPass,
       addURole,
     );
 
     res.json(AddUserStatus);
+})
+
+app.post("/getProfilePicture", async(req, res)=>{
+  let {email, role} = req.body;
+  let responce_result = await GetProfilePictureHandler(email, role);
+  res.json(responce_result);
 })
 app.listen(3000, ()=>console.log("Server Running on Port : 3000"));

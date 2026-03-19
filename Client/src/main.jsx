@@ -16,18 +16,20 @@ import EquipmentManagement from './Components/EquipmentManagement.jsx';
 import CMS from './Components/CMS.jsx';
 import Profile from './Components/Profile.jsx';
 import LabourManagement from './Components/LabourManagement.jsx';
-import AddUser from './Components/ViewAllUser.jsx';
 import ViewAllUsers from './Components/ViewAllUser.jsx';
 import AddUsers from './Components/AddUsers.jsx';
 import CreateProject from './Components/CreateProject.jsx';
 import ProjectManagement from './Components/ProjectManagement.jsx';
+import RootLayout from './Components/RootLayout.jsx';
 const router = createBrowserRouter(
   createRoutesFromElements(
     <>
+        <Route element={<RootLayout />}>
+
       <Route path="/" element={<Home />} />
 
       <Route path="/admin" element={<Login />} />
-      {/* <Route path="admin/dashboard" element={<ProtectedRoute><Dashboard/></ProtectedRoute>}/> */}
+      <Route path="admin/dashboard" element={<ProtectedRoute><Dashboard/></ProtectedRoute>}/>
       <Route
         path="/dashboard"
         element={
@@ -50,6 +52,7 @@ const router = createBrowserRouter(
         <Route path="profile" element={<Profile />} />
         <Route path="manage-labours" element={<LabourManagement />} />
       </Route>
+</Route>
     </>,
   ),
 );
@@ -57,9 +60,7 @@ const router = createBrowserRouter(
 createRoot(document.getElementById("root")).render(
   <>
     <StrictMode>
-      <LoginContextProvider>
         <RouterProvider router={router} />
-      </LoginContextProvider>
     </StrictMode>
   </>,
 );

@@ -33,15 +33,20 @@ export default function Login() {
 
     const data = await request.json();
     if (data.success) {
+
+      const user = {
+        UserEmail : data.uemail,
+        UserName : data.funame,
+        Address : data.uaddr,
+        Phone : data.uphone,
+        UserRole : data.urole,
+        UserImgPath : data.profileimgpath
+      }
+
+      setLoggedInUser(user)
+      sessionStorage.setItem("user", JSON.stringify(user));
+      sessionStorage.setItem("token", data.token);
       toast.success(data.message);
-      setLoggedInUser({
-        UserName: data.funame,
-        Role: data.urole,
-        Address: data.uaddr,
-        Phone: data.uphone,
-        Email: data.uemail,
-        ProfileImage: data.profileimgpath
-      });
       navigate("/dashboard");
   
   

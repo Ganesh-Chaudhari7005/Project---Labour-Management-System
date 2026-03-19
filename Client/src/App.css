@@ -41,11 +41,13 @@ button {
 }
 
 .tbl-head {
-  background-color: #ddd6d6 !important;
+  background-color: #f1eeee !important;
 
 }
 
-
+td{
+  vertical-align: middle;
+}
 
 .global-page-anim {
   animation: pagefade 0.4s linear;
@@ -149,6 +151,22 @@ input[type="checkbox"] {
   background-color: #1e50cf;
 }
 
+
+/*logout button*/
+
+.logoutbtn{
+  background-color: #DC2626;
+  padding:  2px 20px;
+  margin-left: 10px;
+  border-radius: 3px;
+  border: none;
+  transition: transform 0.1s linear;
+}
+
+.logoutbtn:hover{
+  transform: scale(1.1);
+  background-color: #cf0606;
+}
 /*dashboard*/
 
 .dash-nav-btn {

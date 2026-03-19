@@ -1,13 +1,14 @@
 import { useContext } from "react";
-import { Navigate } from "react-router-dom";
+import { Navigate , useNavigate} from "react-router-dom";
 import LoginContext from "../Context/LoginContext";
 
 
 function ProtectedRoute({ children }) {
   const {loggedInUser} = useContext(LoginContext);
-
-  if (!loggedInUser) {
-    return <Navigate to="/admin" />;
+  const token = sessionStorage.getItem("token");
+  const navigate = useNavigate();
+  if(!token){
+    return <Navigate to="/admin" replace/>
   }
 
   return children;

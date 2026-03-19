@@ -11,8 +11,8 @@ export async function HandleProfileUpdate(
 ) {
   let db;
   let currenttable;
-  if(roleInfo ==="Admin"){
-    currenttable = "System_Admin";
+  if(roleInfo ==="Admin" || roleInfo === "admin"){
+    currenttable = "system_admin";
   }else if(roleInfo ==="Supervisor"){
     currenttable = "Supervisors";
   }else if(roleInfo === "Client"){
@@ -21,6 +21,13 @@ export async function HandleProfileUpdate(
     currenttable = "Labours"
   }
 
+  console.log("-------------");
+  console.log(profileAddr);
+  console.log(profileEmail);
+  console.log(profilePhone);
+  console.log(profilename);
+  console.log(roleInfo);
+  console.log(currenttable);
   
   try {
     db = await mysql.createConnection(db_details);
@@ -31,7 +38,7 @@ export async function HandleProfileUpdate(
       message: "Something went wrong. Please try again later.",
     };
   }
-
+console.log("Updating user with email:", profileEmail);
   try {
     let result;
     if(filepath){
@@ -52,6 +59,17 @@ export async function HandleProfileUpdate(
           userEmail
         ],
       );
+
+      let [checkImgExists] = await db.execute(`Select profileImgPath from Users where User_Email = ?`,
+        [profileEmail]
+      )
+
+      if (!checkImgExists[0].profileImgPath){
+        db.execute('UPDATE Users set profileImgPath = ? where User_Email = ?',
+          [filepath, profileEmail]
+        )
+      }
+      
     }else{
        [result] = await db.execute(
          `UPDATE ${currenttable} 

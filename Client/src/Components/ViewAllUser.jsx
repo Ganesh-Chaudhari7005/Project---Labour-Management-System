@@ -1,13 +1,14 @@
 import React, { useCallback, useEffect } from "react";
-import { ApiRoute } from "./ApiConfig";
+import { ApiRoute } from "./ApiConfig.js";
 import { useState } from "react";
 import { toast, ToastContainer } from "react-toastify";
 import { NavLink } from "react-router-dom";
 import { motion } from "framer-motion";
+import { uploadUrl } from "../uploadConfig";
 
+import Swal from "sweetalert2";
 export default function ViewAllUsers() {
   const [AllUsers, setAllUsers] = useState([]);
-
   const FetchUsersFromDB = async () => {
     let reqUsers = await fetch(`${ApiRoute}fetch-users`);
     let resAllUsers = await reqUsers.json();
@@ -18,26 +19,56 @@ export default function ViewAllUsers() {
     FetchUsersFromDB();
   }, []);
 
-  const removeUser = async (remuseremail) => {
-    let reqRemoveUser = await fetch(`${ApiRoute}remove-user`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ remuseremail }),
+  const removeUser = async (remuseremail, role, name) => {
+    console.log("delete user btn clicked");
+    
+    let result = await Swal.fire({
+      title: "Alert",
+      text: `Delete User ${name}`,
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#DC2626",
+      cancelButtonColor: "#6B7280",
+      confirmButtonText: "Yes, Delete",
     });
 
-    let remuserResponce = await reqRemoveUser.json();
-    if (remuserResponce.success) {
-      console.log(remuserResponce.message);
-      toast.success(remuserResponce.message);
-      FetchUsersFromDB();
-      FetchUsersFromDB();
-    } else {
-      toast.error(remuserResponce.message);
+    if (result.isConfirmed) {
+      let reqRemoveUser = await fetch(`${ApiRoute}remove-user`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ remuseremail, role }),
+      });
+
+      let remuserResponce = await reqRemoveUser.json();
+      if (remuserResponce.success) {
+        console.log(remuserResponce.message);
+        toast.success(remuserResponce.message);
+        FetchUsersFromDB();
+        FetchUsersFromDB();
+      } else {
+        toast.error(remuserResponce.message);
+      }
     }
   };
 
+  // const getProfilePic = async(email, role)=>{
+  //     let reqImg = await fetch(`${ApiRoute}getProfilePicture`, {
+  //       method: "POST",
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //       },
+  //       body: JSON.stringify({ email, role })
+  //     });
+  //           console.log("Api called");
+
+  //     let resofImg = await reqImg.json();
+  //     console.log(resofImg);
+  //     let fullImgPath = `${uploadUrl}${resofImg[0].profileImgPath}`;
+  //     return fullImgPath;
+
+  // }
   return (
     <motion.div
       initial={{ opacity: 0, y: 10 }}
@@ -54,7 +85,7 @@ export default function ViewAllUsers() {
           <button className="defbtn px-2">+ Add User</button>
         </NavLink>
         <div className="table-responsive table-wrapper">
-          <table className="table cust-table table-bordered">
+          <table className="table cust-table">
             <thead>
               <tr>
                 <th className="tbl-head">Sr. No.</th>
@@ -74,7 +105,13 @@ export default function ViewAllUsers() {
                   <td>
                     <button
                       className="btn btn-danger"
-                      onClick={() => removeUser(user.email)}
+                      onClick={() =>
+                        removeUser(
+                          user.User_Email,
+                          user.User_Role,
+                          user.User_Name,
+                        )
+                      }
                     >
                       Remove
                     </button>
@@ -84,6 +121,38 @@ export default function ViewAllUsers() {
             </tbody>
           </table>
         </div>
+        {/* <div className="row">
+          {AllUsers.map((user, index) => (
+            <div className="col-lg-3">
+              <div
+                className="card"
+                key={index}
+                style={{ width: "15rem", height: "18rem" }}
+              >
+                <div className="imgcont overflow-hidden">
+                  <img
+                    src={`${uploadUrl}${user.profileImgPath}`}
+                    className="card-img-top"
+                    alt="..."
+                    onError={(e) => {
+                      e.target.src = "/public/defaultprofile.png";
+                    }}
+                  />
+                </div>
+                <div className="card-body">
+                  <h5 className="card-title">{user.User_Name}</h5>
+                  <p className="card-text">{user.User_Role}</p>
+                  <button
+                    className="btn btn-danger"
+                    onClick={() => removeUser(user.User_Email, user.User_Role)}
+                  >
+                    Remove
+                  </button>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div> */}
       </div>
     </motion.div>
   );

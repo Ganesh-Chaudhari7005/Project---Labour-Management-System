@@ -1,13 +1,17 @@
 import mysql from "mysql2/promise";
 import { db_details } from "./dbconfig.js";
 import SendMail from "./SendMail.js";
+import {CreateUserId, CreateAdminId} from "./UserIDGenerator.js";
+import bcrypt from "bcrypt";
+
 export async function AddUserHandler(
   addUName,
   addUEmail,
-  addUNumber,
   addUPass,
   addURole,
 ) {
+
+
   let db;
   try {
     db = await mysql.createConnection(db_details);
@@ -19,7 +23,7 @@ export async function AddUserHandler(
     };
   }
 
-  if (!addUName || !addUEmail || !addUNumber || !addUPass || !addURole) {
+  if (!addUName || !addUEmail || !addUPass || !addURole) {
     return {
       success: false,
       message: "Missing Required Fields",
@@ -34,8 +38,9 @@ export async function AddUserHandler(
 
   let checkEmailExists;
   let insertStatus;
+  
   try {
-    checkEmailExists = await db.execute(`SELECT * FROM users WHERE email=?`, [
+    checkEmailExists = await db.execute(`SELECT * FROM users WHERE User_Email=?`, [
       addUEmail,
     ]);
     if (checkEmailExists[0].length > 0) {
@@ -45,13 +50,32 @@ export async function AddUserHandler(
         message: "Email Already Exists",
       };
     } else {
+      const saltrounds = 10;
+      const hashedPassword = await bcrypt.hash(addUPass, saltrounds);
+      let uid = CreateUserId(); 
       insertStatus = await db.execute(
-        "INSERT INTO users (runame,email,phone,password,role) values(?, ?, ?, ?,?)",
-        [addUName, addUEmail, addUNumber, addUPass, addURole],
+        "INSERT INTO users (User_ID, User_Name, User_Email, User_Pass, User_Role) values(?, ?, ?, ?, ?)", 
+        [uid,addUName, addUEmail, hashedPassword, addURole], 
       );
+
+      let currenttable;
+      if (addURole === "Admin" || addURole === "admin") {
+        currenttable = "System_Admin";
+      } else if (addURole === "Supervisor") {
+        currenttable = "Supervisors";
+      } else if (addURole === "Client") {
+        currenttable = "Clients";
+      } else if (addURole === "Labour") {
+        currenttable = "Labours";
+      }
+
+      let AdmId = CreateAdminId();
+      db.execute(
+        `INSERT INTO ${currenttable} (ID, Name , Email) values (? , ? , ?)`,
+        [AdmId, addUName, addUEmail]
+      )
       let mailMessage = `<h2 style="font-family : 'Google Sans',Roboto,RobotoDraft,Helvetica,Arial,sans-serif">You have been given access to Royal Enterprises Portal</h2>
                         <p>Login :<a href="http://192.168.31.208:5173/admin" target="_blank">http://192.168.31.208:5173/</a></p>
-                        <p>Password : ${addUPass}</p> 
       `;
 
     let mailSubject = "Access Granted";

@@ -1,18 +1,38 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useState , useEffect } from "react";
 import LoginContext from "../Context/LoginContext";
 import { motion } from "framer-motion";
 import { toast, ToastContainer } from "react-toastify";
 import { ApiRoute } from "./ApiConfig";
+import { useApi } from "./ApiCaller";
 import { uploadUrl } from "../uploadConfig";
 export default function Profile() {
+  const callApi = useApi();
   const { loggedInUser, setLoggedInUser } = useContext(LoginContext);
+
+ 
   const [isdisabled, setDisabled] = useState(true);
   const [isavebtnVisible, setSavebtn] = useState(false);
-  const [profilename, setProfileName] = useState(loggedInUser.UserName);
-  const [profileEmail, setProfileEmail] = useState(loggedInUser.Email);
-  const [profilePhone, setProfilePhone] = useState(loggedInUser.Phone);
-  const [profileAddr, setProfileAddr] = useState(loggedInUser.Address);
+  const [profilename, setProfileName] = useState("");
+  const [profileEmail, setProfileEmail] = useState("");
+  const [profilePhone, setProfilePhone] = useState("");
+  const [profileAddr, setProfileAddr] = useState("");
   const[profileImage2 , setProfileImage] = useState('');
+ 
+
+    useEffect(() => {
+      if (loggedInUser) {
+        setProfileName(loggedInUser.UserName);
+        setProfileEmail(loggedInUser.UserEmail);
+        setProfilePhone(loggedInUser.Phone);
+        setProfileAddr(loggedInUser.Address);
+        setProfileImage(loggedInUser.UserImgPath);
+      }
+    }, [loggedInUser]);
+
+    if (!loggedInUser) {
+      return <div>Loading</div>;
+    }
+
   const HandleFormStatus = () => {
     setDisabled((prev) => !prev);
   };
@@ -34,8 +54,8 @@ export default function Profile() {
   };
 
   const HandleProfileUpdate = async () => {
-    const currentUserEmail = loggedInUser.Email;
-    let roleInfo = loggedInUser.Role;
+    const currentUserEmail = loggedInUser.UserEmail;
+    let roleInfo = loggedInUser.UserRole;
 
     const formData = new FormData();
 
@@ -47,17 +67,11 @@ export default function Profile() {
     formData.append("roleInfo", roleInfo);
 
     formData.append("profileimage", profileImage2);
-    const reqProfileUpdate = await fetch(
-      `
-      ${ApiRoute}update-profile`,
-      {
-        method: "POST",
-        body : formData
-       
-      },
-    );
+    const resjsondata = await callApi(`${ApiRoute}update-profile`, {
+      method: "POST",
+      body: formData,
+    });
 
-    const resjsondata = await reqProfileUpdate.json();
     console.log(resjsondata);
     if (resjsondata.success) {
       if (resjsondata.UpdatedImgPath){    
@@ -66,17 +80,41 @@ export default function Profile() {
         UserName: profilename,
         Address: profileAddr,
         Phone: profilePhone,
-        Email: profileEmail,
-        ProfileImage: resjsondata.UpdatedImgPath,
+        UserEmail: profileEmail,
+        UserImgPath: resjsondata.UpdatedImgPath,
       });
+      console.log("relog" ,loggedInUser);
+      const user = {  
+        UserEmail: profileEmail,
+        UserName: profilename,
+        Address: profileAddr,
+        Phone: profilePhone,
+        UserRole: roleInfo,
+        UserImgPath: resjsondata.UpdatedImgPath,
+      };
+
+      sessionStorage.setItem("user", JSON.stringify(user));
+
+
       }else{
         setLoggedInUser({
           ...loggedInUser,
           UserName: profilename,
           Address: profileAddr,
           Phone: profilePhone,
-          Email: profileEmail,
+          UserEmail: profileEmail,
         });
+
+        const user = {
+          UserEmail: profileEmail,
+          UserName: profilename,
+          Address: profileAddr,
+          Phone: profilePhone,
+          UserRole: roleInfo,
+        };
+
+      sessionStorage.setItem("user", JSON.stringify(user));
+
       } 
       toast.success(resjsondata.message);
     } else {
@@ -102,14 +140,19 @@ export default function Profile() {
           <div className="row">
             <div className="col-lg-2 d-flex justify-content-center">
               <div className="profile-pic-cont">
-                <img src={`${uploadUrl}${loggedInUser.ProfileImage}`} />
+                <img
+                  src={`${uploadUrl}${loggedInUser.UserImgPath}`}
+                  onError={(e) => {
+                    e.target.src = `/defaultprofile.png`;
+                  }}
+                />
               </div>
             </div>
             <div className="col-lg-10">
               <br />
               <br />
               <h3>{loggedInUser.UserName}</h3>
-              <p className="profile-role-text">{loggedInUser.Role}</p>
+              <p className="profile-role-text">{loggedInUser.UserRole}</p>
               <button
                 className="edit-prof-btn"
                 onClick={() => HandleFormStatus()}
