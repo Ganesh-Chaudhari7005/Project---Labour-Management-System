@@ -21,6 +21,8 @@ import AddUsers from './Components/AddUsers.jsx';
 import CreateProject from './Components/CreateProject.jsx';
 import ProjectManagement from './Components/ProjectManagement.jsx';
 import RootLayout from './Components/RootLayout.jsx';
+import AddLabour from './Components/AddLabour.jsx';
+import ViewAllLabour from './Components/ViewAllLabour.jsx';
 const router = createBrowserRouter(
   createRoutesFromElements(
     <>
@@ -50,7 +52,10 @@ const router = createBrowserRouter(
         <Route path="manage-equipments" element={<EquipmentManagement />} />
         <Route path="cms" element={<CMS />} />
         <Route path="profile" element={<Profile />} />
-        <Route path="manage-labours" element={<LabourManagement />} />
+        <Route path="manage-labours" element={<LabourManagement />}>
+          <Route index element={<ViewAllLabour/>}/>
+          <Route path='add-labour' element={<AddLabour/>}/>
+        </Route>
       </Route>
 </Route>
     </>,

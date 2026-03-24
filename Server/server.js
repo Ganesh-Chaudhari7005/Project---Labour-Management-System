@@ -24,6 +24,15 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
+//uncomment during deployment 
+// app.use(express.static(path.join(__dirname, 'dist')));
+// app.use((req, res, next) => {
+//   if (req.path.startsWith('/api') || req.path.startsWith('/uploads')) {
+//     return next(); // let API routes handle it
+//   }
+//   res.sendFile(path.join(__dirname, 'dist', 'index.html'));
+// });
+
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     cb(null, "uploads/profile-pictures"); 

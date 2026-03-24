@@ -34,6 +34,7 @@ p {
   color: #000;
 }
 
+
 button {
   background-color: var(--primary);
   color: #fff;
@@ -45,7 +46,15 @@ button {
 
 }
 
-td{
+.custom-feild{
+  font-size: 18px;
+  font-weight: 500;
+  color: rgb(0, 0, 0);
+  margin-bottom: 5px;
+}
+
+
+td {
   vertical-align: middle;
 }
 
@@ -154,19 +163,20 @@ input[type="checkbox"] {
 
 /*logout button*/
 
-.logoutbtn{
+.logoutbtn {
   background-color: #DC2626;
-  padding:  2px 20px;
+  padding: 2px 20px;
   margin-left: 10px;
   border-radius: 3px;
   border: none;
   transition: transform 0.1s linear;
 }
 
-.logoutbtn:hover{
+.logoutbtn:hover {
   transform: scale(1.1);
   background-color: #cf0606;
 }
+
 /*dashboard*/
 
 .dash-nav-btn {

@@ -1,9 +1,9 @@
 import React from 'react'
-
+import { Outlet } from 'react-router-dom';
 export default function LabourManagement() {
   return (
-    <div>
-      <h1>Labour Management</h1>
+    <div className="h-100 w-100 admin-comp-def global-page-anim">
+      <Outlet />
     </div>
-  )
+  );
 }
