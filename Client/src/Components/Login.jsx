@@ -3,6 +3,7 @@ import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import LoginContext from "../Context/LoginContext";
 import { useNavigate } from "react-router-dom";
+import Swal from "sweetalert2";
 export default function Login() {
   const navigate = useNavigate();
   const [userEmail, setUserEmial] = useState("");
@@ -34,6 +35,15 @@ export default function Login() {
     const data = await request.json();
     if (data.success) {
 
+      Swal.fire({
+        title: "Login Successful!",
+        icon: "success",
+        timer: 2000,
+        showConfirmButton: false,
+        customClass: {
+          title : "small-title"
+        }
+      });
       const user = {
         UserEmail : data.uemail,
         UserName : data.funame,

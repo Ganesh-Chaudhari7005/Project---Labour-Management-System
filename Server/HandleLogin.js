@@ -51,7 +51,7 @@ console.log("rows:", rows[0].User_Pass);
           let temptable;
           if (rows[0].User_Role === "Admin") {
             temptable = "System_Admin";
-          } else if (rows[0].User_Role === "Labour") {
+          } else if (rows[0].User_Role === "Labour" || rows[0].User_Role === "labour") {
             temptable = "Labours";
           } else if (rows[0].User_Role === "Client") {
             temptable = "Clients";

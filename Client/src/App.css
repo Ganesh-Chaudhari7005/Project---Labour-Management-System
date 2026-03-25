@@ -41,6 +41,10 @@ button {
   border-radius: 5px;
 }
 
+.small-icon {
+  width: 80px !important;
+  height: 80px !important;
+}
 .tbl-head {
   background-color: #f1eeee !important;
 
@@ -53,6 +57,11 @@ button {
   margin-bottom: 5px;
 }
 
+.small-title{
+  font-size: 22px;
+  font-weight: 500;
+  color: #000;
+}
 
 td {
   vertical-align: middle;

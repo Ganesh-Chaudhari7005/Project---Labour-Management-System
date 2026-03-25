@@ -8,7 +8,7 @@ import RemoveUser from './RemoveUser.js';
 import { AddUserHandler } from './AddNewUsersHandler.js';
 import multer from 'multer';
 import path from 'path';
-
+import AddLabourHandlerFunction from './AddLabourHandler.js';
 
 import { fileURLToPath } from "url";
 import { GetProfilePictureHandler } from './GetProfilePictureHandler.js';
@@ -19,6 +19,11 @@ const app = express();
 
 app.use(express.json());
 app.use(cors());
+
+app.use((req, res, next) => {
+  console.log("Incoming:", req.method, req.url);
+  next();
+});
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -53,10 +58,43 @@ app.post("/login", async(req,res)=>{
 
 app.get("/me", authenticateToken, async (req, res) => {
   const user = req.user.userId;
-  res.json({ user });
+  res.json({ user }); 
 });
 
+app.post("/add-Labour", authenticateToken, upload.single("LabPhoto"), async(req, res)=>{
+     let filepath = null;
+ if (req.file) {
+   filepath = req.file.path.replace(/\\/g, "/");
+ }
+   let {
+     LabName,
+     LabEmail,
+     LabContact,
+     LabAddr,
+     LabWage,
+     LabGen,
+     Labdob,
+     LabAccess
+   } = req.body;
 
+    
+   console.log(LabName, LabEmail, LabContact, LabAddr, LabWage, LabGen, Labdob, filepath, LabAccess);
+
+   let addLabRes = await AddLabourHandlerFunction(
+     LabName,
+     LabEmail,
+     LabContact,
+     LabAddr,
+     LabWage,
+     LabGen,
+     Labdob,
+     LabAccess,
+     filepath
+   );
+   
+   res.json(addLabRes);
+   
+});
 app.post("/update-profile",authenticateToken, upload.single("profileimage"), async(req,res)=>{
     let filepath = null;
 
@@ -74,16 +112,7 @@ app.post("/update-profile",authenticateToken, upload.single("profileimage"), asy
       roleInfo
     } = req.body;
     
-    console.log("Therse sare");
-    
-    console.log(
-      profilename,
-      profileEmail,
-      profilePhone,
-      profileAddr,
-      currentUserEmail,
-      roleInfo,
-    );
+
     
     let profileUpdateRes = await HandleProfileUpdate(
       profilename,

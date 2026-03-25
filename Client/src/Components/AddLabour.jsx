@@ -1,7 +1,79 @@
-import React from "react";
+import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { toast, ToastContainer } from "react-toastify";
+import { ApiRoute } from "./ApiConfig.js";
+import { useApi } from "./ApiCaller.js";
 export default function AddLabour() {
+  const callApi = useApi()
+  const [LabourName, setLabName] = useState("");
+  const [LabourEmail, setLabEmail] = useState("");
+  const [LabourContact, setLabContact] = useState("");
+  const [LabourAddress, setLabAddress] = useState("");
+  const [LabourGender, setLabGender] = useState("");
+  const [LabourDOB, setLabDOB] = useState("");
+  const [Labourwage, setLabwage] = useState("");
+  const [hasSystemAccess, setSystemAccess] = useState(false);
+  const [labImage, setLabImage] = useState("");
+
+  const ValLabDetails = (e) => {
+    e.preventDefault();
+    const trimLabName = LabourName.trim();
+    const trimLabContact = LabourContact.trim();
+    const trimLabEmail = LabourEmail.trim();
+    const trimLabAddr = LabourAddress.trim();
+    const trimWage = Labourwage.trim();
+    const today = new Date().toISOString().split("T")[0];
+
+    if (
+      !trimLabName ||
+      !trimLabEmail ||
+      !trimLabContact ||
+      !trimLabAddr ||
+      !trimWage ||
+      !LabourDOB ||
+      !LabourGender
+    ) {
+      toast.error("Fill required details");
+    } else if (trimLabContact.length > 10 || trimLabContact.length < 10) {
+      toast.error("Enter a Valid Phone Number");
+    } else if (LabourDOB > today) {
+      toast.error("Invalid Date");
+    }else if(Labourwage === 0){
+      toast.error("Wage should be greater than 0");
+    } 
+    else {
+      HandleAddLab();
+    }
+  };
+
+  const HandleAddLab = async()=>{
+      const formdata = new FormData();
+
+      formdata.append("LabName" , LabourName);
+      formdata.append("LabEmail", LabourEmail);
+      formdata.append("LabContact", LabourContact);
+      formdata.append("LabAddr", LabourAddress);
+      formdata.append("LabWage", Labourwage);
+      formdata.append("LabGen", LabourGender);
+      formdata.append("Labdob", LabourDOB);
+      formdata.append("LabPhoto", labImage);
+      formdata.append("LabAccess", hasSystemAccess);
+
+      const resjsondata = await callApi(`${ApiRoute}add-Labour`, {
+        method: "POST",
+        body: formdata,
+      });
+
+      if(resjsondata?.success){
+        toast.success(resjsondata?.message);
+      }else{
+        toast.error(resjsondata?.message);
+      }
+      console.log(resjsondata);
+      
+      
+  }
+
   return (
     <>
       <motion.div
@@ -27,8 +99,12 @@ export default function AddLabour() {
                   <input
                     type="text"
                     id="labourName"
+                    value={LabourName}
+                    onChange={(e) => {
+                      setLabName(e.target.value);
+                    }}
                     className="profile-fields  custom-text mb-3"
-                    required
+                    required={true}
                   />
                 </div>
               </div>
@@ -39,7 +115,11 @@ export default function AddLabour() {
                   </label>
                   <br />
                   <input
-                    type="text"
+                    type="email"
+                    value={LabourEmail}
+                    onChange={(e) => {
+                      setLabEmail(e.target.value);
+                    }}
                     id="labourEmail"
                     className="profile-fields  custom-text"
                     required
@@ -55,6 +135,10 @@ export default function AddLabour() {
                   <input
                     type="text"
                     id="labourContact"
+                    value={LabourContact}
+                    onChange={(e) => {
+                      setLabContact(e.target.value);
+                    }}
                     className="profile-fields  custom-text"
                     required
                   />
@@ -75,6 +159,9 @@ export default function AddLabour() {
                       height: "40px",
                     }}
                     type="file"
+                    onChange={(e) => {
+                      setLabImage(e.target.files[0]);
+                    }}
                     id="labourContact"
                     className="profile-fields  custom-text"
                   />
@@ -88,6 +175,10 @@ export default function AddLabour() {
                   <br />
                   <input
                     type="text"
+                    value={Labourwage}
+                    onChange={(e) => {
+                      setLabwage(e.target.value);
+                    }}
                     id="labourWages"
                     className="profile-fields  custom-text"
                     required
@@ -96,13 +187,17 @@ export default function AddLabour() {
               </div>
               <div className="col-lg-4 d-flex align-items-center">
                 <div className="form-divs">
-                  <label htmlFor="labourWages" className="custom-feild">
+                  <label htmlFor="labBOB" className="custom-feild">
                     Date of birth : <sup style={{ color: "red" }}>*</sup>
                   </label>
                   <br />
                   <input
                     type="date"
-                    id="labourWages"
+                    id="labBOB"
+                    value={LabourDOB}
+                    onChange={(e) => {
+                      setLabDOB(e.target.value);
+                    }}
                     className="profile-fields  custom-text p-2"
                     required
                   />
@@ -112,10 +207,16 @@ export default function AddLabour() {
             <div className="row mb-5">
               <div className="col-lg-8">
                 <label htmlFor="address" className="custom-feild">
-                  Address :{" "}
+                  Address : <sup style={{ color: "red" }}>*</sup>
                 </label>
                 <br />
-                <textarea className="w-100 h-100"></textarea>
+                <textarea
+                  className="w-100 h-100 custom-feild"
+                  value={LabourAddress}
+                  onChange={(e) => {
+                    setLabAddress(e.target.value);
+                  }}
+                ></textarea>
               </div>
               <div className="col-lg-4 d-flex align-items-center">
                 <div className="form-divs">
@@ -127,7 +228,9 @@ export default function AddLabour() {
                       className="mx-2"
                       type="radio"
                       name="gendergrp"
-                      value="Male"
+                      checked={LabourGender === "male"}
+                      onChange={(e) => setLabGender(e.target.value)}
+                      value="male"
                       required
                     />
                     Male
@@ -137,6 +240,8 @@ export default function AddLabour() {
                       className="mx-2"
                       type="radio"
                       name="gendergrp"
+                      checked={LabourGender === "female"}
+                      onChange={(e) => setLabGender(e.target.value)}
                       value="female"
                       required
                     />
@@ -146,13 +251,28 @@ export default function AddLabour() {
               </div>
             </div>
             <div className="mb-3">
-              <input type="checkbox" name="" id="access" />
+              <input
+                type="checkbox"
+                value={hasSystemAccess}
+                onChange={() => {
+                  setSystemAccess((prev) => (prev = !prev));
+                }}
+                name=""
+                id="access"
+              />
               <label className="custom-feild mx-2" htmlFor="access">
                 Give Labour Access to System
               </label>
             </div>
-            <div className="d-flex">
-              <button type="submit" className="defbtn">Add Labour</button>
+            <div className="w-100 p-3">
+              <button
+                type="submit"
+                style={{ position: "relative" }}
+                className="defbtn"
+                onClick={(e) => ValLabDetails(e)}
+              >
+                Add Labour
+              </button>
             </div>
           </form>
         </div>

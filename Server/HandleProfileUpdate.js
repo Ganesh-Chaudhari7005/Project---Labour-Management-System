@@ -17,7 +17,7 @@ export async function HandleProfileUpdate(
     currenttable = "Supervisors";
   }else if(roleInfo === "Client"){
     currenttable = "Clients";
-  }else if(roleInfo ==="Labour"){
+  }else if(roleInfo ==="Labour" || roleInfo === "labour"){
     currenttable = "Labours"
   }
 

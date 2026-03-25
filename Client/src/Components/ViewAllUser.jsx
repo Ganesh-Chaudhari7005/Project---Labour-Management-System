@@ -30,6 +30,9 @@ export default function ViewAllUsers() {
       confirmButtonColor: "#DC2626",
       cancelButtonColor: "#6B7280",
       confirmButtonText: "Yes, Delete",
+      customClass: {
+        title: "small-title",
+      },
     });
 
     if (result.isConfirmed) {

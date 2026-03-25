@@ -42,7 +42,7 @@ export default function Dashboard() {
       "CMS",
     ],
     Supervisor: ["Profile","Manage-Labours", "Attendance", "Manage Equipments", "CMS"],
-    Labour: ["Profile","View Attendance"],
+    labour: ["Profile","View Attendance"],
     Client: ["Profile","Work Status","Feedback","Billing"],
   };
 
@@ -55,12 +55,15 @@ export default function Dashboard() {
       confirmButtonColor: "#DC2626",
       cancelButtonColor: "#6B7280",
       confirmButtonText: "Yes, logout",
-    }).then((result)=>{
-      if(result.isConfirmed){
+      customClass: {
+        title: "small-title",
+      },
+    }).then((result) => {
+      if (result.isConfirmed) {
         sessionStorage.removeItem("token");
         navigate("/admin");
       }
-    })
+    });
   }
   const allowedFeatures = permissions[loggedInUser?.UserRole] || [];
   return (

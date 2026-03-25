@@ -26,38 +26,44 @@ import ViewAllLabour from './Components/ViewAllLabour.jsx';
 const router = createBrowserRouter(
   createRoutesFromElements(
     <>
-        <Route element={<RootLayout />}>
+      <Route element={<RootLayout />}>
+        <Route path="/" element={<Home />} />
 
-      <Route path="/" element={<Home />} />
-
-      <Route path="/admin" element={<Login />} />
-      <Route path="admin/dashboard" element={<ProtectedRoute><Dashboard/></ProtectedRoute>}/>
-      <Route
-        path="/dashboard"
-        element={
-          <ProtectedRoute>
-            <Dashboard />
-          </ProtectedRoute>
-        }
-      >
-        <Route path="project-management" element={<ProjectManagement />}>
-          <Route index element={<Project/>}/>
-          <Route path="create-project" element={<CreateProject/>}/>
-        </Route>
-        <Route path="attendance" element={<Attendance />} />
-        <Route path="manage-users" element={<UserManagement />}>
-          <Route index element={<ViewAllUsers />} />
-          <Route path="add-user" element={<AddUsers />} />
-        </Route>
-        <Route path="manage-equipments" element={<EquipmentManagement />} />
-        <Route path="cms" element={<CMS />} />
-        <Route path="profile" element={<Profile />} />
-        <Route path="manage-labours" element={<LabourManagement />}>
-          <Route index element={<ViewAllLabour/>}/>
-          <Route path='add-labour' element={<AddLabour/>}/>
+        <Route path="/admin" element={<Login />} />
+        <Route
+          path="admin/dashboard"
+          element={
+            <ProtectedRoute>
+              <Dashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard"
+          element={
+            <ProtectedRoute>
+              <Dashboard />
+            </ProtectedRoute>
+          }
+        >
+          <Route path="project-management" element={<ProjectManagement />}>
+            <Route index element={<Project />} />
+            <Route path="create-project" element={<CreateProject />} />
+          </Route>
+          <Route path="View-Attendance" element={<Attendance />} />
+          <Route path="manage-users" element={<UserManagement />}>
+            <Route index element={<ViewAllUsers />} />
+            <Route path="add-user" element={<AddUsers />} />
+          </Route>
+          <Route path="manage-equipments" element={<EquipmentManagement />} />
+          <Route path="cms" element={<CMS />} />
+          <Route path="profile" element={<Profile />} />
+          <Route path="manage-labours" element={<LabourManagement />}>
+            <Route index element={<ViewAllLabour />} />
+            <Route path="add-labour" element={<AddLabour />} />
+          </Route>
         </Route>
       </Route>
-</Route>
     </>,
   ),
 );
