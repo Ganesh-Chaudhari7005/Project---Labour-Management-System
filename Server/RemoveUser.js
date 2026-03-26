@@ -7,7 +7,7 @@ async function RemoveUser(removeuseremail, role) {
   } catch (err) {
     console.log("Failed to Connect Database");
     return {
-      success: false,
+      success: false,    
       message: "Something went wrong. Please try again later.",
     };
   }
@@ -19,9 +19,9 @@ async function RemoveUser(removeuseremail, role) {
       currenttable = "System_Admin";
     } else if (role === "Supervisor") {
       currenttable = "Supervisors";
-    } else if (role === "Client") {
+    } else if (role === "Client") { 
       currenttable = "Clients";
-    } else if (role === "Labour") {
+    } else if (role === "Labour" || role === "labour") {
       currenttable = "Labours";
     }
   try {

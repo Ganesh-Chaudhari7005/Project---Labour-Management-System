@@ -14,6 +14,7 @@ export default function AddLabour() {
   const [Labourwage, setLabwage] = useState("");
   const [hasSystemAccess, setSystemAccess] = useState(false);
   const [labImage, setLabImage] = useState("");
+  const [LabType , setLabType] = useState("");
 
   const ValLabDetails = (e) => {
     e.preventDefault();
@@ -40,7 +41,9 @@ export default function AddLabour() {
       toast.error("Invalid Date");
     }else if(Labourwage === 0){
       toast.error("Wage should be greater than 0");
-    } 
+    } else if(LabType === ""){
+      toast.error("Select Labour Type");
+    }
     else {
       HandleAddLab();
     }
@@ -58,15 +61,16 @@ export default function AddLabour() {
       formdata.append("Labdob", LabourDOB);
       formdata.append("LabPhoto", labImage);
       formdata.append("LabAccess", hasSystemAccess);
-
+      formdata.append("LabType", LabType);
       const resjsondata = await callApi(`${ApiRoute}add-Labour`, {
         method: "POST",
         body: formdata,
       });
 
       if(resjsondata?.success){
-        toast.success(resjsondata?.message);
-      }else{
+        toast.success(resjsondata?.message);     
+    }
+      else{
         toast.error(resjsondata?.message);
       }
       console.log(resjsondata);
@@ -186,21 +190,42 @@ export default function AddLabour() {
                 </div>
               </div>
               <div className="col-lg-4 d-flex align-items-center">
-                <div className="form-divs">
-                  <label htmlFor="labBOB" className="custom-feild">
-                    Date of birth : <sup style={{ color: "red" }}>*</sup>
-                  </label>
-                  <br />
-                  <input
-                    type="date"
-                    id="labBOB"
-                    value={LabourDOB}
-                    onChange={(e) => {
-                      setLabDOB(e.target.value);
-                    }}
-                    className="profile-fields  custom-text p-2"
-                    required
-                  />
+                <div className="row w-100">
+                  <div className="col-lg-6">
+                    <div className="form-divs">
+                      <label htmlFor="labBOB" className="custom-feild">
+                        Date of birth : <sup style={{ color: "red" }}>*</sup>
+                      </label>
+                      <br />
+                      <input
+                        type="date"
+                        id="labBOB"
+                        value={LabourDOB}
+                        onChange={(e) => {
+                          setLabDOB(e.target.value);
+                        }}
+                        className="profile-fields  custom-text p-2"
+                        required
+                      />
+                    </div>
+                  </div>
+                  <div className="col-lg-6">
+                    <div className="form-divs">
+                      <label htmlFor="labtype" className="custom-feild">
+                        Labour Type : <sup style={{ color: "red" }}>*</sup>
+                      </label>
+                    </div>
+                    <select
+                      value={LabType}
+                      onChange={(e) => setLabType(e.target.value)}
+                      className="w-100 custom-feild profile-fields"
+                      name="labtype"
+                    >
+                      <option value="">-- Select Gender --</option>
+                      <option value="Misteri">Misteri</option>
+                      <option value="Helper">Helper</option>
+                    </select>
+                  </div>
                 </div>
               </div>
             </div>

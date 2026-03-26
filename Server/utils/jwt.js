@@ -9,7 +9,7 @@ function generateToken(user){
             role : user.role
         },
         SECRET,
-        {expiresIn: "1h"}
+        {expiresIn: "2h"}
     );
 }
 

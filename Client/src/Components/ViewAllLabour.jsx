@@ -1,13 +1,119 @@
-import React from 'react'
-import { NavLink } from 'react-router-dom';
+import React, { useEffect, useState } from "react";
+import { NavLink } from "react-router-dom";
+import { ApiRoute } from "./ApiConfig.js";
+import { uploadUrl } from "../uploadConfig";
+import ShowLabourDetails from "./ShowLabourDetails.jsx";
+import { motion } from "framer-motion";
+ShowLabourDetails
 export default function ViewAllLabour() {
-  return (
-    <div className="container remuser-cont p-3">
-      <h4 className="mb-5 d-inline-block">All Labours</h4>
+  const [AllLabours, setAllLabours] = useState([]);
+  const [currrentLabName, setLabName] = useState('');
+  const [currrentLabEmail, setLabEmail] = useState('');
+  const [currrentLabPhone, setLabPhone] = useState('');
+  const [currrentLabImg, setLabImg] = useState('');
+  const [currrentLabDOB, setLabDOB] = useState('');
+  const [currrentLabAddr, setLabAddr] = useState('');
+  const [currrentLabType, setLabType] = useState('');
+  const [isConVisible, setContisvisible] = useState(false);
+  const FetchLaboursFromDB = async () => {
+    let reqLab = await fetch(`${ApiRoute}fetch-labours`);
+    console.log(reqLab.status);
 
-      <NavLink to="add-labour">
-        <button className="defbtn">+ Add Labour</button>
-      </NavLink>
-    </div>
+    let res = await reqLab.json();
+    setAllLabours(res);
+    console.log(reqLab);
+    console.log(res);
+    console.log(AllLabours);
+  };
+  useEffect(() => {
+    FetchLaboursFromDB();
+  }, []);
+
+  const OpenFullView = (index)=>{
+    setLabName(AllLabours[index].Name);
+    setLabImg(AllLabours[index].profileImgPath);
+    setLabType(AllLabours[index].LabType);
+    setLabEmail(AllLabours[index].Email);
+    setLabPhone(AllLabours[index].Phone);
+    setLabAddr(AllLabours[index].Address);
+    setContisvisible((prev)=> prev = !prev);
+  }
+
+  const toggleVisibility = ()=>{
+    setContisvisible((prev) => prev = !prev);
+  }
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3 }}
+    >
+      <div className="container remuser-cont p-3">
+        <h4 className="mb-5 d-inline-block">
+          All Labours ({AllLabours.length})
+        </h4>
+
+        <NavLink to="add-labour">
+          <button className="defbtn">+ Add Labour</button>
+        </NavLink>
+        <ShowLabourDetails
+          onClose={toggleVisibility}
+          isVisible={isConVisible}
+          address={currrentLabAddr}
+          phone={currrentLabPhone}
+          email={currrentLabEmail}
+          type={currrentLabType}
+          imgpath={currrentLabImg}
+          Name={currrentLabName || ""}
+        />
+        
+       
+        <div className="row g-3">
+          {AllLabours.map((data, index) => (
+            <div className="col-lg-3 p-0" key={index}>
+              <div
+                className="card cust-card"
+                style={{ width: "15rem", height: "20rem" }}
+              >
+                <div className="card-img-cont">
+                  <img
+                    src={`${uploadUrl}${data.profileImgPath}`}
+                    className="img-fluid"
+                    alt="..."
+                    onError={(e) => {
+                      e.target.src = "/public/defaultlabouricon.png";
+                    }}
+                  />
+                </div>
+
+                <div className="card-body d-flex flex-column align-items-center">
+                  <h5 className="card-title text-capitalize">{data.Name}</h5>
+                  <p className="card-text">Worker Type : {data.LabType}</p>
+                  <div className="btn-cont d-flex gap-2">
+                    <button
+                      onClick={() => {
+                        OpenFullView(index);
+                      }}
+                      className="card-btn"
+                    >
+                      More Info.
+                    </button>
+                    <button
+                      className="px-2 py-0"
+                      style={{
+                        backgroundColor: "#dc2626",
+                        borderRadius: "5px",
+                      }}
+                    >
+                      Remove
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </motion.div>
   );
 }
