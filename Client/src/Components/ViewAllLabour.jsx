@@ -4,16 +4,20 @@ import { ApiRoute } from "./ApiConfig.js";
 import { uploadUrl } from "../uploadConfig";
 import ShowLabourDetails from "./ShowLabourDetails.jsx";
 import { motion } from "framer-motion";
-ShowLabourDetails
+import { useApi } from "./ApiCaller.js";
+import { toast, ToastContainer } from "react-toastify";
+import Swal from "sweetalert2";
+ShowLabourDetails;
 export default function ViewAllLabour() {
+  const callapi = useApi();
   const [AllLabours, setAllLabours] = useState([]);
-  const [currrentLabName, setLabName] = useState('');
-  const [currrentLabEmail, setLabEmail] = useState('');
-  const [currrentLabPhone, setLabPhone] = useState('');
-  const [currrentLabImg, setLabImg] = useState('');
-  const [currrentLabDOB, setLabDOB] = useState('');
-  const [currrentLabAddr, setLabAddr] = useState('');
-  const [currrentLabType, setLabType] = useState('');
+  const [currrentLabName, setLabName] = useState("");
+  const [currrentLabEmail, setLabEmail] = useState("");
+  const [currrentLabPhone, setLabPhone] = useState("");
+  const [currrentLabImg, setLabImg] = useState("");
+  const [currrentLabDOB, setLabDOB] = useState("");
+  const [currrentLabAddr, setLabAddr] = useState("");
+  const [currrentLabType, setLabType] = useState("");
   const [isConVisible, setContisvisible] = useState(false);
   const FetchLaboursFromDB = async () => {
     let reqLab = await fetch(`${ApiRoute}fetch-labours`);
@@ -29,25 +33,65 @@ export default function ViewAllLabour() {
     FetchLaboursFromDB();
   }, []);
 
-  const OpenFullView = (index)=>{
+  const OpenFullView = (index) => {
     setLabName(AllLabours[index].Name);
     setLabImg(AllLabours[index].profileImgPath);
     setLabType(AllLabours[index].LabType);
     setLabEmail(AllLabours[index].Email);
     setLabPhone(AllLabours[index].Phone);
     setLabAddr(AllLabours[index].Address);
-    setContisvisible((prev)=> prev = !prev);
-  }
+    setContisvisible((prev) => (prev = !prev));
+  };
 
-  const toggleVisibility = ()=>{
-    setContisvisible((prev) => prev = !prev);
-  }
+  const toggleVisibility = () => {
+    setContisvisible((prev) => (prev = !prev));
+  };
+
+  const RemoveLabourHandler = async (email, name) => {
+    let Choiseresult = await Swal.fire({
+      title: "Alert",
+      text: `Delete Labour ${name}`,
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#DC2626",
+      cancelButtonColor: "#6B7280",
+      confirmButtonText: "Yes, Delete",
+      customClass: {
+        title: "small-title",
+      },
+    });
+
+    if (Choiseresult) {
+      const req = await callapi(`${ApiRoute}remove-labour`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email }),
+      });
+
+      console.log("result is ", req.success);
+ 
+      if (req.success) {
+        console.log("Labour Deleted Successfully");
+        toast.success(req.message);
+        FetchLaboursFromDB();
+      } else {
+        console.log("Failed to delete labour");
+        toast.error(req.message || "Error");
+      }
+    }
+  };
   return (
     <motion.div
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
     >
+      <ToastContainer
+        toastClassName="custom-toast"
+        bodyClassName="custom-toast-body"
+      />
       <div className="container remuser-cont p-3">
         <h4 className="mb-5 d-inline-block">
           All Labours ({AllLabours.length})
@@ -66,8 +110,7 @@ export default function ViewAllLabour() {
           imgpath={currrentLabImg}
           Name={currrentLabName || ""}
         />
-        
-       
+
         <div className="row g-3">
           {AllLabours.map((data, index) => (
             <div className="col-lg-3 p-0" key={index}>
@@ -99,6 +142,9 @@ export default function ViewAllLabour() {
                       More Info.
                     </button>
                     <button
+                      onClick={() => {
+                        RemoveLabourHandler(data.Email, data.Name);
+                      }}
                       className="px-2 py-0"
                       style={{
                         backgroundColor: "#dc2626",

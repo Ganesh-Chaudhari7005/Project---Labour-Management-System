@@ -13,7 +13,7 @@ export default function Project() {
           <button className="defbtn px-2">+ New Project</button>
         </NavLink>
 
-        <h1>Project</h1>
+        <h4 className="mb-5 d-inline-block">All Projects</h4>
       </div>
     </>
   );

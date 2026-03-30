@@ -221,7 +221,7 @@ export default function AddLabour() {
                       className="w-100 custom-feild profile-fields"
                       name="labtype"
                     >
-                      <option value="">-- Select Gender --</option>
+                      <option value="">-- Select --</option>
                       <option value="Misteri">Misteri</option>
                       <option value="Helper">Helper</option>
                     </select>

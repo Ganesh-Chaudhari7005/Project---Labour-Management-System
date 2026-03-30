@@ -38,7 +38,7 @@ export default function Login() {
       Swal.fire({
         title: "Login Successful!",
         icon: "success",
-        timer: 2000,
+        timer: 1000,
         showConfirmButton: false,
         customClass: {
           title : "small-title"

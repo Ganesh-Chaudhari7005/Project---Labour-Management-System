@@ -5,9 +5,10 @@ import { toast, ToastContainer } from "react-toastify";
 import { NavLink } from "react-router-dom";
 import { motion } from "framer-motion";
 import { uploadUrl } from "../uploadConfig";
-
+import { useApi } from "./ApiCaller.js";
 import Swal from "sweetalert2";
 export default function ViewAllUsers() {
+  const callpi = useApi();
   const [AllUsers, setAllUsers] = useState([]);
   const FetchUsersFromDB = async () => {
     let reqUsers = await fetch(`${ApiRoute}fetch-users`);
@@ -36,7 +37,7 @@ export default function ViewAllUsers() {
     });
 
     if (result.isConfirmed) {
-      let reqRemoveUser = await fetch(`${ApiRoute}remove-user`, {
+      let reqRemoveUser = await callpi(`${ApiRoute}remove-user`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -44,14 +45,13 @@ export default function ViewAllUsers() {
         body: JSON.stringify({ remuseremail, role }),
       });
 
-      let remuserResponce = await reqRemoveUser.json();
-      if (remuserResponce.success) {
-        console.log(remuserResponce.message);
-        toast.success(remuserResponce.message);
+      if (reqRemoveUser.success) {
+        console.log(reqRemoveUser.message);
+        toast.success(reqRemoveUser.message);
         FetchUsersFromDB();
         FetchUsersFromDB();
       } else {
-        toast.error(remuserResponce.message);
+        toast.error(reqRemoveUser.message);
       }
     }
   };

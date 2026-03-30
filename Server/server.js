@@ -14,6 +14,7 @@ import { fileURLToPath } from "url";
 import { GetProfilePictureHandler } from "./GetProfilePictureHandler.js";
 import { authenticateToken } from "./middleware/authenticate.js";
 import { log } from "console";
+import RemoveLabour from "./RemoveLabour.js";
 
 const app = express();
 
@@ -155,7 +156,7 @@ app.post(
   },
 );
 
-app.post("/remove-user", async (req, res) => {
+app.post("/remove-user", authenticateToken ,async (req, res) => {
   let { remuseremail, role } = req.body;
 
   let removeStatus = await RemoveUser(remuseremail, role);
@@ -168,6 +169,14 @@ app.get("/fetch-users", async (req, res) => {
   let AllUsers = await FetchUsers();
   res.json(AllUsers);
 });
+
+
+app.post("/remove-labour", async(req, res)=>{ 
+  let {email} = req.body;
+  let removeStatus = await RemoveLabour(email);
+  res.json(removeStatus); 
+  
+})
 
 
 app.get("/fetch-labours", async(req, res)=>{
