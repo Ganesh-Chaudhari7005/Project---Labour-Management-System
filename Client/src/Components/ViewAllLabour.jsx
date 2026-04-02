@@ -61,7 +61,7 @@ export default function ViewAllLabour() {
       },
     });
 
-    if (Choiseresult) {
+    if (Choiseresult.isConfirmed) {
       const req = await callapi(`${ApiRoute}remove-labour`, {
         method: "POST",
         headers: {
@@ -71,7 +71,7 @@ export default function ViewAllLabour() {
       });
 
       console.log("result is ", req.success);
- 
+
       if (req.success) {
         console.log("Labour Deleted Successfully");
         toast.success(req.message);

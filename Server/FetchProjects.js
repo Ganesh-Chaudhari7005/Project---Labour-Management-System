@@ -1,7 +1,7 @@
 import mysql from 'mysql2/promise';
 import { db_details } from './dbconfig.js';
 
-async function FetchLabours(){
+async function FetchProjects(){
     
   let db;
   try {
@@ -18,7 +18,7 @@ async function FetchLabours(){
     let rows;
 
     try{
-        [rows] = await db.execute('SELECT * FROM labours');
+        [rows] = await db.execute('SELECT * FROM projects');
 
          return rows;
     }catch(err){
@@ -28,4 +28,4 @@ async function FetchLabours(){
     }
 } 
 
-export default FetchLabours;
+export default FetchProjects;

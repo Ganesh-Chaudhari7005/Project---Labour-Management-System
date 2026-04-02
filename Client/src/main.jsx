@@ -23,6 +23,12 @@ import ProjectManagement from './Components/ProjectManagement.jsx';
 import RootLayout from './Components/RootLayout.jsx';
 import AddLabour from './Components/AddLabour.jsx';
 import ViewAllLabour from './Components/ViewAllLabour.jsx';
+import ManageProject from  './Components/ManageProject.jsx';
+import AssignLabours from './Components/AssignLabours.jsx';
+import ProjectDetails from './Components/ProjectDetails.jsx';
+import EquipmentsDash from './Components/EquipmentsDash.jsx';
+import AddEquipment from './Components/AddEquipment';
+import AssignEquipment from './Components/AssignEquipment.jsx';
 const router = createBrowserRouter(
   createRoutesFromElements(
     <>
@@ -49,13 +55,21 @@ const router = createBrowserRouter(
           <Route path="project-management" element={<ProjectManagement />}>
             <Route index element={<Project />} />
             <Route path="create-project" element={<CreateProject />} />
+            <Route path="manage-project/:id" element={<ManageProject />}>
+                <Route index element={<ProjectDetails />}/>
+                <Route path='assign-labours' element={<AssignLabours />}/>
+            </Route>
           </Route>
           <Route path="View-Attendance" element={<Attendance />} />
           <Route path="manage-users" element={<UserManagement />}>
             <Route index element={<ViewAllUsers />} />
             <Route path="add-user" element={<AddUsers />} />
           </Route>
-          <Route path="manage-equipments" element={<EquipmentManagement />} />
+          <Route path="manage-equipments" element={<EquipmentManagement />} >
+            <Route  index element={<EquipmentsDash/>}/>
+            <Route  path='add-equipment' element={<AddEquipment/>}/>
+            <Route  path='assign-equipments' element={<AssignEquipment/>}/>
+          </Route>
           <Route path="cms" element={<CMS />} />
           <Route path="profile" element={<Profile />} />
           <Route path="manage-labours" element={<LabourManagement />}>
@@ -70,8 +84,6 @@ const router = createBrowserRouter(
 
 createRoot(document.getElementById("root")).render(
   <>
-    <StrictMode>
         <RouterProvider router={router} />
-    </StrictMode>
   </>,
 );

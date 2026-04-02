@@ -15,7 +15,11 @@ import { GetProfilePictureHandler } from "./GetProfilePictureHandler.js";
 import { authenticateToken } from "./middleware/authenticate.js";
 import { log } from "console";
 import RemoveLabour from "./RemoveLabour.js";
-
+import { HandleCreateProject } from "./createProjectService.js";
+import FetchProjects from "./FetchProjects.js";
+import GetProjectDetails from "./GetProjectDetails.js";
+import FetchEquipments from "./FetchAllEquipments.js";
+import { AddEquipment } from "./HandleEquipmentManagement.js";
 const app = express();
 
 app.use(express.json());
@@ -170,6 +174,20 @@ app.get("/fetch-users", async (req, res) => {
   res.json(AllUsers);
 });
 
+app.post("/getProject-details",authenticateToken, async(req, res)=>{
+  let projectid = req.body.id;
+
+  let sendres= await GetProjectDetails(projectid);
+  res.json(sendres); 
+});
+
+app.post("/create-project", async (req, res) => {
+
+    const result = req.body;
+    console.log(result.finalData.works)
+    let functionRes = await HandleCreateProject(result);
+    res.json(functionRes);
+});
 
 app.post("/remove-labour", async(req, res)=>{ 
   let {email} = req.body;
@@ -178,10 +196,30 @@ app.post("/remove-labour", async(req, res)=>{
   
 })
 
+app.post("/add-equipments" , authenticateToken , async(req, res)=>{
+    let { finalEquipment, selectedQuantity} = req.body;
+
+    let sendres = AddEquipment(
+      finalEquipment,
+      selectedQuantity,
+    );
+    res.json(sendres);
+}); 
+
+app.get("/get-all-equipments-list", async(req, res)=>{
+  let AllEquipments = await FetchEquipments();
+  res.json(AllEquipments);
+});
 
 app.get("/fetch-labours", async(req, res)=>{
   let AllLabours = await FetchLabours();
   res.json(AllLabours);
+});
+
+
+app.get("/fetch-projects", async (req, res) => {
+  let AllProjects = await FetchProjects();
+  res.json(AllProjects);
 });
 
 app.post("/add-new-user", async (req, res) => {

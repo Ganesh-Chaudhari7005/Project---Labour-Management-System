@@ -95,3 +95,39 @@ export function PasswordGenerator() {
 
   return Password;
 }
+
+export function CreateClientId() {
+  let ClientID;
+  let chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
+  let random_char_num = Math.floor(Math.random() * chars.length);
+  let random_char_num2 = Math.floor(Math.random() * chars.length);
+  let random_char2 = chars.charAt(random_char_num2);
+  let random_char = chars.charAt(random_char_num);
+
+  let random_num1 = Math.floor(Math.random() * 10);
+  let random_num2 = Math.floor(Math.random() * 10);
+  let random_num3 = Math.floor(Math.random() * 10);
+
+  ClientID = `CLI-${random_char}${random_char2}${random_num1}${random_num2}${random_num3}`;
+
+  return ClientID;
+}
+
+export function CreateProjectID() {
+  let ProjectID;
+  let chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
+  let random_char_num = Math.floor(Math.random() * chars.length);
+  let random_char_num2 = Math.floor(Math.random() * chars.length);
+  let random_char2 = chars.charAt(random_char_num2);
+  let random_char = chars.charAt(random_char_num);
+
+  let random_num1 = Math.floor(Math.random() * 10);
+  let random_num2 = Math.floor(Math.random() * 10);
+  let random_num3 = Math.floor(Math.random() * 10);
+
+  ProjectID = `PRJ-${random_char}${random_char2}${random_num1}${random_num2}${random_num3}`;
+
+  return ProjectID;
+}
