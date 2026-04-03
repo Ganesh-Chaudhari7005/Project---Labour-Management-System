@@ -592,6 +592,12 @@ a.text-white.adminnavbtn {
   min-height: 100vh;
 }
 
+.equip-btn{
+  padding: 7px;
+  border-radius: 4px;
+}
+
+
 .eq-add-card {
   width: 100%;
   max-width: 100%;   /* remove restriction */
@@ -684,11 +690,11 @@ a.text-white.adminnavbtn {
 
 /*assign*/
 
-.eq-assign-content {
+/* .eq-assign-content {
   display: grid;
   grid-template-columns: 2fr 1fr;
   gap: 24px;
-}
+} */
 
 .eq-assign-group {
   margin-bottom: 18px;
@@ -709,6 +715,8 @@ a.text-white.adminnavbtn {
 
 .eq-assign-btn-row {
   margin-top: 10px;
+  display: flex;
+  gap: 10px;
 }
 
 .eq-assign-btn {
@@ -721,15 +729,22 @@ a.text-white.adminnavbtn {
 
 .eq-assign-summary {
   background: #f9fafb;
-  padding: 15px;
+  padding: 8px;
   border-radius: 10px;
   border: 1px solid #e5e7eb;
+  width: 84%;
+  display: flex;
+  gap: 5%;
+  align-items: center;
 }
-
 .eq-assign-box {
   display: flex;
   justify-content: space-between;
-  margin-bottom: 10px;
+  /* margin-bottom: 10px; */
+}
+
+.equip-span{
+  margin-right: 6px;
 }
 
 .eq-assign-tip {

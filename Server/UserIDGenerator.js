@@ -131,3 +131,21 @@ export function CreateProjectID() {
 
   return ProjectID;
 }
+
+export function CreateEquipmentID() {
+  let EquiPID;
+  let chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
+  let random_char_num = Math.floor(Math.random() * chars.length);
+  let random_char_num2 = Math.floor(Math.random() * chars.length);
+  let random_char2 = chars.charAt(random_char_num2);
+  let random_char = chars.charAt(random_char_num);
+
+  let random_num1 = Math.floor(Math.random() * 10);
+  let random_num2 = Math.floor(Math.random() * 10);
+  let random_num3 = Math.floor(Math.random() * 10);
+
+  EquiPID = `${random_char}${random_char2}-${random_num1}${random_num2}${random_num3}`;
+
+  return EquiPID;
+}

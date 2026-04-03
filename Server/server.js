@@ -1,5 +1,4 @@
 import express from "express";
-import mysql from "mysql2/promise";
 import { HandleLogin } from "./HandleLogin.js";
 import cors from "cors";
 import { HandleProfileUpdate } from "./HandleProfileUpdate.js";
@@ -13,13 +12,14 @@ import FetchLabours from "./FetchLabours.js";
 import { fileURLToPath } from "url";
 import { GetProfilePictureHandler } from "./GetProfilePictureHandler.js";
 import { authenticateToken } from "./middleware/authenticate.js";
-import { log } from "console";
 import RemoveLabour from "./RemoveLabour.js";
 import { HandleCreateProject } from "./createProjectService.js";
 import FetchProjects from "./FetchProjects.js";
 import GetProjectDetails from "./GetProjectDetails.js";
 import FetchEquipments from "./FetchAllEquipments.js";
 import { AddEquipment } from "./HandleEquipmentManagement.js";
+import FetchInStockEquipments from "./FetchInStockEquipments.js";
+import LabourEquipAssignDetails from "./LabourEquipAssignDetails.js";
 const app = express();
 
 app.use(express.json());
@@ -199,7 +199,7 @@ app.post("/remove-labour", async(req, res)=>{
 app.post("/add-equipments" , authenticateToken , async(req, res)=>{
     let { finalEquipment, selectedQuantity} = req.body;
 
-    let sendres = AddEquipment(
+    let sendres = await AddEquipment(
       finalEquipment,
       selectedQuantity,
     );
@@ -241,4 +241,20 @@ app.post("/getProfilePicture", async (req, res) => {
   let responce_result = await GetProfilePictureHandler(email, role);
   res.json(responce_result);
 });
+
+app.get("/get-Lab-Equip-Info", async(req, res)=>{
+  const allLabourList = await FetchLabours();
+  const allEquipments =await FetchInStockEquipments();
+
+  res.json({allLabourList, allEquipments});
+});
+
+app.post("/Selected-Lab-Equip-Det", async(req, res)=>{
+  let { selectedLabour } = req.body;
+
+  let LabourEquipDet = await LabourEquipAssignDetails(selectedLabour);
+
+  res.json(LabourEquipDet);
+});
+
 app.listen(3000, () => console.log("Server Running on Port : 3000"));
