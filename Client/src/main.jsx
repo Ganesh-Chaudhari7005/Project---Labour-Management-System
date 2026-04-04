@@ -29,6 +29,8 @@ import ProjectDetails from './Components/ProjectDetails.jsx';
 import EquipmentsDash from './Components/EquipmentsDash.jsx';
 import AddEquipment from './Components/AddEquipment';
 import AssignEquipment from './Components/AssignEquipment.jsx';
+import RemoveEquipment from './Components/RemoveEquipment.jsx';
+import RecordAttendance from './Components/RecordAttendance.jsx';
 const router = createBrowserRouter(
   createRoutesFromElements(
     <>
@@ -60,7 +62,9 @@ const router = createBrowserRouter(
                 <Route path='assign-labours' element={<AssignLabours />}/>
             </Route>
           </Route>
-          <Route path="View-Attendance" element={<Attendance />} />
+          <Route path="Attendance" element={<Attendance />}>
+            <Route index element={<RecordAttendance/>}/>
+          </Route>
           <Route path="manage-users" element={<UserManagement />}>
             <Route index element={<ViewAllUsers />} />
             <Route path="add-user" element={<AddUsers />} />
@@ -68,6 +72,7 @@ const router = createBrowserRouter(
           <Route path="manage-equipments" element={<EquipmentManagement />} >
             <Route  index element={<EquipmentsDash/>}/>
             <Route  path='add-equipment' element={<AddEquipment/>}/>
+            <Route  path='remove-equipment' element={<RemoveEquipment/>}/>
             <Route  path='assign-equipments' element={<AssignEquipment/>}/>
           </Route>
           <Route path="cms" element={<CMS />} />

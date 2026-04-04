@@ -1,9 +1,21 @@
-import React from 'react'
+import React from "react";
+import { NavLink, Outlet } from "react-router-dom";
 
 export default function Attendance() {
   return (
     <div>
-      <h1>Attendance</h1>
+      <NavLink to="." end>
+        {({ isActive }) => (
+          <button
+            className={`equip-btn
+                            ${isActive ? "equip-btn-active" : "text-white"}`}
+          >
+            Record Attendance
+          </button>
+        )}
+      </NavLink>
+
+      <Outlet />
     </div>
-  )
+  );
 }

@@ -21,6 +21,17 @@ async function LabourEquipAssignDetails(selectedLabour) {
       "SELECT * FROM Equipment_Assignments where labourID =?",[selectedLabour]
     );
 
+    if(rows.length ===0){
+      return{
+        isAssigned : false,
+        message : "No Equipments Assigned yet"
+      }
+    }else if(rows.length > 0){
+      return{
+        isAssigned : true,
+        AssignedEquipments : rows
+      }
+    }
     return rows;
   } catch (err) {
     console.log(err);

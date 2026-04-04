@@ -20,6 +20,9 @@ import FetchEquipments from "./FetchAllEquipments.js";
 import { AddEquipment } from "./HandleEquipmentManagement.js";
 import FetchInStockEquipments from "./FetchInStockEquipments.js";
 import LabourEquipAssignDetails from "./LabourEquipAssignDetails.js";
+import { AssignEquipments } from "./AssignEquipment.js";
+import { UnAssignEquipments } from "./UnAssignEquipment.js";
+import RemoveEquipment from "./RemoveEquipment.js";
 const app = express();
 
 app.use(express.json());
@@ -249,6 +252,12 @@ app.get("/get-Lab-Equip-Info", async(req, res)=>{
   res.json({allLabourList, allEquipments});
 });
 
+app.get("/get-inStock-equipList", async (req, res) => {
+  const allEquipments = await FetchInStockEquipments();
+
+  res.json({allEquipments});
+});
+
 app.post("/Selected-Lab-Equip-Det", async(req, res)=>{
   let { selectedLabour } = req.body;
 
@@ -257,4 +266,33 @@ app.post("/Selected-Lab-Equip-Det", async(req, res)=>{
   res.json(LabourEquipDet);
 });
 
+
+app.post("/assign-equip", async(req,res)=>{
+  let { selectedLabour, selectedEquip, quantity } = req.body;
+
+  let AssignRes =  await AssignEquipments(selectedLabour,selectedEquip, quantity);
+
+  res.json(AssignRes);
+
+});
+
+app.post("/un-assign-equip", async (req, res) => {
+  let { selectedLabour, selectedEquip, quantity } = req.body;
+
+  let UnAssignRes = await UnAssignEquipments(
+    selectedLabour,
+    selectedEquip,
+    quantity,
+  );
+
+  res.json(UnAssignRes);
+});
+
+
+app.post("/remove-equipments", authenticateToken, async(req, res)=>{
+  let { selectedEquip, selectedQuantity } = req.body;
+  let removeRes = await RemoveEquipment(selectedEquip, selectedQuantity);
+
+  res.json(removeRes);
+});
 app.listen(3000, () => console.log("Server Running on Port : 3000"));

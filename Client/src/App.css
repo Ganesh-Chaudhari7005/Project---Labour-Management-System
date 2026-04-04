@@ -732,7 +732,7 @@ a.text-white.adminnavbtn {
   padding: 8px;
   border-radius: 10px;
   border: 1px solid #e5e7eb;
-  width: 84%;
+  width: 67%;
   display: flex;
   gap: 5%;
   align-items: center;
@@ -752,6 +752,20 @@ a.text-white.adminnavbtn {
   color: gray;
 }
 /*Media Queries for responsiveness*/
+
+/*attendance*/
+
+.attendance-card {
+  margin: 30px auto;
+  border-radius: 12px;
+  padding: 10px;
+}
+
+.attendance-card h4 {
+  font-weight: 600;
+  color: #333;
+}
+
 
 @media (max-width: 480px) {
 

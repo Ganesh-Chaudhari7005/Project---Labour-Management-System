@@ -27,10 +27,19 @@
                 {({ isActive }) => (
                   <button
                     className={`equip-btn
-                      ${isActive ? "equip-btn-active" : "text-white"}`
-                    }
+                      ${isActive ? "equip-btn-active" : "text-white"}`}
                   >
                     Add Equipments
+                  </button>
+                )}
+              </NavLink>
+              <NavLink to="remove-equipment">
+                {({ isActive }) => (
+                  <button
+                    className={`equip-btn
+                      ${isActive ? "equip-btn-active" : "text-white"}`}
+                  >
+                    Remove Equipments
                   </button>
                 )}
               </NavLink>
@@ -38,10 +47,9 @@
                 {({ isActive }) => (
                   <button
                     className={`equip-btn
-                      ${isActive ? "equip-btn-active" : "text-white"}`
-                    }
+                      ${isActive ? "equip-btn-active" : "text-white"}`}
                   >
-                    Assign Equipments
+                    Assign/UnAssign Equipments
                   </button>
                 )}
               </NavLink>
