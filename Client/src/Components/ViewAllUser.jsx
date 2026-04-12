@@ -9,6 +9,7 @@ import { useApi } from "./ApiCaller.js";
 import Swal from "sweetalert2";
 export default function ViewAllUsers() {
   const callpi = useApi();
+  const [searchTerm, setSearchTerm] = useState("");
   const [AllUsers, setAllUsers] = useState([]);
   const FetchUsersFromDB = async () => {
     let reqUsers = await fetch(`${ApiRoute}fetch-users`);
@@ -56,22 +57,12 @@ export default function ViewAllUsers() {
     }
   };
 
-  // const getProfilePic = async(email, role)=>{
-  //     let reqImg = await fetch(`${ApiRoute}getProfilePicture`, {
-  //       method: "POST",
-  //       headers: {
-  //         "Content-Type": "application/json",
-  //       },
-  //       body: JSON.stringify({ email, role })
-  //     });
-  //           console.log("Api called");
-
-  //     let resofImg = await reqImg.json();
-  //     console.log(resofImg);
-  //     let fullImgPath = `${uploadUrl}${resofImg[0].profileImgPath}`;
-  //     return fullImgPath;
-
-  // }
+const filteredUsers = AllUsers.filter(
+  (user) =>
+    user.User_Name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    user.User_Email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    user.User_Role.toLowerCase().includes(searchTerm.toLowerCase()),
+);
   return (
     <motion.div
       initial={{ opacity: 0, y: 10 }}
@@ -87,6 +78,15 @@ export default function ViewAllUsers() {
         <NavLink to="add-user">
           <button className="defbtn px-2">+ Add User</button>
         </NavLink>
+        <div className="mb-3 d-flex justify-content-between align-items-center">
+          <input
+            type="text"
+            placeholder="Search Users by name, email, or role..."
+            className="form-control w-50"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+        </div>
         <div className="table-responsive table-wrapper">
           <table className="table cust-table">
             <thead>
@@ -99,7 +99,7 @@ export default function ViewAllUsers() {
               </tr>
             </thead>
             <tbody>
-              {AllUsers.map((user, index) => (
+              {filteredUsers.map((user, index) => (
                 <tr>
                   <td>{index + 1}</td>
                   <td>{user.User_Name}</td>
@@ -124,38 +124,6 @@ export default function ViewAllUsers() {
             </tbody>
           </table>
         </div>
-        {/* <div className="row">
-          {AllUsers.map((user, index) => (
-            <div className="col-lg-3">
-              <div
-                className="card"
-                key={index}
-                style={{ width: "15rem", height: "18rem" }}
-              >
-                <div className="imgcont overflow-hidden">
-                  <img
-                    src={`${uploadUrl}${user.profileImgPath}`}
-                    className="card-img-top"
-                    alt="..."
-                    onError={(e) => {
-                      e.target.src = "/public/defaultprofile.png";
-                    }}
-                  />
-                </div>
-                <div className="card-body">
-                  <h5 className="card-title">{user.User_Name}</h5>
-                  <p className="card-text">{user.User_Role}</p>
-                  <button
-                    className="btn btn-danger"
-                    onClick={() => removeUser(user.User_Email, user.User_Role)}
-                  >
-                    Remove
-                  </button>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div> */}
       </div>
     </motion.div>
   );

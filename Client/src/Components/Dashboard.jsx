@@ -13,6 +13,8 @@ import {
   FaCalendarCheck,
   FaTools,
   FaNewspaper,
+  FaMoneyBillWave,
+  FaUserTie,
 } from "react-icons/fa";
 import { MdDashboard } from "react-icons/md";
 import { warning } from "framer-motion";
@@ -21,22 +23,26 @@ export default function Dashboard() {
   const navigate = useNavigate();
 
   const [activeComp , setActivecomp] = useState('Dashboard');
-  const featureIcons ={
-    "Profile" : FaUserCircle,
-      "Manage Users" : FaUsers,
-      "Project Management" : FaFolderOpen,
-      "Manage Labours" :FaHardHat,
-      "Attendance" : FaCalendarCheck,
-      "Manage Equipments":FaTools,
-      "CMS" :FaNewspaper
-  }
+  const featureIcons = {
+    Profile: FaUserCircle,
+    "Manage Users": FaUsers,
+    "Project Management": FaFolderOpen,
+    "Manage Labours": FaHardHat,
+    Attendance: FaCalendarCheck,
+    "Manage Equipments": FaTools,
+    CMS: FaNewspaper,
+    "Manage Wages": FaMoneyBillWave,
+    "Manage Supervisors": FaUserTie,
+  };
   const location = useLocation(); 
   const permissions = {
     Admin: [
       "Profile",
       "Manage Users",
       "Project Management",
+      "Manage Supervisors",
       "Manage Labours",
+      "Manage Wages",
       "Attendance",
       "Manage Equipments",
       "CMS",

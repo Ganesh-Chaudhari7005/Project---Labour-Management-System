@@ -21,25 +21,40 @@ export default function ManageProject() {
       />
       <div className="container">
         <div className="d-flex gap-2">
-          <NavLink
-            to="."
-            end
-            className={({ isActive }) =>
-              `${isActive ? "text-black" : "text-white"}`
-            }
-          >
-            <button>Project Details</button>
-          </NavLink>
-          <NavLink
-            to="assign-labours"
-            end
-            className={({ isActive }) =>
-              `${isActive ? "text-black" : "text-white"}`
-            }
-          >
-            <button>Manage Labours</button>
-          </NavLink>
-        </div><br/>
+          <div className="manage-project-tabs">
+            <NavLink to="." end>
+              {({ isActive }) => (
+                <button className={isActive ? "tab-btn active" : "tab-btn"}>
+                  Project Details
+                </button>
+              )}
+            </NavLink>
+
+            <NavLink to="project-status">
+              {({ isActive }) => (
+                <button className={isActive ? "tab-btn active" : "tab-btn"}>
+                  Project Status
+                </button>
+              )}
+            </NavLink>
+
+            <NavLink to="assign-labours">
+              {({ isActive }) => (
+                <button className={isActive ? "tab-btn active" : "tab-btn"}>
+                  Manage Labours
+                </button>
+              )}
+            </NavLink>
+            <NavLink to="generate-bill">
+              {({ isActive }) => (
+                <button className={isActive ? "tab-btn active" : "tab-btn"}>
+                  Generate Bill
+                </button>
+              )}
+            </NavLink>
+          </div>
+        </div>
+        <br />
         <Outlet />
       </div>
     </motion.div>

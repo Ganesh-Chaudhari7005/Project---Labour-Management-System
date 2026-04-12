@@ -23,6 +23,11 @@ import LabourEquipAssignDetails from "./LabourEquipAssignDetails.js";
 import { AssignEquipments } from "./AssignEquipment.js";
 import { UnAssignEquipments } from "./UnAssignEquipment.js";
 import RemoveEquipment from "./RemoveEquipment.js";
+import { insertAttendance } from "./HandleInsertAttendance.js";
+import { getReportData } from "./ReportHandler.js";
+import { log } from "console";
+import GetProjectStatus from "./GetProjectStatus.js";
+import { SaveBill } from "./SaveBillHandler.js";
 const app = express();
 
 app.use(express.json());
@@ -57,6 +62,41 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage });
 
+const billStorage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, "uploads/bills"); // 📁 new folder
+  },
+  filename: (req, file, cb) => {
+    const uniqueName = Date.now() + "-Invoice.pdf";
+    cb(null, uniqueName);
+  },
+});
+
+const uploadBill = multer({ storage: billStorage });
+
+app.post("/create-bill", uploadBill.single("pdf"), async (req, res) => {
+  try {
+    const file = req.file;
+
+    const data = JSON.parse(req.body.data);
+
+    const filePath = file.path.replace(/\\/g, "/"); 
+    let saveStatus = await SaveBill(data, filePath);
+ 
+
+    res.json({
+      success: true,
+      message: "Bill saved successfully",
+      filePath,
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({
+      success: false,
+      message: "Error saving bill",
+    });
+  }
+});
 app.post("/login", async (req, res) => {
   let { loginUserEmail, loginUserPassword } = req.body;
   let result = await HandleLogin(loginUserEmail, loginUserPassword);
@@ -178,7 +218,10 @@ app.get("/fetch-users", async (req, res) => {
 });
 
 app.post("/getProject-details",authenticateToken, async(req, res)=>{
+  
   let projectid = req.body.id;
+
+console.log("id is",projectid);
 
   let sendres= await GetProjectDetails(projectid);
   res.json(sendres); 
@@ -186,9 +229,9 @@ app.post("/getProject-details",authenticateToken, async(req, res)=>{
 
 app.post("/create-project", async (req, res) => {
 
-    const result = req.body;
-    console.log(result.finalData.works)
-    let functionRes = await HandleCreateProject(result);
+    const { finalData } = req.body;
+    
+    let functionRes = await HandleCreateProject(finalData);
     res.json(functionRes);
 });
 
@@ -295,4 +338,68 @@ app.post("/remove-equipments", authenticateToken, async(req, res)=>{
 
   res.json(removeRes);
 });
+
+
+app.post("/add-attendance", async (req, res) => {
+  try {
+    const data = req.body;
+
+    // optional validation
+    if (!data.labour || !data.status || !data.date) {
+      return res.status(400).json({
+        success: false,
+        message: "Required fields missing",
+      });
+    }
+
+    const result = await insertAttendance(data);
+
+    if (result.success) {
+      res.json(result);
+    } else {
+      res.status(400).json(result);
+    }
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({
+      success: false,
+      message: "Server error",
+    });
+  }
+});
+
+app.post("/get-report", async (req, res) => {
+  try {
+    const data = req.body;
+
+    const result = await getReportData(data);
+
+    if (result.success) {
+      res.json(result);
+    } else {
+      res.status(400).json(result);
+    }
+  } catch (err) {
+    console.error(err);
+
+    res.status(500).json({
+      success: false,
+      message: "Server error",
+    });
+  }
+});
+
+app.post("/get-project-status" ,async(req, res)=>{
+  const {id} =  req.body;
+  if(!id){
+    return res.json({success : false, message : "Id not available"})
+  }else{
+    let resStatus = await GetProjectStatus(id);
+    console.log(resStatus);
+    
+    res.json(resStatus);
+  }
+  
+})
+
 app.listen(3000, () => console.log("Server Running on Port : 3000"));

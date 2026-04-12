@@ -9,7 +9,10 @@ export default function ProjectDetails() {
     const [projectDetails, setprojectdetails] = useState({});
       const [clientDetails, setClientDetails] = useState({});
      const { id } = useParams();
+     console.log(id);
+     
  const getProjectDetails = async () => {
+  console.log("Sending ID:", id, typeof id);
    const reqPrj = await callApi(`${ApiRoute}getProject-details`, {
      method: "POST",
      headers: {
@@ -18,52 +21,71 @@ export default function ProjectDetails() {
      body: JSON.stringify({ id }),
    });
 
+   
    setprojectdetails(reqPrj.projectdetails);
    setClientDetails(reqPrj.clientDetails);
  };
 
  useEffect(() => {
    getProjectDetails();
+   console.log(clientDetails);
+   console.log(projectDetails);
+   
  }, []);
-     console.log(projectDetails);
-     console.log(clientDetails);
+     const formatDate = (date) => {
+       if (!date) return "---";
+
+       return new Date(date).toLocaleDateString("en-IN", {
+         timeZone: "Asia/Kolkata",
+         day: "numeric",
+         month: "long",
+         year: "numeric",
+       });
+     };
   return (
     <motion.div
+      className="pd3-wrapper"
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
     >
-      <ToastContainer
-        toastClassName="custom-toast"
-        bodyClassName="custom-toast-body"
-      />
-      <div className="details-cont">
-        <div className="row">
-          <h4 className="mb-2 d-inline-block">
-            Project : {projectDetails.project_name || "Loading"}
-          </h4>
-          <div className="col-lg-4">
-            <p className="projInfo">Client : {clientDetails.Name || ""}</p>
-            <p className="projInfo">
-              Client Contact: {clientDetails.Phone || ""}
-            </p>
-            <p className="projInfo">
-              Client Address: {clientDetails.Address || ""}
-            </p>
-          </div>
-          <div className="col-lg-4">
-            <p className="projInfo">
-              Rate(Sq. Ft.) : {projectDetails.builtup_rate || ""}
-            </p>
-            <p className="projInfo">
-              Project Duration : {projectDetails.work_duration || ""}
-            </p>
-            <p className="projInfo">
-              Site Address: {projectDetails.site_address || ""}
-            </p>
-          </div>
-          <div className="col-lg-4"></div>
-        </div>
+      <ToastContainer />
+
+      <div className="pd3-card">
+        <h4 className="pd3-title">Client Details</h4>
+
+        <p>
+          <span>Name:</span> {clientDetails?.Name || "---"}
+        </p>
+        <p>
+          <span>Contact:</span> {clientDetails?.Phone || "---"}
+        </p>
+        <p>
+          <span>Email:</span> {clientDetails?.Email || "---"}
+        </p>
+        <p>
+          <span>Address:</span> {clientDetails?.Address || "---"}
+        </p>
+        <p>
+          <span>GSTIN:</span> {clientDetails?.gsting || "Not Available"}
+        </p>
+      </div>
+
+      <div className="pd3-card">
+        <h4 className="pd3-title">Project Details</h4>
+
+        <p>
+          <span>Site Name</span> {projectDetails?.ProjectName || "---"}
+        </p>
+        <p>
+          <span>Site Address</span> {projectDetails?.Address || "---"}
+        </p>
+        <p>
+          <span>Start Date</span> {formatDate(projectDetails?.StartDate)}
+        </p>
+        <p>
+          <span>End Date</span> {formatDate(projectDetails?.EndDate)}
+        </p>
       </div>
     </motion.div>
   );

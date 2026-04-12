@@ -35,9 +35,9 @@ async function RemoveUser(removeuseremail, role) {
       `DELETE FROM users WHERE User_Email = ?`,
       [removeuseremail],
     );
-    await db.execute(`DELETE FROM ${currenttable} WHERE Email = ?`, 
-      [removeuseremail],
-    );
+    // await db.execute(`DELETE FROM ${currenttable} WHERE Email = ?`, 
+    //   [removeuseremail],
+    // );
     return {
       success: true,
       message: "User Deleted Successfully",

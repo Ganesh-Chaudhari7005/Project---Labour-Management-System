@@ -31,6 +31,10 @@ import AddEquipment from './Components/AddEquipment';
 import AssignEquipment from './Components/AssignEquipment.jsx';
 import RemoveEquipment from './Components/RemoveEquipment.jsx';
 import RecordAttendance from './Components/RecordAttendance.jsx';
+import AttendanceReport from './Components/Attendancereport.jsx';
+import ProjectStatus from './Components/ProjectStatus.jsx';
+import GenerateBill from './Components/GenerateBill.jsx';
+import RazorpayTest from './Components/RazorpayTest.jsx';
 const router = createBrowserRouter(
   createRoutesFromElements(
     <>
@@ -57,23 +61,29 @@ const router = createBrowserRouter(
           <Route path="project-management" element={<ProjectManagement />}>
             <Route index element={<Project />} />
             <Route path="create-project" element={<CreateProject />} />
+
             <Route path="manage-project/:id" element={<ManageProject />}>
-                <Route index element={<ProjectDetails />}/>
-                <Route path='assign-labours' element={<AssignLabours />}/>
+              <Route index element={<ProjectDetails />} />
+              <Route path="assign-labours" element={<AssignLabours />} />
+              <Route path="project-status" element={<ProjectStatus />} />
+              <Route path="generate-bill" element={<GenerateBill />} />
             </Route>
           </Route>
+          <Route path="test-payment" element={<RazorpayTest />} />
+
           <Route path="Attendance" element={<Attendance />}>
-            <Route index element={<RecordAttendance/>}/>
+            <Route index element={<RecordAttendance />} />
+            <Route path="attendance-report" element={<AttendanceReport />} />
           </Route>
           <Route path="manage-users" element={<UserManagement />}>
             <Route index element={<ViewAllUsers />} />
             <Route path="add-user" element={<AddUsers />} />
           </Route>
-          <Route path="manage-equipments" element={<EquipmentManagement />} >
-            <Route  index element={<EquipmentsDash/>}/>
-            <Route  path='add-equipment' element={<AddEquipment/>}/>
-            <Route  path='remove-equipment' element={<RemoveEquipment/>}/>
-            <Route  path='assign-equipments' element={<AssignEquipment/>}/>
+          <Route path="manage-equipments" element={<EquipmentManagement />}>
+            <Route index element={<EquipmentsDash />} />
+            <Route path="add-equipment" element={<AddEquipment />} />
+            <Route path="remove-equipment" element={<RemoveEquipment />} />
+            <Route path="assign-equipments" element={<AssignEquipment />} />
           </Route>
           <Route path="cms" element={<CMS />} />
           <Route path="profile" element={<Profile />} />

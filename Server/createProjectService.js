@@ -4,7 +4,6 @@ import { CreateClientId, CreateProjectID , CreateUserId , PasswordGenerator} fro
 import bcrypt from "bcrypt";
 export const HandleCreateProject = async (prjdata) => {
   let db;
-  const ProjectDetails = prjdata.finalData;
   try {
     db = await mysql.createConnection(db_details);
   } catch (err) {
@@ -15,75 +14,111 @@ export const HandleCreateProject = async (prjdata) => {
     };
   }
 
-  console.log("prjdata: ", ProjectDetails);
+  
+  const {
+    clientName,
+    clientEmail,
+    clientContact,
+    clientImage,
+    clientAddress,
+    systemAccess,
+    isGSTRegistered,
+    gstin,
+    ProjectName,
+    Startdate,
+    Enddate,
+    SiteAddress,
+  } = prjdata;
 
-  try {
-    await db.beginTransaction();
+  const {works} = prjdata;
+  
+  console.log(clientName);
+  console.log(works);
 
-    let clientid = CreateClientId();
-    db.execute(
-      `insert into Clients (ID, Name , Email , Phone,Address, profileImgPath) values (?, ?, ?, ?, ?, ?)`,
-      [
-        clientid,
-        ProjectDetails.clientName,
-        ProjectDetails.clientEmail,
-        ProjectDetails.clientContact,
-        ProjectDetails.clientAddress,
-        ProjectDetails.clientImage,
-      ],
-    );
+ try {
+   await db.beginTransaction();
 
-    let projectID = CreateProjectID();
-    await db.execute(
-      `Insert into Projects (id, client_id, project_name, work_duration, builtup_rate, site_address) values(? , ? , ? , ? , ? , ?)`,
-      [
-        projectID,
-        clientid,
-        ProjectDetails.ProjectName,
-        ProjectDetails.WorkDuration,
-        ProjectDetails.BuiltupRate,
-        ProjectDetails.SiteAddress,
-      ],
-    );
+   let [existing] = await db.query("SELECT ID FROM clients WHERE Email = ?", [
+     clientEmail,
+   ]);
+   let clientID;
 
-    for (const workdata of ProjectDetails.works) {
-      await db.execute(
-        `INSERT INTO project_status (project_id, work_type, work_status) VALUES (?, ?, ?)`,
-        [projectID, workdata, "Pending"],
-      );
-    }
+   if (existing.length > 0) {
+     clientID = existing[0].ID;
+   } else {
+     clientID = CreateClientId();
+     await db.query(
+       `INSERT INTO clients (ID, Name, Email, Phone, Address, gstin)
+         VALUES (?, ?, ?, ?, ?, ?)`,
+       [
+         clientID,
+         clientName,
+         clientEmail,
+         clientContact,
+         clientAddress,
+         gstin || null,
+       ],
+     );
+   }
 
+   let projectID = CreateProjectID();
+   await db.query(
+     `INSERT INTO projects 
+      (ProjectID, ClientID, ProjectName, StartDate, EndDate, Address, Status)
+      VALUES (?, ?, ?, ?, ?, ?, ?)`,
+     [
+       projectID,
+       clientID,
+       ProjectName,
+       Startdate,
+       Enddate || null,
+       SiteAddress,
+       "Pending",
+     ],
+   );
 
-    if (ProjectDetails.systemAccess === true){
-        let Userid = CreateUserId();
-        let  Userpassword = PasswordGenerator();
+   for (const key in works) {
+     const work = works[key];
 
-        const saltrounds = 10;
-        const hashedPassword = await bcrypt.hash(Userpassword, saltrounds);
-        await db.execute(
-          `Insert into users (User_ID, User_Name, User_Email, User_Pass, User_Role, profileImgPath)values(? ,?, ?, ?, ?, ?)`,
-          [
-            Userid,
-            ProjectDetails.clientName,
-            ProjectDetails.clientEmail,
-            hashedPassword,
-            "Client",
-            ProjectDetails.clientImage
-          ],
-        );
-    }
-    
-    await db.commit();
+     await db.query(
+       `INSERT INTO Work_Details 
+        (ProjectID, WorkName, TotalArea, Rate, CompletedArea)
+        VALUES (?, ?, ?, ?, ?)`,
+       [
+         projectID,
+         work.label || key,
+         work.total,
+         work.rate,
+         0, // initially 0
+       ],
+     );
+   }
 
-    return{
-      success : true,
-      message : "Project Created Successfully"
-    }
-  } catch (err) {
-    console.log(err);
-    return {
-      success: false,
-      message: "Failed to Create Project",
-    };
-  }
-};
+   if (systemAccess === true) {
+     let Userid = CreateUserId();
+     let Userpassword = PasswordGenerator();
+
+     const saltrounds = 10;
+     const hashedPassword = await bcrypt.hash(Userpassword, saltrounds);
+     await db.execute(
+       `Insert into users (User_ID, User_Name, User_Email, User_Pass, User_Role)values(? ,?, ?, ?, ?)`,
+       [Userid, clientName, clientEmail, hashedPassword, "Client"],
+     );
+   }
+
+   await db.commit();
+   return {
+     success: true,
+     message: "Project created successfully",
+   };
+ } catch (err) {
+   await db.rollback();
+   console.error(err);
+
+   return {
+     success: false,
+     message: "Error creating project",
+   };
+ } finally {
+   if (db) await db.end();
+ }}
