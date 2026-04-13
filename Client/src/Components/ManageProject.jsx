@@ -52,6 +52,13 @@ export default function ManageProject() {
                 </button>
               )}
             </NavLink>
+            <NavLink to="view-past-bills">
+              {({ isActive }) => (
+                <button className={isActive ? "tab-btn active" : "tab-btn"}>
+                  View Bills
+                </button>
+              )}
+            </NavLink>
           </div>
         </div>
         <br />

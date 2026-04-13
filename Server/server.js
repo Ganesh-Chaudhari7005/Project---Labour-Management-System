@@ -28,6 +28,9 @@ import { getReportData } from "./ReportHandler.js";
 import { log } from "console";
 import GetProjectStatus from "./GetProjectStatus.js";
 import { SaveBill } from "./SaveBillHandler.js";
+import GetPendingBillInfo from "./FetchBillDetails.js";
+import GetClietInfo_BillNo from "./GetClientInfo-BillNo.js";
+import GetPastBills from "./GetPastBillsHandler.js";
 const app = express();
 
 app.use(express.json());
@@ -92,7 +95,7 @@ app.post("/create-bill", uploadBill.single("pdf"), async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({
-      success: false,
+      success: false,  
       message: "Error saving bill",
     });
   }
@@ -388,18 +391,42 @@ app.post("/get-report", async (req, res) => {
     });
   }
 });
-
+     
 app.post("/get-project-status" ,async(req, res)=>{
   const {id} =  req.body;
   if(!id){
     return res.json({success : false, message : "Id not available"})
   }else{
     let resStatus = await GetProjectStatus(id);
-    console.log(resStatus);
     
     res.json(resStatus);
   }
   
 })
 
+app.post("/getPastBill-details", async(req, res)=>{
+  let {works} = req.body;
+  let { projectID } = req.body;
+  let pastInfo = await GetPendingBillInfo(works, projectID);
+
+  res.json(pastInfo);
+  
+});
+
+app.post("/get-ClientInfo-BillNo", async(req,res)=>{
+  let {projectid} = req.body;
+
+  let resdet = await GetClietInfo_BillNo(projectid);
+
+  res.json(resdet);
+
+});
+
+app.post("/get-past-bills", async(req, res)=>{
+  let { id } = req.body;
+
+    let AllBill = await GetPastBills(id);
+
+    res.json(AllBill);
+});
 app.listen(3000, () => console.log("Server Running on Port : 3000"));

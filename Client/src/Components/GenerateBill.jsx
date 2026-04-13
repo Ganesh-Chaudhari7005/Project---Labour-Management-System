@@ -9,8 +9,12 @@ import { ToastContainer , toast} from "react-toastify";
 export default function GenerateBill() {
   const { id } = useParams();
   const invoiceRef = useRef();
+  const[pastBillDet, setPastDet] = useState([]);
   const isSubmitting = useRef(false);
   const [workDetails, setWorkDetails] = useState([]);
+  const[clientName , setclientName] = useState("");
+  const[siteAddr , setsiteAddr] = useState("");
+  const[billno, setbillno] = useState();
 const [loading, setLoading] = useState(false);
   const fetchStatus = async () => {
     const req = await fetch(`${ApiRoute}get-project-status`, {
@@ -29,11 +33,63 @@ const updated = res.map((item) => ({
   selected: false,
 }));
     setWorkDetails(updated);
+    GetPendingBillInfo(updated);
   };
 
-  useEffect(() => {
-    fetchStatus();
-  }, []);
+const getClientDet_BillNo = async()=>{
+  let CB = await fetch(`${ApiRoute}get-ClientInfo-BillNo`, {
+    method: "POST",
+    headers: {
+        "Content-Type": "application/json",
+      },
+    body : JSON.stringify({projectid : id})
+  });
+
+  let data = await CB.json();
+  if(data.success){
+    setbillno(data.BillNum);
+    setclientName(data.Name);
+    setsiteAddr(data.Address)
+  }
+}
+
+useEffect(() => {
+  getClientDet_BillNo();
+}, []);
+ const GetPendingBillInfo = async (data) => {
+   let workArray = data
+     .filter((d) => d.CompletedArea > 0)
+     .map((d) => d.WorkName);
+
+   console.log(workArray);
+
+   let reqPastbills = await fetch(`${ApiRoute}getPastBill-details`, {
+     method: "POST",
+     headers: {
+       "Content-Type": "application/json",
+     },
+     body: JSON.stringify({ works: workArray , projectID : id}),
+   });
+
+   let res = await reqPastbills.json();
+   console.log(res);
+   
+   if(res.success){
+    setPastDet(res.data);
+   }
+   
+ };
+
+useEffect(() => {
+  fetchStatus();
+}, []);
+
+
+useEffect(() => {
+  if (workDetails.length > 0) {
+    GetPendingBillInfo(workDetails);
+  }
+}, [workDetails]);
 
     useEffect(() => {
       console.log(workDetails);
@@ -48,23 +104,37 @@ const handleRateChange = (index, value) => {
 };
 
 const handleSelect = (index) => {
-  const updated = [...workDetails];
+  const updated = [...pastBillDet];
 
   if (Number(updated[index].CompletedArea) === 0) return;
 
   updated[index].selected = !updated[index].selected;
-  setWorkDetails(updated);
+  setPastDet(updated);
 };
-const subtotal = workDetails
+
+const getTotalArea = (WorkName) => {
+  const work = workDetails.find((item) => item.WorkName === WorkName);
+  return work ? Number(work.CompletedArea) : 0;
+};
+
+const getRate = (WorkName) => {
+  const work = workDetails.find((item) => item.WorkName === WorkName);
+  return work ? Number(work.Rate) : 0;
+};
+const subtotal = pastBillDet
   .filter((item) => item.selected)
   .reduce((sum, item) => {
-    return sum + Number(item.CompletedArea) * item.Rate;
+    const area = getTotalArea(item.WorkType) - (item.billedArea || 0);
+    const rate = getRate(item.WorkType);
+    return sum + area * rate;
   }, 0);
+
+
   const gst = subtotal * 0.18;
   const grandTotal = subtotal + gst;
 
 const validateBill = () => {
-  const selectedItems = workDetails.filter((item) => item.selected);
+  const selectedItems = pastBillDet.filter((item) => item.selected);
 
   if (selectedItems.length === 0) {
     toast.error("Please select at least one work item");
@@ -72,13 +142,16 @@ const validateBill = () => {
   }
 
   for (let item of selectedItems) {
-    if (!item.Rate || item.Rate <= 0) {
-      toast.error(`Enter valid rate for "${item.WorkName}"`);
+    const area = getTotalArea(item.WorkType) - (item.billedArea || 0);
+    const rate = getRate(item.WorkType);
+
+    if (!rate || rate <= 0) {
+      toast.error(`Enter valid rate for "${item.WorkType}"`);
       return false;
     }
 
-    if (!item.CompletedArea || item.CompletedArea <= 0) {
-      toast.error(`Invalid area for "${item.WorkName}"`);
+    if (!area || area <= 0) {
+      toast.error(`Invalid area for "${item.WorkType}"`);
       return false;
     }
   }
@@ -135,21 +208,28 @@ const generatePDFBlob = async () => {
 };
 
 const saveBill = async (pdfBlob) => {
-  const selectedItems = workDetails
-    .filter((item) => item.selected)
-    .map((item) => ({
-      name: item.WorkName,
-      area: Number(item.CompletedArea),
-      rate: item.Rate,
-      total: Number(item.CompletedArea) * item.Rate,
-    }));
+const selectedItems = pastBillDet
+  .filter((item) => item.selected)
+  .map((item) => {
+    const totalArea = getTotalArea(item.WorkType);
+    const billedArea = Number(item.billedArea || 0);
+    const area = Math.max(0, totalArea - billedArea);
+    const rate = getRate(item.WorkType);
+
+    return {
+      name: item.WorkType,
+      area,
+      rate,
+      total: area * rate,
+    };
+  });
 
   if (selectedItems.length === 0) {
     alert("Select at least one row");
     return;
   }
 
-  const totalAmount = selectedItems.reduce((sum, item) => sum + item.total, 0);
+  const totalAmount = grandTotal;
 
   const formData = new FormData();
 
@@ -174,9 +254,26 @@ const saveBill = async (pdfBlob) => {
   const data = await res.json();
   console.log(data);
 };
-const isValid = workDetails.some(
-  (item) => item.selected && item.Rate > 0 && item.CompletedArea > 0,
-);
+const isValid = pastBillDet.some((item) => {
+  const area = getTotalArea(item.WorkType) - (item.billedArea || 0);
+  const rate = getRate(item.WorkType);
+
+  return item.selected && area > 0 && rate > 0;
+});
+
+
+
+const getRemainingArea = (workType) => {
+  const total = getTotalArea(workType);
+
+  const billed =
+    pastBillDet.find((i) => i.WorkType === workType)?.billedArea || 0;
+
+  return Math.max(0, total - billed);
+};
+
+
+
 return (
   <motion.div
     ref={invoiceRef}
@@ -196,7 +293,7 @@ return (
 
       <div className="invoice-meta">
         <p>
-          <strong>Bill No. :</strong> 1
+          <strong>Bill No. :</strong> {billno}
         </p>
         <p>
           <strong>Date:</strong> {new Date().toLocaleDateString()}
@@ -207,8 +304,8 @@ return (
     <div className="client-section">
       <div>
         <p className="label">Bill To:</p>
-        <p>Client Name</p>
-        <p>Site Location</p>
+        <p>{clientName || "Client Name"}</p>
+        <p>{siteAddr || "Site Address"}</p>
       </div>
     </div>
 
@@ -224,7 +321,7 @@ return (
         </tr>
       </thead>
       <tbody>
-        {workDetails.map((item, index) => {
+        {pastBillDet.map((item, index) => {
           const area = Number(item.CompletedArea);
           const total = area * item.Rate;
 
@@ -247,26 +344,14 @@ return (
               </td>
 
               <td>{index + 1}</td>
-              <td>{item.WorkName}</td>
-              <td>{area} sq.ft</td>
+              <td>{item.WorkType}</td>
+              <td>{getTotalArea(item.WorkType) - item.billedArea} sq.ft</td>
+              <td>₹ {getRate(item.WorkType)}</td>
 
               <td>
-                <input
-                  type="number"
-                  value={item.Rate}
-                  disabled={area === 0}
-                  onChange={(e) => {
-                    const value = e.target.value;
-
-                    if (value < 0) return;
-
-                    handleRateChange(index, value);
-                  }}
-                  style={{ width: "80px" }}
-                />
+                {(getTotalArea(item.WorkType) - item.billedArea) *
+                  getRate(item.WorkType)}
               </td>
-
-              <td>{area === 0 ? "—" : `₹ ${total.toLocaleString("en-IN")}`}</td>
             </tr>
           );
         })}
@@ -307,7 +392,7 @@ return (
         disabled={loading || !isValid}
         onClick={async () => {
           console.log("Button clicked");
-          
+
           if (isSubmitting.current) return; // 🔥 instant block
 
           if (!validateBill()) return;

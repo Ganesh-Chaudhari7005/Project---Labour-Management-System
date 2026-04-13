@@ -35,6 +35,7 @@ import AttendanceReport from './Components/Attendancereport.jsx';
 import ProjectStatus from './Components/ProjectStatus.jsx';
 import GenerateBill from './Components/GenerateBill.jsx';
 import RazorpayTest from './Components/RazorpayTest.jsx';
+import ViewPastProjectBills from './Components/ViewPastProjectBills.jsx';
 const router = createBrowserRouter(
   createRoutesFromElements(
     <>
@@ -67,6 +68,7 @@ const router = createBrowserRouter(
               <Route path="assign-labours" element={<AssignLabours />} />
               <Route path="project-status" element={<ProjectStatus />} />
               <Route path="generate-bill" element={<GenerateBill />} />
+              <Route path="view-past-bills" element={<ViewPastProjectBills />} />
             </Route>
           </Route>
           <Route path="test-payment" element={<RazorpayTest />} />
