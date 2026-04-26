@@ -12,12 +12,12 @@
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.3 }}
           >
-            <div className="d-flex gap-3 nav-cont">
+            <div className="d-flex gap-3">
               <NavLink to="." end>
                 {({ isActive }) => (
                   <button
                     className={`equip-btn
-                      ${isActive ? "equip-btn-active" : "text-white"}`}
+                      ${isActive ? "admin-nav-btn" : "text-white"}`}
                   >
                     All Equipments
                   </button>
@@ -27,7 +27,7 @@
                 {({ isActive }) => (
                   <button
                     className={`equip-btn
-                      ${isActive ? "equip-btn-active" : "text-white"}`}
+                      ${isActive ? "admin-nav-btn" : "text-white"}`}
                   >
                     Add Equipments
                   </button>
@@ -37,7 +37,7 @@
                 {({ isActive }) => (
                   <button
                     className={`equip-btn
-                      ${isActive ? "equip-btn-active" : "text-white"}`}
+                      ${isActive ? "admin-nav-btn" : "text-white"}`}
                   >
                     Remove Equipments
                   </button>
@@ -47,7 +47,7 @@
                 {({ isActive }) => (
                   <button
                     className={`equip-btn
-                      ${isActive ? "equip-btn-active" : "text-white"}`}
+                      ${isActive ? "admin-nav-btn" : "text-white"}`}
                   >
                     Assign/UnAssign Equipments
                   </button>

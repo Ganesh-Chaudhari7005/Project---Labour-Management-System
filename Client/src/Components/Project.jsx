@@ -37,7 +37,7 @@ export default function Project() {
           {projects.map((data, index) => (
             <div className="col-lg-3">
               <div className="card p-0" style={{ width: "18rem" }}>
-                <div className="card-body">
+                <div className="card-body project-card-cont">
                   <h5 className="card-title">{data.ProjectName}</h5>
                   <h6 className="card-subtitle mb-2 text-body-secondary">
                     Status- {data.Status}

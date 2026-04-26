@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { ApiRoute } from "../ApiConfig.js";
+import { useEffect } from "react";
 
 const images = [
   "https://images.unsplash.com/photo-1503387762-592deb58ef4e",
@@ -15,6 +17,7 @@ const images = [
 export default function PreviousWork() {
   const [selectedImage, setSelectedImage] = useState(null);
   const [loadedImages, setLoadedImages] = useState({});
+  const [gallery, setGallery] = useState([]);
 
   const handleLoad = (index) => {
     setLoadedImages((prev) => ({
@@ -23,6 +26,23 @@ export default function PreviousWork() {
     }));
   };
 
+   const fetchPhotos = async () => {
+      try {
+        const res = await fetch(`${ApiRoute}photos`);
+        const data = await res.json();
+  
+        if (data.success) {
+          setGallery(data.photos);
+        }
+        console.log(data.photos);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+
+    useEffect(()=>{
+      fetchPhotos();
+    },[])
   return (
     <section className="re-gallery-wrapper">
       <div className="container py-5">
@@ -31,12 +51,11 @@ export default function PreviousWork() {
           <h2 className="re-about-title page-head-def">
             Previous<span> Work</span>
           </h2>
-         
         </div>
 
         {/* Grid */}
         <div className="re-gallery-grid">
-          {images.map((img, index) => (
+          {gallery.map((img, index) => (
             <motion.div
               key={index}
               className="re-gallery-item"
@@ -44,7 +63,7 @@ export default function PreviousWork() {
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.4, delay: index * 0.05 }}
               viewport={{ once: true }}
-              onClick={() => setSelectedImage(img)}
+              onClick={() => setSelectedImage(`${ApiRoute}${img.uploadpath}`)}
             >
               {/* Always visible skeleton (prevents empty gap) */}
               <div
@@ -54,7 +73,7 @@ export default function PreviousWork() {
               />
 
               <img
-                src={img}
+                src={`${ApiRoute}${img.uploadpath}`}
                 alt="work"
                 onLoad={() =>
                   setLoadedImages((prev) => ({
@@ -86,7 +105,7 @@ export default function PreviousWork() {
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.9 }}
-                transition={{ duration: 0.15 }}
+                transition={{ duration: 0.75 }}
                 onClick={(e) => e.stopPropagation()}
               >
                 <img src={selectedImage} alt="preview" />

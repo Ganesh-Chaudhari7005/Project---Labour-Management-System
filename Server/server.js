@@ -31,6 +31,12 @@ import { SaveBill } from "./SaveBillHandler.js";
 import GetPendingBillInfo from "./FetchBillDetails.js";
 import GetClietInfo_BillNo from "./GetClientInfo-BillNo.js";
 import GetPastBills from "./GetPastBillsHandler.js";
+import { handlePhotoUpload } from "./HandlePhotoGalleryFileUpload.js";
+import { handleCarouselPhotoUpload } from "./HandleHomeCarouselPhotoUpload.js";
+import { db_details } from "./dbconfig.js";
+import mysql from 'mysql2/promise';
+import RemoveGalleryImage from "./HandleGallerPhotoDelete.js";
+import RemoveCarouselImage from "./DeleteCarouselImageHandler.js";
 const app = express();
 
 app.use(express.json());
@@ -430,3 +436,171 @@ app.post("/get-past-bills", async(req, res)=>{
     res.json(AllBill);
 });
 app.listen(3000, () => console.log("Server Running on Port : 3000"));
+
+const photoStorage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, "uploads/photo-gallery");
+  },
+  filename: (req, file, cb) => {
+    const uniqueName = Date.now() + "-" + file.originalname;
+    cb(null, uniqueName);
+  },
+});
+
+const uploadPhoto = multer({ storage: photoStorage });
+
+app.post("/upload-photo", uploadPhoto.array("photos", 10), async (req, res) => {
+  try {
+    const files = req.files;
+
+    if (!files || files.length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: "No files uploaded",
+      });
+    }
+
+    const filePaths = files.map((file) => file.path.replace(/\\/g, "/"));
+
+    // insert all into DB
+    for (let path of filePaths) {
+      await handlePhotoUpload(path);
+    }
+
+    res.json({
+      success: true,
+      message: "Photos uploaded successfully",
+      paths: filePaths,
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({
+      success: false,
+      message: "Upload failed",
+    });
+  } finally {
+    if (db) await db.end();
+  }
+});
+
+
+
+const photoStorageCarousel = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, "uploads/home-carousel");
+  },
+  filename: (req, file, cb) => {
+    const uniqueName = Date.now() + "-" + file.originalname;
+    cb(null, uniqueName);
+  },
+});
+
+const uploadPhotoCarousel = multer({ storage: photoStorageCarousel });
+
+app.post(
+  "/upload-photo-carousel",
+  uploadPhotoCarousel.array("photos", 10),
+  async (req, res) => {
+    try {
+      const files = req.files;
+
+      if (!files || files.length === 0) {
+        return res.status(400).json({
+          success: false,
+          message: "No files uploaded",
+        });
+      }
+
+      const filePaths = files.map((file) => file.path.replace(/\\/g, "/"));
+
+      // insert all into DB
+      for (let path of filePaths) {
+        await handleCarouselPhotoUpload(path);
+      }
+
+      res.json({
+        success: true,
+        message: "Photos uploaded successfully",
+        paths: filePaths,
+      });
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({
+        success: false,
+        message: "Upload failed",
+      });
+    } finally {
+      if (db) await db.end();
+    }
+  },
+);
+
+app.get("/photos", async (req, res) => {
+  try {
+    let db;
+      try {
+        db = await mysql.createConnection(db_details);
+      } catch (err) {
+        console.log("Failed to Connect Database");
+        return {
+          success: false,    
+          message: "Something went wrong. Please try again later.",
+        };
+      }
+   const [rows] = await db.execute("SELECT * FROM photogallery");
+
+    res.json({
+      success: true,
+      photos: rows,
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({
+      success: false,
+      message: "Error fetching photos",
+    });
+  }
+});
+
+app.get("/carousel", async (req, res) => {
+  try {
+    let db;
+    try {
+      db = await mysql.createConnection(db_details);
+    } catch (err) {
+      console.log("Failed to Connect Database");
+      return {
+        success: false,
+        message: "Something went wrong. Please try again later.",
+      };
+    }
+    const [rows] = await db.execute("SELECT * FROM HomeCarousel");
+
+    res.json({
+      success: true,
+      photos: rows,
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({
+      success: false,
+      message: "Error fetching photos",
+    });
+  }
+});
+
+app.post("/delete-Photo", async(req,res)=>{
+  let {ID} = req.body;
+  console.log(ID);
+  
+  let resDelete = await RemoveGalleryImage(ID);
+  res.json(resDelete);
+});
+
+app.post("/delete-Photo-carousel", async (req, res) => {
+  let { ID } = req.body;
+  console.log(ID);
+
+  let resDelete = await RemoveCarouselImage(ID);
+  res.json(resDelete);
+});

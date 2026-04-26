@@ -1,6 +1,123 @@
 import React from "react";
 import { motion } from "framer-motion";
+import { ApiRoute } from "../ApiConfig";
+import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 export default function Home() {
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    mobile: "",
+    address: "",
+    city: "",
+    pincode: "",
+    requirement: "",
+  });
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  const validate = () => {
+    let newErrors = {};
+
+    if (!formData.name.trim()) newErrors.name = "Name is required";
+
+    if (!formData.email.trim()) {
+      newErrors.email = "Email is required";
+    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
+      newErrors.email = "Invalid email";
+    }
+
+    if (!formData.mobile.trim()) {
+      newErrors.mobile = "Mobile is required";
+    } else if (!/^\d{10}$/.test(formData.mobile)) {
+      newErrors.mobile = "Mobile must be 10 digits";
+    }
+
+    if (!formData.address.trim()) newErrors.address = "Address is required";
+
+    if (!formData.city.trim()) newErrors.city = "City is required";
+
+    if (!formData.pincode.trim()) {
+      newErrors.pincode = "Pincode is required";
+    } else if (!/^\d{6}$/.test(formData.pincode)) {
+      newErrors.pincode = "Invalid pincode";
+    }
+
+    if (!formData.requirement.trim()) {
+      newErrors.requirement = "Requirement is required";
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if (!validate()) return;
+
+    try {
+      const res = await fetch(`${ApiRoute}insert-reqform-data`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await res.json();
+
+      if (data.success) {
+        alert("Request submitted successfully!");
+
+        // reset form
+        setFormData({
+          name: "",
+          email: "",
+          mobile: "",
+          address: "",
+          city: "",
+          pincode: "",
+          requirement: "",
+        });
+
+        setErrors({});
+      } else {
+        alert("Something went wrong!");
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Server error!");
+    }
+  };
+
+  const [errors, setErrors] = useState({});
+  const [gallery, setGallery] = useState([]);
+
+  const fetchPhotos = async () => {
+    try {
+      const res = await fetch(`${ApiRoute}carousel`);
+      const data = await res.json();
+
+      if (data.success) {
+        setGallery(data.photos);
+      }
+      console.log(data.photos);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  useEffect(() => {
+    fetchPhotos();
+  }, []);
   return (
     <>
       <motion.div
@@ -23,27 +140,18 @@ export default function Home() {
                       <p>Quality Services you can trust</p>
                     </div>
                     <div className="carousel-inner">
-                      <div className="carousel-item active">
-                        <img
-                          src="https://static.vecteezy.com/system/resources/thumbnails/047/022/839/small/sunlight-streaming-through-window-onto-white-tiled-floor-in-empty-room-free-photo.jpeg"
-                          className="d-block carousel-image"
-                          alt="..."
-                        />
-                      </div>
-                      <div className="carousel-item">
-                        <img
-                          src="https://static.vecteezy.com/system/resources/previews/050/523/691/large_2x/a-large-white-marble-bathtub-sits-in-a-room-with-a-marble-wall-free-photo.jpeg"
-                          className="d-block carousel-image"
-                          alt="..."
-                        />
-                      </div>
-                      <div className="carousel-item">
-                        <img
-                          src="https://static.vecteezy.com/system/resources/previews/046/366/841/non_2x/a-bathroom-with-a-white-toilet-and-a-white-sink-photo.jpg"
-                          className="d-block carousel-image"
-                          alt="..."
-                        />
-                      </div>
+                      {gallery.map((img, index) => (
+                        <div
+                          className={`carousel-item ${index === 0 ? "active" : ""}`}
+                          key={index}
+                        >
+                          <img
+                            src={`${ApiRoute}${img.uploadpath}`}
+                            className="d-block w-100 carousel-image"
+                            alt="..."
+                          />
+                        </div>
+                      ))}
                     </div>
                     <button
                       className="carousel-control-prev"
@@ -79,37 +187,60 @@ export default function Home() {
                       Get in touch with us for your construction needs.
                     </p>
 
-                    <form>
-                      <div className="mb-3">
+                    <form onSubmit={handleSubmit}>
+                      <div className="mb-4">
                         <input
                           type="text"
+                          name="name"
+                          value={formData.name}
+                          onChange={handleChange}
                           className="form-control re-input"
                           placeholder="Full Name"
                         />
+                        {errors.name && (
+                          <small className="text-danger">{errors.name}</small>
+                        )}
                       </div>
 
-                      <div className="mb-3">
+                      <div className="mb-4">
                         <input
                           type="email"
+                          name="email"
+                          value={formData.email}
+                          onChange={handleChange}
                           className="form-control re-input"
                           placeholder="Email Address"
                         />
+                        {errors.email && (
+                          <small className="text-danger">{errors.email}</small>
+                        )}
                       </div>
 
-                      <div className="mb-3">
+                      <div className="mb-4">
                         <input
                           type="tel"
                           className="form-control re-input"
                           placeholder="Mobile Number"
+                          name="mobile"
+                          value={formData.mobile}
+                          onChange={handleChange}
                         />
+                        {errors.mobile && (
+                          <small className="text-danger">
+                            {errors.mobile || " "}
+                          </small>
+                        )}
                       </div>
 
                       {/* ADDRESS FIELD */}
-                      <div className="mb-3">
+                      <div className="mb-4">
                         <textarea
                           className="form-control re-input"
                           rows="2"
                           placeholder="Full Address"
+                          name="address"
+                          value={formData.address}
+                          onChange={handleChange}
                         ></textarea>
                       </div>
 
@@ -120,6 +251,9 @@ export default function Home() {
                             type="text"
                             className="form-control re-input"
                             placeholder="City"
+                            name="city"
+                            value={formData.city}
+                            onChange={handleChange}
                           />
                         </div>
                         <div className="col-6 mb-3">
@@ -127,6 +261,9 @@ export default function Home() {
                             type="text"
                             className="form-control re-input"
                             placeholder="Pincode"
+                            name="pincode"
+                            value={formData.pincode}
+                            onChange={handleChange}
                           />
                         </div>
                       </div>
@@ -136,6 +273,9 @@ export default function Home() {
                           className="form-control re-input"
                           rows="3"
                           placeholder="Describe your requirement"
+                          name="requirement"
+                          value={formData.requirement}
+                          onChange={handleChange}
                         ></textarea>
                       </div>
 
@@ -172,7 +312,9 @@ export default function Home() {
                     strength of your spaces.
                   </p>
                   <br />
-                  <button className="about-readmore">Read more</button>
+                  <Link to="about-us" about-us>
+                    <button className="about-readmore">Read more</button>
+                  </Link>
                 </div>
                 <div className="col-lg-6">
                   <div className="row">

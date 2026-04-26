@@ -8,7 +8,7 @@ export default function Attendance() {
         {({ isActive }) => (
           <button
             className={`equip-btn mx-2
-                            ${isActive ? "equip-btn-active" : "text-white"}`}
+                            ${isActive ? "admin-nav-btn" : "text-white"}`}
           >
             Record Attendance
           </button>
@@ -19,7 +19,7 @@ export default function Attendance() {
         {({ isActive }) => (
           <button
             className={`equip-btn
-                            ${isActive ? "equip-btn-active" : "text-white"}`}
+                            ${isActive ? "admin-nav-btn" : "text-white"}`}
           >
             Attendance Report
           </button>

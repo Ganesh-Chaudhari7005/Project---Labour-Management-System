@@ -24,7 +24,7 @@ export default function ManageProject() {
           <div className="manage-project-tabs">
             <NavLink to="." end>
               {({ isActive }) => (
-                <button className={isActive ? "tab-btn active" : "tab-btn"}>
+                <button className={isActive ? "admin-nav-btn" : "rounded"}>
                   Project Details
                 </button>
               )}
@@ -32,7 +32,7 @@ export default function ManageProject() {
 
             <NavLink to="project-status">
               {({ isActive }) => (
-                <button className={isActive ? "tab-btn active" : "tab-btn"}>
+                <button className={isActive ? "admin-nav-btn" : "rounded"}>
                   Project Status
                 </button>
               )}
@@ -40,21 +40,21 @@ export default function ManageProject() {
 
             <NavLink to="assign-labours">
               {({ isActive }) => (
-                <button className={isActive ? "tab-btn active" : "tab-btn"}>
+                <button className={isActive ? "admin-nav-btn" : "rounded"}>
                   Manage Labours
                 </button>
               )}
             </NavLink>
             <NavLink to="generate-bill">
               {({ isActive }) => (
-                <button className={isActive ? "tab-btn active" : "tab-btn"}>
+                <button className={isActive ? "admin-nav-btn" : "rounded"}>
                   Generate Bill
                 </button>
               )}
             </NavLink>
             <NavLink to="view-past-bills">
               {({ isActive }) => (
-                <button className={isActive ? "tab-btn active" : "tab-btn"}>
+                <button className={isActive ? "admin-nav-btn" : "rounded"}>
                   View Bills
                 </button>
               )}

@@ -46,6 +46,8 @@ import AboutUs from "./Components/Website/AboutUs.jsx";
 import Services from "./Components/Website/Services.jsx";
 import PreviousWork from "./Components/Website/PreviousWork.jsx";
 import ContactUs from "./Components/Website/ContactUs.jsx";
+import PhotoGallery from "./Components/PhotoGallery.jsx";
+import Carousel from "./Components/Carousel.jsx";
 const router = createBrowserRouter(
   createRoutesFromElements(
     <>
@@ -106,7 +108,11 @@ const router = createBrowserRouter(
             <Route path="remove-equipment" element={<RemoveEquipment />} />
             <Route path="assign-equipments" element={<AssignEquipment />} />
           </Route>
-          <Route path="cms" element={<CMS />} />
+          <Route path="cms" element={<CMS />}>
+            <Route index element={<Carousel/>}/>
+            <Route path="admin-photo-gallery" element={<PhotoGallery/>}/>
+            <Route index element={<Carousel/>}/>
+          </Route>
           <Route path="profile" element={<Profile />} />
           <Route path="manage-labours" element={<LabourManagement />}>
             <Route index element={<ViewAllLabour />} />
