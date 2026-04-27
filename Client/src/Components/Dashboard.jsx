@@ -63,6 +63,7 @@ export default function Dashboard() {
       confirmButtonText: "Yes, logout",
       customClass: {
         title: "small-title",
+        icon: "swal-icon-small",
       },
     }).then((result) => {
       if (result.isConfirmed) {
@@ -126,6 +127,7 @@ export default function Dashboard() {
               </div>
               <div className="outlet-cont overflow-y-scroll">
                 <Outlet />
+                
               </div>
             </div>
           </div>

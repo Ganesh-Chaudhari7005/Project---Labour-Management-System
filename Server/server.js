@@ -34,9 +34,17 @@ import GetPastBills from "./GetPastBillsHandler.js";
 import { handlePhotoUpload } from "./HandlePhotoGalleryFileUpload.js";
 import { handleCarouselPhotoUpload } from "./HandleHomeCarouselPhotoUpload.js";
 import { db_details } from "./dbconfig.js";
-import mysql from 'mysql2/promise';
+import mysql from "mysql2/promise";
 import RemoveGalleryImage from "./HandleGallerPhotoDelete.js";
 import RemoveCarouselImage from "./DeleteCarouselImageHandler.js";
+import { insertServiceRequest } from "./serviceRequestController.js";
+import { getServiceRequests } from "./FetchServiceRequests.js";
+import { deleteServiceRequest } from "./serviceRequestController.js";
+import {
+  getTestimonials,
+  addTestimonial,
+  deleteTestimonial,
+} from "./testimonialController.js";
 const app = express();
 
 app.use(express.json());
@@ -89,9 +97,8 @@ app.post("/create-bill", uploadBill.single("pdf"), async (req, res) => {
 
     const data = JSON.parse(req.body.data);
 
-    const filePath = file.path.replace(/\\/g, "/"); 
+    const filePath = file.path.replace(/\\/g, "/");
     let saveStatus = await SaveBill(data, filePath);
- 
 
     res.json({
       success: true,
@@ -101,7 +108,7 @@ app.post("/create-bill", uploadBill.single("pdf"), async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({
-      success: false,  
+      success: false,
       message: "Error saving bill",
     });
   }
@@ -123,12 +130,10 @@ app.post("/download-File", async (req, res) => {
   console.log(fp);
   console.log(fn);
 
-  res.download(fp, (err)=>{
+  res.download(fp, (err) => {
     console.log(err);
-    
-  })
-  
-}); 
+  });
+});
 app.post(
   "/add-Labour",
   authenticateToken,
@@ -212,7 +217,7 @@ app.post(
   },
 );
 
-app.post("/remove-user", authenticateToken ,async (req, res) => {
+app.post("/remove-user", authenticateToken, async (req, res) => {
   let { remuseremail, role } = req.body;
 
   let removeStatus = await RemoveUser(remuseremail, role);
@@ -226,51 +231,44 @@ app.get("/fetch-users", async (req, res) => {
   res.json(AllUsers);
 });
 
-app.post("/getProject-details",authenticateToken, async(req, res)=>{
-  
+app.post("/getProject-details", authenticateToken, async (req, res) => {
   let projectid = req.body.id;
 
-console.log("id is",projectid);
+  console.log("id is", projectid);
 
-  let sendres= await GetProjectDetails(projectid);
-  res.json(sendres); 
+  let sendres = await GetProjectDetails(projectid);
+  res.json(sendres);
 });
 
 app.post("/create-project", async (req, res) => {
+  const { finalData } = req.body;
 
-    const { finalData } = req.body;
-    
-    let functionRes = await HandleCreateProject(finalData);
-    res.json(functionRes);
+  let functionRes = await HandleCreateProject(finalData);
+  res.json(functionRes);
 });
 
-app.post("/remove-labour", async(req, res)=>{ 
-  let {email} = req.body;
+app.post("/remove-labour", async (req, res) => {
+  let { email } = req.body;
   let removeStatus = await RemoveLabour(email);
-  res.json(removeStatus); 
-  
-})
+  res.json(removeStatus);
+});
 
-app.post("/add-equipments" , authenticateToken , async(req, res)=>{
-    let { finalEquipment, selectedQuantity} = req.body;
+app.post("/add-equipments", authenticateToken, async (req, res) => {
+  let { finalEquipment, selectedQuantity } = req.body;
 
-    let sendres = await AddEquipment(
-      finalEquipment,
-      selectedQuantity,
-    );
-    res.json(sendres);
-}); 
+  let sendres = await AddEquipment(finalEquipment, selectedQuantity);
+  res.json(sendres);
+});
 
-app.get("/get-all-equipments-list", async(req, res)=>{
+app.get("/get-all-equipments-list", async (req, res) => {
   let AllEquipments = await FetchEquipments();
   res.json(AllEquipments);
 });
 
-app.get("/fetch-labours", async(req, res)=>{
+app.get("/fetch-labours", async (req, res) => {
   let AllLabours = await FetchLabours();
   res.json(AllLabours);
 });
-
 
 app.get("/fetch-projects", async (req, res) => {
   let AllProjects = await FetchProjects();
@@ -297,20 +295,20 @@ app.post("/getProfilePicture", async (req, res) => {
   res.json(responce_result);
 });
 
-app.get("/get-Lab-Equip-Info", async(req, res)=>{
+app.get("/get-Lab-Equip-Info", async (req, res) => {
   const allLabourList = await FetchLabours();
-  const allEquipments =await FetchInStockEquipments();
+  const allEquipments = await FetchInStockEquipments();
 
-  res.json({allLabourList, allEquipments});
+  res.json({ allLabourList, allEquipments });
 });
 
 app.get("/get-inStock-equipList", async (req, res) => {
   const allEquipments = await FetchInStockEquipments();
 
-  res.json({allEquipments});
+  res.json({ allEquipments });
 });
 
-app.post("/Selected-Lab-Equip-Det", async(req, res)=>{
+app.post("/Selected-Lab-Equip-Det", async (req, res) => {
   let { selectedLabour } = req.body;
 
   let LabourEquipDet = await LabourEquipAssignDetails(selectedLabour);
@@ -318,14 +316,16 @@ app.post("/Selected-Lab-Equip-Det", async(req, res)=>{
   res.json(LabourEquipDet);
 });
 
-
-app.post("/assign-equip", async(req,res)=>{
+app.post("/assign-equip", async (req, res) => {
   let { selectedLabour, selectedEquip, quantity } = req.body;
 
-  let AssignRes =  await AssignEquipments(selectedLabour,selectedEquip, quantity);
+  let AssignRes = await AssignEquipments(
+    selectedLabour,
+    selectedEquip,
+    quantity,
+  );
 
   res.json(AssignRes);
-
 });
 
 app.post("/un-assign-equip", async (req, res) => {
@@ -340,14 +340,12 @@ app.post("/un-assign-equip", async (req, res) => {
   res.json(UnAssignRes);
 });
 
-
-app.post("/remove-equipments", authenticateToken, async(req, res)=>{
+app.post("/remove-equipments", authenticateToken, async (req, res) => {
   let { selectedEquip, selectedQuantity } = req.body;
   let removeRes = await RemoveEquipment(selectedEquip, selectedQuantity);
 
   res.json(removeRes);
 });
-
 
 app.post("/add-attendance", async (req, res) => {
   try {
@@ -397,43 +395,40 @@ app.post("/get-report", async (req, res) => {
     });
   }
 });
-     
-app.post("/get-project-status" ,async(req, res)=>{
-  const {id} =  req.body;
-  if(!id){
-    return res.json({success : false, message : "Id not available"})
-  }else{
+
+app.post("/get-project-status", async (req, res) => {
+  const { id } = req.body;
+  if (!id) {
+    return res.json({ success: false, message: "Id not available" });
+  } else {
     let resStatus = await GetProjectStatus(id);
-    
+
     res.json(resStatus);
   }
-  
-})
+});
 
-app.post("/getPastBill-details", async(req, res)=>{
-  let {works} = req.body;
+app.post("/getPastBill-details", async (req, res) => {
+  let { works } = req.body;
   let { projectID } = req.body;
   let pastInfo = await GetPendingBillInfo(works, projectID);
 
   res.json(pastInfo);
-  
 });
 
-app.post("/get-ClientInfo-BillNo", async(req,res)=>{
-  let {projectid} = req.body;
+app.post("/get-ClientInfo-BillNo", async (req, res) => {
+  let { projectid } = req.body;
 
   let resdet = await GetClietInfo_BillNo(projectid);
 
   res.json(resdet);
-
 });
 
-app.post("/get-past-bills", async(req, res)=>{
+app.post("/get-past-bills", async (req, res) => {
   let { id } = req.body;
 
-    let AllBill = await GetPastBills(id);
+  let AllBill = await GetPastBills(id);
 
-    res.json(AllBill);
+  res.json(AllBill);
 });
 app.listen(3000, () => console.log("Server Running on Port : 3000"));
 
@@ -482,8 +477,6 @@ app.post("/upload-photo", uploadPhoto.array("photos", 10), async (req, res) => {
     if (db) await db.end();
   }
 });
-
-
 
 const photoStorageCarousel = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -538,16 +531,16 @@ app.post(
 app.get("/photos", async (req, res) => {
   try {
     let db;
-      try {
-        db = await mysql.createConnection(db_details);
-      } catch (err) {
-        console.log("Failed to Connect Database");
-        return {
-          success: false,    
-          message: "Something went wrong. Please try again later.",
-        };
-      }
-   const [rows] = await db.execute("SELECT * FROM photogallery");
+    try {
+      db = await mysql.createConnection(db_details);
+    } catch (err) {
+      console.log("Failed to Connect Database");
+      return {
+        success: false,
+        message: "Something went wrong. Please try again later.",
+      };
+    }
+    const [rows] = await db.execute("SELECT * FROM photogallery");
 
     res.json({
       success: true,
@@ -589,10 +582,10 @@ app.get("/carousel", async (req, res) => {
   }
 });
 
-app.post("/delete-Photo", async(req,res)=>{
-  let {ID} = req.body;
+app.post("/delete-Photo", async (req, res) => {
+  let { ID } = req.body;
   console.log(ID);
-  
+
   let resDelete = await RemoveGalleryImage(ID);
   res.json(resDelete);
 });
@@ -604,3 +597,17 @@ app.post("/delete-Photo-carousel", async (req, res) => {
   let resDelete = await RemoveCarouselImage(ID);
   res.json(resDelete);
 });
+
+app.post("/insert-reqform-data", insertServiceRequest);
+
+app.get("/get-service-requests", getServiceRequests);
+
+app.delete("/delete-service-request/:id", deleteServiceRequest);
+
+app.get("/testimonials", getTestimonials);
+
+// ADD
+app.post("/add-testimonials", addTestimonial);
+
+// DELETE
+app.delete("/testimonials/:id", deleteTestimonial);

@@ -1,9 +1,14 @@
 import React from "react";
-import { motion } from "framer-motion";
 import { ApiRoute } from "../ApiConfig";
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import { motion, AnimatePresence } from "framer-motion";
 export default function Home() {
+    const [data, setData] = useState([]);
+
+
+
+  const [submitted, setSubmitted] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -13,7 +18,11 @@ export default function Home() {
     pincode: "",
     requirement: "",
   });
-
+  useEffect(() => {
+    fetch(`${ApiRoute}testimonials`)
+      .then((res) => res.json())
+      .then(setData);
+  }, []);
   const handleChange = (e) => {
     const { name, value } = e.target;
 
@@ -75,7 +84,7 @@ export default function Home() {
       const data = await res.json();
 
       if (data.success) {
-        alert("Request submitted successfully!");
+         setSubmitted(true);
 
         // reset form
         setFormData({
@@ -187,102 +196,121 @@ export default function Home() {
                       Get in touch with us for your construction needs.
                     </p>
 
-                    <form onSubmit={handleSubmit}>
-                      <div className="mb-4">
-                        <input
-                          type="text"
-                          name="name"
-                          value={formData.name}
-                          onChange={handleChange}
-                          className="form-control re-input"
-                          placeholder="Full Name"
-                        />
-                        {errors.name && (
-                          <small className="text-danger">{errors.name}</small>
-                        )}
-                      </div>
+                    <AnimatePresence mode="wait">
+                      {submitted ? (
+                        <motion.div
+                          key="success"
+                          className="re-success-box"
+                          initial={{ opacity: 0, y: 20, scale: 0.98 }}
+                          animate={{ opacity: 1, y: 0, scale: 1 }}
+                          exit={{ opacity: 0, y: -20 }}
+                          transition={{ duration: 0.3 }}
+                        >
+                          <h5>✅ Request Submitted</h5>
+                          <p>We’ll contact you shortly.</p>
+                        </motion.div>
+                      ) : (
+                        <motion.form
+                          key="form"
+                          onSubmit={handleSubmit}
+                          initial={{ opacity: 0, y: 20, scale: 0.98 }}
+                          animate={{ opacity: 1, y: 0, scale: 1 }}
+                          exit={{ opacity: 0, y: -20 }}
+                          transition={{ duration: 0.3 }}
+                        >
+                          <div>
+                            <input
+                              type="text"
+                              name="name"
+                              value={formData.name}
+                              onChange={handleChange}
+                              className="form-control re-input"
+                              placeholder="Full Name"
+                            />
+                            <small className="text-danger error-text">
+                              {errors.name || " "}
+                            </small>
+                          </div>
 
-                      <div className="mb-4">
-                        <input
-                          type="email"
-                          name="email"
-                          value={formData.email}
-                          onChange={handleChange}
-                          className="form-control re-input"
-                          placeholder="Email Address"
-                        />
-                        {errors.email && (
-                          <small className="text-danger">{errors.email}</small>
-                        )}
-                      </div>
+                          <div>
+                            <input
+                              type="email"
+                              name="email"
+                              value={formData.email}
+                              onChange={handleChange}
+                              className="form-control re-input"
+                              placeholder="Email Address"
+                            />
+                            <small className="text-danger error-text">
+                              {errors.email || " "}
+                            </small>
+                          </div>
 
-                      <div className="mb-4">
-                        <input
-                          type="tel"
-                          className="form-control re-input"
-                          placeholder="Mobile Number"
-                          name="mobile"
-                          value={formData.mobile}
-                          onChange={handleChange}
-                        />
-                        {errors.mobile && (
-                          <small className="text-danger">
-                            {errors.mobile || " "}
-                          </small>
-                        )}
-                      </div>
+                          <div>
+                            <input
+                              type="tel"
+                              className="form-control re-input"
+                              placeholder="Mobile Number"
+                              name="mobile"
+                              value={formData.mobile}
+                              onChange={handleChange}
+                            />
+                            <small className="text-danger error-text">
+                              {errors.mobile || " "}
+                            </small>
+                          </div>
 
-                      {/* ADDRESS FIELD */}
-                      <div className="mb-4">
-                        <textarea
-                          className="form-control re-input"
-                          rows="2"
-                          placeholder="Full Address"
-                          name="address"
-                          value={formData.address}
-                          onChange={handleChange}
-                        ></textarea>
-                      </div>
+                          <div className="mb-2">
+                            <textarea
+                              className="form-control re-input"
+                              rows="2"
+                              placeholder="Full Address"
+                              name="address"
+                              value={formData.address}
+                              onChange={handleChange}
+                            ></textarea>
+                          </div>
 
-                      {/* OPTIONAL: CITY + PIN */}
-                      <div className="row">
-                        <div className="col-6 mb-3">
-                          <input
-                            type="text"
-                            className="form-control re-input"
-                            placeholder="City"
-                            name="city"
-                            value={formData.city}
-                            onChange={handleChange}
-                          />
-                        </div>
-                        <div className="col-6 mb-3">
-                          <input
-                            type="text"
-                            className="form-control re-input"
-                            placeholder="Pincode"
-                            name="pincode"
-                            value={formData.pincode}
-                            onChange={handleChange}
-                          />
-                        </div>
-                      </div>
+                          <div className="row">
+                            <div className="col-6 mb-3">
+                              <input
+                                type="text"
+                                className="form-control re-input"
+                                placeholder="City"
+                                name="city"
+                                value={formData.city}
+                                onChange={handleChange}
+                              />
+                            </div>
+                            <div className="col-6 mb-3">
+                              <input
+                                type="text"
+                                className="form-control re-input"
+                                placeholder="Pincode"
+                                name="pincode"
+                                value={formData.pincode}
+                                onChange={handleChange}
+                              />
+                            </div>
+                          </div>
 
-                      <div className="mb-3">
-                        <textarea
-                          className="form-control re-input"
-                          rows="3"
-                          placeholder="Describe your requirement"
-                          name="requirement"
-                          value={formData.requirement}
-                          onChange={handleChange}
-                        ></textarea>
-                      </div>
+                          <div className="mb-3">
+                            <textarea
+                              className="form-control re-input"
+                              rows="3"
+                              placeholder="Describe your requirement"
+                              name="requirement"
+                              value={formData.requirement}
+                              onChange={handleChange}
+                            ></textarea>
+                          </div>
 
-                      <button type="submit" className="re-submit-btn w-100">
-                        Submit Request
-                      </button>
-                    </form>
+                          <button type="submit" className="re-submit-btn w-100">
+                            Submit Request
+                          </button>
+                        </motion.form>
+                      )}
+                    </AnimatePresence>
                   </div>
                 </div>
               </div>
@@ -477,50 +505,24 @@ export default function Home() {
             </div>
           </div>
         </section>
-        <section className="py-5">
-          <div className="container py-5">
+        <section className="tmx9-testimonial-root">
+          <div className="tmx9-container">
             <h2 className="text-center mb-5">
-              --- What Our <span className="section-head">Customers Say</span>{" "}
-              ---
+              What Our <span className="section-head">Customers Say</span>
             </h2>
 
-            <div className="slider">
-              <div className="slide-track">
-                {/* Testimonial 1 */}
-                <div className="testimonial-card">
-                  <p>"Excellent tile installation work. Very professional!"</p>
-                  <h6>- Rahul Sharma</h6>
-                </div>
+            <div className="tmx9-track">
+              {[...data, ...data].map((item, index) => (
+                <div className="tmx9-card" key={index}>
+                  <div className="tmx9-avatar">{item.name.charAt(0)}</div>
 
-                {/* Testimonial 2 */}
-                <div className="testimonial-card">
-                  <p>"Marble finishing was top-notch. Highly recommended."</p>
-                  <h6>- Amit Patil</h6>
-                </div>
+                  <p>"{item.message}"</p>
 
-                {/* Testimonial 3 */}
-                <div className="testimonial-card">
-                  <p>"Work completed on time with great quality."</p>
-                  <h6>- Sneha Joshi</h6>
-                </div>
+                  <div>{"⭐".repeat(item.rating)}</div>
 
-                {/* Testimonial 4 */}
-                <div className="testimonial-card">
-                  <p>"Affordable pricing and amazing results!"</p>
-                  <h6>- Vikram Singh</h6>
+                  <h6>- {item.name}</h6>
                 </div>
-
-                {/* Duplicate for smooth infinite scroll */}
-                <div className="testimonial-card">
-                  <p>"Excellent tile installation work. Very professional!"</p>
-                  <h6>- Rahul Sharma</h6>
-                </div>
-
-                <div className="testimonial-card">
-                  <p>"Marble finishing was top-notch. Highly recommended."</p>
-                  <h6>- Amit Patil</h6>
-                </div>
-              </div>
+              ))}
             </div>
           </div>
         </section>

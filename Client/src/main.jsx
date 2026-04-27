@@ -48,10 +48,15 @@ import PreviousWork from "./Components/Website/PreviousWork.jsx";
 import ContactUs from "./Components/Website/ContactUs.jsx";
 import PhotoGallery from "./Components/PhotoGallery.jsx";
 import Carousel from "./Components/Carousel.jsx";
+import ServiceRequestsAdmin from "./Components/ServiceRequestsAdmin.jsx";
+import Tiles404Page from "./Components/HandlePageNotFound.jsx";
+import AdminTestimonials from "./Components/ManageTestimonials.jsx";
+import DashboardInner from "./Components/DashboardInner.jsx";
 const router = createBrowserRouter(
   createRoutesFromElements(
     <>
       <Route element={<RootLayout />}>
+        <Route path="*" element={<Tiles404Page />} />
         <Route path="/" element={<App />}>
           <Route index element={<Home />} />
           <Route path="about-us" element={<AboutUs />} />
@@ -68,7 +73,8 @@ const router = createBrowserRouter(
               <Dashboard />
             </ProtectedRoute>
           }
-        />
+        ></Route>
+
         <Route
           path="/dashboard"
           element={
@@ -77,6 +83,8 @@ const router = createBrowserRouter(
             </ProtectedRoute>
           }
         >
+          <Route index element={<DashboardInner />} />
+          <Route path="dash" element={<DashboardInner />} />{" "}
           <Route path="project-management" element={<ProjectManagement />}>
             <Route index element={<Project />} />
             <Route path="create-project" element={<CreateProject />} />
@@ -93,7 +101,6 @@ const router = createBrowserRouter(
             </Route>
           </Route>
           <Route path="test-payment" element={<RazorpayTest />} />
-
           <Route path="Attendance" element={<Attendance />}>
             <Route index element={<RecordAttendance />} />
             <Route path="attendance-report" element={<AttendanceReport />} />
@@ -109,9 +116,13 @@ const router = createBrowserRouter(
             <Route path="assign-equipments" element={<AssignEquipment />} />
           </Route>
           <Route path="cms" element={<CMS />}>
-            <Route index element={<Carousel/>}/>
-            <Route path="admin-photo-gallery" element={<PhotoGallery/>}/>
-            <Route index element={<Carousel/>}/>
+            <Route index element={<Carousel />} />
+            <Route path="admin-photo-gallery" element={<PhotoGallery />} />
+            <Route path="manage-testimonials" element={<AdminTestimonials />} />
+            <Route
+              path="service-req-admin"
+              element={<ServiceRequestsAdmin />}
+            />
           </Route>
           <Route path="profile" element={<Profile />} />
           <Route path="manage-labours" element={<LabourManagement />}>

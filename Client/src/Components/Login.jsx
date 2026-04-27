@@ -35,15 +35,18 @@ export default function Login() {
     const data = await request.json();
     if (data.success) {
 
-      Swal.fire({
-        title: "Login Successful!",
-        icon: "success",
-        timer: 1000,
-        showConfirmButton: false,
-        customClass: {
-          title : "small-title"
-        }
-      });
+     Swal.fire({
+       title: "Login Successful!",
+       icon: "success",
+       timer: 1000,
+       showConfirmButton: false,
+
+       customClass: {
+         popup: "swal-small",
+         title: "small-title",
+         icon: "swal-icon-small-login",
+       },
+     });
       const user = {
         UserEmail : data.uemail,
         UserName : data.funame,

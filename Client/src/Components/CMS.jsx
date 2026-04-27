@@ -14,6 +14,16 @@ export default function CMS() {
             </button>
           )}
         </NavLink>
+        <NavLink to="service-req-admin">
+          {({ isActive }) => (
+            <button
+              className={`equip-btn
+                      ${isActive ? "admin-nav-btn" : "text-white"}`}
+            >
+              Service Requests
+            </button>
+          )}
+        </NavLink>
         <NavLink to="admin-photo-gallery">
           {({ isActive }) => (
             <button
@@ -24,7 +34,8 @@ export default function CMS() {
             </button>
           )}
         </NavLink>
-        <NavLink to="remove-equipment">
+
+        <NavLink to="manage-testimonials">
           {({ isActive }) => (
             <button
               className={`equip-btn
