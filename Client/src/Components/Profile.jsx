@@ -135,6 +135,22 @@ export default function Profile() {
         toastClassName="custom-toast"
         bodyClassName="custom-toast-body"
       />
+      <div className="project-top-section">
+        <div className="project-header-card">
+          <div className="project-header-left">
+            <div className="project-badge">
+              <i className="ri-building-line"></i>
+              Manage Profile
+            </div>
+
+            {/* <h1>Manage Profile</h1> */}
+          </div>
+
+          {/* Decorative Elements */}
+          <div className="project-bg-circle one"></div>
+          <div className="project-bg-circle two"></div>
+        </div>
+      </div>
       <div className="h-100 w-100 admin-comp-def global-page-anim">
         <div className="container p-3">
           <div className="row">

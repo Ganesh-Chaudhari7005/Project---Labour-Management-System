@@ -71,7 +71,7 @@ export default function Project() {
         <div className="pjx-wrap">
           {/* HEADER */}
           <div className="pjx-header">
-            <h3 className="pjx-title">Project Dashboard</h3>
+            <h3 className="pjx-title">All Projects</h3>
 
             <NavLink to="create-project">
               <button className="pjx-btn-create">+ New Project</button>

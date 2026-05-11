@@ -1,32 +1,35 @@
 import { useEffect, useState } from "react";
 import { ApiRoute } from "./ApiConfig.js";
-import {toast, ToastContainer} from "react-toastify"
+import { toast, ToastContainer } from "react-toastify";
 export default function RecordAttendance() {
   const todayDate = new Date().toISOString().split("T")[0];
-
-  const [labour, setLabour] = useState("");
+const [selectedLabour, setSelectedLabour] = useState(null);
   const [status, setStatus] = useState("");
   const [advance, setAdvance] = useState(0);
   const [mode, setMode] = useState("");
   const [date, setDate] = useState(todayDate);
   const [workDone, setworkdone] = useState("");
   const [AlllabourList, setLabourList] = useState([]);
-
   const getLaboursList = async () => {
     const reqLabourList = await fetch(`${ApiRoute}fetch-labours`);
     const res = await reqLabourList.json();
+    console.log(res);
+    
     setLabourList(res);
   };
 
   useEffect(() => {
     getLaboursList();
+    // console.log);
+    
   }, []);
 
  const handleSubmit = async (e) => {
    e.preventDefault();
 
    const data = {
-     labour,
+     labour: selectedLabour?.ID,
+     project_id: selectedLabour?.ProjectID,
      status,
      advance,
      mode,
@@ -49,13 +52,12 @@ export default function RecordAttendance() {
        toast.success("Attendance Saved!");
      } else {
        toast.error("❌ " + result.message);
-            }
+     }
    } catch (err) {
      console.error(err);
      alert("Server error");
    }
  };
-
   return (
     <div className="container mt-4">
       <ToastContainer />
@@ -114,17 +116,30 @@ export default function RecordAttendance() {
               <label className="form-label">Select Labour</label>
               <select
                 className="form-select mb-3"
-                value={labour}
-                onChange={(e) => setLabour(e.target.value)}
+                value={selectedLabour?.ID || ""}
+                onChange={(e) => {
+                  const selected = AlllabourList.find(
+                    (l) => l.ID === e.target.value,
+                  );
+
+                  setSelectedLabour(selected);
+                }}
                 required
               >
                 <option value="">-- Select Labour --</option>
+
                 {AlllabourList.map((data) => (
                   <option key={data.ID} value={data.ID}>
                     {data.Name}
                   </option>
                 ))}
               </select>
+              {selectedLabour?.ProjectName && (
+                <div className="project-info-box">
+                  <strong>Currently Working on Site : </strong>{" "}
+                  {selectedLabour.ProjectName}
+                </div>
+              )}
 
               <label className="form-label">Status</label>
               <select

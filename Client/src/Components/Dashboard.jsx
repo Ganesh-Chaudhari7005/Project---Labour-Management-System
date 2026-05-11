@@ -84,7 +84,7 @@ export default function Dashboard() {
                   to="/dashboard"
                   end
                   className={({ isActive }) =>
-                    `${isActive ? "text-black nav-item-active" : "text-white"} adminnavbtn
+                    `${isActive ? "text-black nav-item-active" : "text-white"} adminnavbtn dashboardbtn
                     ${isActive ? setActivecomp("Dashboard") : ""}
                   `
                   }

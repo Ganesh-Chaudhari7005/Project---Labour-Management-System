@@ -1,16 +1,67 @@
-import React, { useEffect , useState } from "react";
-import { Outlet, useParams } from "react-router-dom";
-import { toast, ToastContainer } from "react-toastify";
+import React , {useState, useEffect} from "react";
+import { Outlet, useParams, NavLink } from "react-router-dom";
+import { ToastContainer } from "react-toastify";
 import { motion } from "framer-motion";
-import { NavLink } from "react-router-dom";
+import { useApi } from "./ApiCaller";
+import { ApiRoute } from "./ApiConfig";
 
 export default function ManageProject() {
-  
   const { id } = useParams();
+    const callApi = useApi();
   
- 
+  const [ProjectName, setProjectName] = useState();
+
+   useEffect(() => {
+      getProjectDetails();
+    }, []);
+  
+
+  const getProjectDetails = async () => {
+      console.log("Sending ID:", id, typeof id);
+      const reqPrj = await callApi(`${ApiRoute}getProject-details`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ id }),
+      });
+  
+      console.log(reqPrj);
+  
+      setProjectName(reqPrj.projectdetails.ProjectName);
+    };
+  const tabs = [
+    {
+      name: "Dashboard",
+      path: ".",
+      end: true,
+      icon: "ri-dashboard-line",
+    },
+    {
+      name: "Manage Work",
+      path: "project-details",
+      icon: "ri-tools-line",
+    },
+    {
+      name: "Generate Bill",
+      path: "generate-bill",
+      icon: "ri-file-list-3-line",
+    },
+    {
+      name: "View Bills",
+      path: "view-past-bills",
+      icon: "ri-money-rupee-circle-line",
+    },
+    {
+      name: "Project Details",
+      path: "project-details",
+      icon: "ri-folder-info-line",
+    },
+  ];
+
   return (
     <motion.div
+      className="manage-project-page"
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
@@ -19,50 +70,59 @@ export default function ManageProject() {
         toastClassName="custom-toast"
         bodyClassName="custom-toast-body"
       />
+
       <div className="container">
-        <div className="d-flex gap-2">
-          <div className="manage-project-tabs">
-            <NavLink to="." end>
-              {({ isActive }) => (
-                <button className={isActive ? "admin-nav-btn" : "rounded"}>
-                  Project Details
-                </button>
-              )}
-            </NavLink>
+        {/* Header */}
+        <div className="project-top-section">
+          <div className="project-header-card">
+            <div className="project-header-left">
+              <div className="project-badge">
+                <i className="ri-building-line"></i>
+                Active Project
+              </div>
 
-            <NavLink to="project-status">
-              {({ isActive }) => (
-                <button className={isActive ? "admin-nav-btn" : "rounded"}>
-                  Project Status
-                </button>
-              )}
-            </NavLink>
+              <h1>{ProjectName}</h1>
+            </div>
 
-            <NavLink to="assign-labours">
-              {({ isActive }) => (
-                <button className={isActive ? "admin-nav-btn" : "rounded"}>
-                  Manage Labours
-                </button>
-              )}
-            </NavLink>
-            <NavLink to="generate-bill">
-              {({ isActive }) => (
-                <button className={isActive ? "admin-nav-btn" : "rounded"}>
-                  Generate Bill
-                </button>
-              )}
-            </NavLink>
-            <NavLink to="view-past-bills">
-              {({ isActive }) => (
-                <button className={isActive ? "admin-nav-btn" : "rounded"}>
-                  View Bills
-                </button>
-              )}
-            </NavLink>
+            
+
+            {/* Decorative Elements */}
+            <div className="project-bg-circle one"></div>
+            <div className="project-bg-circle two"></div>
           </div>
         </div>
-        <br />
-        <Outlet />
+
+        {/* Navigation Tabs */}
+        <div className="manage-project-tabs-wrapper">
+          <div className="manage-project-tabs">
+            {tabs.map((tab, index) => (
+              <NavLink
+                key={index}
+                to={tab.path}
+                end={tab.end}
+                className="navlink-reset"
+              >
+                {({ isActive }) => (
+                  <button
+                    className={
+                      isActive
+                        ? "project-tab-btn active-tab"
+                        : "project-tab-btn"
+                    }
+                  >
+                    <i className={tab.icon}></i>
+                    {tab.name}
+                  </button>
+                )}
+              </NavLink>
+            ))}
+          </div>
+        </div>
+
+        {/* Page Content */}
+        <div className="project-content-area">
+          <Outlet />
+        </div>
       </div>
     </motion.div>
   );

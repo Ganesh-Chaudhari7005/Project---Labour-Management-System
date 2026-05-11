@@ -18,6 +18,8 @@ export default function ViewAllLabour() {
   const [currrentLabDOB, setLabDOB] = useState("");
   const [currrentLabAddr, setLabAddr] = useState("");
   const [currrentLabType, setLabType] = useState("");
+  const [search, setSearch] = useState("");
+  const [typeFilter, setTypeFilter] = useState("all");
   const [isConVisible, setContisvisible] = useState(false);
   const FetchLaboursFromDB = async () => {
     let reqLab = await fetch(`${ApiRoute}fetch-labours`);
@@ -33,14 +35,14 @@ export default function ViewAllLabour() {
     FetchLaboursFromDB();
   }, []);
 
-  const OpenFullView = (index) => {
-    setLabName(AllLabours[index].Name);
-    setLabImg(AllLabours[index].profileImgPath);
-    setLabType(AllLabours[index].LabType);
-    setLabEmail(AllLabours[index].Email);
-    setLabPhone(AllLabours[index].Phone);
-    setLabAddr(AllLabours[index].Address);
-    setContisvisible((prev) => (prev = !prev));
+  const OpenFullView = (labour) => {
+    setLabName(labour.Name);
+    setLabImg(labour.profileImgPath);
+    setLabType(labour.LabType);
+    setLabEmail(labour.Email);
+    setLabPhone(labour.Phone);
+    setLabAddr(labour.Address);
+    setContisvisible((prev) => !prev);
   };
 
   const toggleVisibility = () => {
@@ -82,6 +84,18 @@ export default function ViewAllLabour() {
       }
     }
   };
+
+ const filteredLabours = AllLabours.filter((l) => {
+   const matchesSearch =
+     l.Name.toLowerCase().includes(search.toLowerCase()) ||
+     l.Email.toLowerCase().includes(search.toLowerCase()) ||
+     l.LabType.toLowerCase().includes(search.toLowerCase());
+
+   const matchesType =
+     typeFilter === "all" || l.LabType.toLowerCase() === typeFilter;
+
+   return matchesSearch && matchesType;
+ });
   return (
     <motion.div
       initial={{ opacity: 0, y: 10 }}
@@ -93,13 +107,17 @@ export default function ViewAllLabour() {
         bodyClassName="custom-toast-body"
       />
       <div className="container remuser-cont p-3">
-        <h4 className="mb-5 d-inline-block">
-          All Labours ({AllLabours.length})
-        </h4>
+        <div className="labour-title-bar">
+          <div>
+            <h3>All Labours</h3>
+            <p>
+              Showing {filteredLabours.length} of {AllLabours.length} workers
+            </p>
+          </div>
 
-        <NavLink to="add-labour">
-          <button className="defbtn">+ Add Labour</button>
-        </NavLink>
+          <div className="labour-pill">Total: {AllLabours.length}</div>
+        </div>
+
         <ShowLabourDetails
           onClose={toggleVisibility}
           isVisible={isConVisible}
@@ -110,54 +128,87 @@ export default function ViewAllLabour() {
           imgpath={currrentLabImg}
           Name={currrentLabName || ""}
         />
+        <div className="labour-toolbar">
+          <input
+            type="text"
+            placeholder="Search by name, email, or type..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
 
+          <select
+            value={typeFilter}
+            onChange={(e) => setTypeFilter(e.target.value)}
+          >
+            <option value="all">All</option>
+            <option value="misteri">Misteri</option>
+            <option value="helper">Helper</option>
+          </select>
+        </div>
         <div className="row g-3">
-          {AllLabours.map((data, index) => (
-            <div className="col-lg-3 p-0" key={index}>
-              <div
-                className="card cust-card"
-                style={{ width: "15rem", height: "20rem" }}
-              >
-                <div className="card-img-cont">
-                  <img
-                    src={`${uploadUrl}${data.profileImgPath}`}
-                    className="img-fluid"
-                    alt="..."
-                    onError={(e) => {
-                      e.target.src = "/public/defaultlabouricon.png";
-                    }}
-                  />
-                </div>
+          {filteredLabours.length > 0 ? (
+            filteredLabours.map((data, index) => (
+              <div className="col-12" key={index}>
+                <motion.div
+                  whileHover={{ scale: 1.01 }}
+                  className="labour-row-card"
+                >
+                  {/* IMAGE */}
+                  <div className="labour-row-img">
+                    <img
+                      src={`${uploadUrl}${data.profileImgPath}`}
+                      alt={data.Name}
+                      onError={(e) => {
+                        e.target.src = "/defaultlabouricon.png";
+                      }}
+                    />
+                  </div>
 
-                <div className="card-body d-flex flex-column align-items-center">
-                  <h5 className="card-title text-capitalize">{data.Name}</h5>
-                  <p className="card-text">Worker Type : {data.LabType}</p>
-                  <div className="btn-cont d-flex gap-2">
+                  {/* INFO */}
+                  <div className="labour-row-info">
+                    <h5>{data.Name}</h5>
+                    <p>{data.Email}</p>
+                    <span className="labour-type-tag">{data.LabType}</span>
+                  </div>
+
+                  {/* ACTIONS */}
+                  <div className="labour-row-actions">
                     <button
-                      onClick={() => {
-                        OpenFullView(index);
-                      }}
-                      className="card-btn"
+                      className="row-btn view"
+                      onClick={() => OpenFullView(data)}
                     >
-                      More Info.
+                      View
                     </button>
+
                     <button
-                      onClick={() => {
-                        RemoveLabourHandler(data.Email, data.Name);
-                      }}
-                      className="px-2 py-0"
-                      style={{
-                        backgroundColor: "#dc2626",
-                        borderRadius: "5px",
-                      }}
+                      className="row-btn delete"
+                      onClick={() => RemoveLabourHandler(data.Email, data.Name)}
                     >
                       Remove
                     </button>
                   </div>
-                </div>
+                </motion.div>
+              </div>
+            ))
+          ) : (
+            <div className="col-12">
+              <div className="no-data-container">
+                <div className="no-data-icon">🔍</div>
+                <h5>No labour found</h5>
+                <p>Try changing search or filter</p>
+
+                <button
+                  className="clear-btn"
+                  onClick={() => {
+                    setSearch("");
+                    setTypeFilter("all");
+                  }}
+                >
+                  Clear Filters
+                </button>
               </div>
             </div>
-          ))}
+          )}
         </div>
       </div>
     </motion.div>

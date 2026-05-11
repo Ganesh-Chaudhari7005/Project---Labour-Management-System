@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+
+  <style>
+    body {
+      background: #f3f4f6;
+      font-family: Arial, sans-serif;
+      padding: 20px;
+    }
+
+    .page {
+      width: 210mm;
+      min-height: 297mm;
+      background: white;
+      margin: auto;
+      padding: 20mm;
+      box-sizing: border-box;
+    }
+
+    .top {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 30px;
+    }
+
+    .company h1 {
+      margin: 0;
+      color: #111827;
+    }
+
+    .company p {
+      color: #6b7280;
+    }
+
+    .invoice-info {
+      text-align: right;
+    }
+
+    .client-box {
+      margin-bottom: 30px;
+      padding: 15px;
+      background: #f9fafb;
+      border-radius: 10px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+
+    thead {
+      background: #111827;
+      color: white;
+    }
+
+    th {
+      padding: 12px;
+      text-align: left;
+      font-size: 14px;
+    }
+
+    td {
+      padding: 12px;
+      border-bottom: 1px solid #e5e7eb;
+    }
+
+    tr {
+      page-break-inside: avoid;
+    }
+
+    .summary {
+      margin-top: 30px;
+      width: 320px;
+      margin-left: auto;
+    }
+
+    .summary-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+
+    .grand {
+      font-size: 20px;
+      font-weight: bold;
+      border-top: 2px solid #111827;
+      padding-top: 10px;
+    }
+
+    .footer {
+      margin-top: 60px;
+      text-align: right;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="page">
+
+    <div class="top">
+      <div class="company">
+        <h1>Royal Enterprises</h1>
+        <p>Dhayari, Pune</p>
+      </div>
+
+      <div class="invoice-info">
+        <p><strong>Invoice #:</strong> <%= billno %></p>
+        <p><strong>Date:</strong> <%= date %></p>
+      </div>
+    </div>
+
+    <div class="client-box">
+      <h3>Bill To</h3>
+
+      <p><strong><%= clientName %></strong></p>
+      <p><%= siteAddr %></p>
+    </div>
+
+    <table>
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Description</th>
+          <th>Area</th>
+          <th>Rate</th>
+          <th>Amount</th>
+        </tr>
+      </thead>
+
+      <tbody>
+
+        <% items.forEach((item, index) => { %>
+          <tr>
+            <td><%= index + 1 %></td>
+            <td><%= item.name %></td>
+            <td><%= item.area %></td>
+            <td>₹ <%= item.rate %></td>
+            <td>₹ <%= item.total.toLocaleString("en-IN") %></td>
+          </tr>
+        <% }) %>
+
+        <% customRows.forEach((item, index) => { %>
+          <tr>
+            <td><%= items.length + index + 1 %></td>
+            <td><%= item.Desc %></td>
+            <td><%= item.Area %></td>
+            <td>₹ <%= item.Rate %></td>
+            <td>
+              ₹ <%= (item.Area * item.Rate).toLocaleString("en-IN") %>
+            </td>
+          </tr>
+        <% }) %>
+
+      </tbody>
+    </table>
+
+    <div class="summary">
+      <div class="summary-row">
+        <span>Subtotal</span>
+        <span>₹ <%= subtotal.toLocaleString("en-IN") %></span>
+      </div>
+
+      <div class="summary-row">
+        <span>GST (18%)</span>
+        <span>₹ <%= gst.toLocaleString("en-IN") %></span>
+      </div>
+
+      <div class="summary-row grand">
+        <span>Grand Total</span>
+        <span>₹ <%= grandTotal.toLocaleString("en-IN") %></span>
+      </div>
+    </div>
+
+    <div class="footer">
+      <p>For Royal Enterprises</p>
+    </div>
+
+  </div>
+</body>
+</html>

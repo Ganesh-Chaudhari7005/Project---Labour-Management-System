@@ -139,6 +139,7 @@ export default function AttendanceReport() {
                 <th>Sr No</th>
                 <th>Date</th>
                 <th>Labour</th>
+                <th>Site</th>
                 <th>Status</th>
                 <th>Work Done</th>
                 <th>Advance</th>
@@ -153,6 +154,7 @@ export default function AttendanceReport() {
                     <td>{i + 1}</td> {/* Sr No */}
                     <td>{formatDate(r.date)}</td>
                     <td>{r.Name}</td>
+                    <td>{r.ProjectName || "—"}</td>
                     <td>{r.status}</td>
                     <td>{r.Work_Done}</td>
                     <td>{r.advance}</td>

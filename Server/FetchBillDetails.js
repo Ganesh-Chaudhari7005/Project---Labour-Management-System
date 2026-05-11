@@ -58,7 +58,7 @@ async function GetPendingBillInfo(works, projectID) {
     };
   } finally {
     if (db) await db.end();
-  }
+  } 
 }
 
 export default GetPendingBillInfo;

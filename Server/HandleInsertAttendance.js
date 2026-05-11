@@ -7,7 +7,7 @@ export const insertAttendance = async (data) => {
   try {
     db = await mysql.createConnection(db_details);
 
-    const { labour, status, advance, date, workDone } = data;
+    const { labour, project_id, status, advance, date, workDone } = data;
 
     // 🔹 1. Get wage of labour
     const [wageRows] = await db.execute(
@@ -39,15 +39,16 @@ export const insertAttendance = async (data) => {
       dayTotal = wage * 2;
     }
 
-    // 🔹 3. Insert into attendance
+    // 🔹 3. Insert into attendance (UPDATED)
     const query = `
       INSERT INTO attendance 
-      (labour_id, date, status, advance, Day_Total, Work_Done)
-      VALUES (?, ?, ?, ?, ?, ?)
+      (labour_id, ProjectID, date, status, advance, Day_Total, Work_Done)
+      VALUES (?, ?, ?, ?, ?, ?, ?)
     `;
 
     await db.execute(query, [
       labour,
+      project_id || null,
       date,
       status,
       advance || 0,

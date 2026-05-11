@@ -1,58 +1,124 @@
 import { motion } from "framer-motion";
 import { useState, useEffect } from "react";
 import { ApiRoute } from "./ApiConfig.js";
+
 export default function EquipmentsDash() {
-    const [fetchedEquip, setfetchedEquip] = useState([]);
-    async function getAllEquipments() {
-    try{
-        let reqEquip = await fetch(`${ApiRoute}get-inStock-equipList`, {
-          method: "GET",
-        });
+  const [fetchedEquip, setfetchedEquip] = useState([]);
+
+  async function getAllEquipments() {
+    try {
+      let reqEquip = await fetch(`${ApiRoute}get-inStock-equipList`, {
+        method: "GET",
+      });
+
       let res = await reqEquip.json();
-  setfetchedEquip(res.allEquipments);
-      
-    }catch(err){
+
+      setfetchedEquip(res.allEquipments);
+    } catch (err) {
       console.log(err);
     }
-      
-    }
-  
-    useEffect(() => {
-      getAllEquipments();
-    }, []);
-  
-  
+  }
+
+  useEffect(() => {
+    getAllEquipments();
+  }, []);
+
   return (
-    <>
-      <motion.div
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.3 }}
-      >
-        <div className="container py-4">
-          <h3>All Equipments</h3>
+    <motion.div
+      className="equipments-page"
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3 }}
+    >
+      <div className="container py-4">
+        {/* Top Header */}
+        <div className="equip-header-card">
+          <div className="equip-header-left">
+            <div className="equip-badge">
+              <i className="ri-tools-line"></i>
+              Inventory Overview
+            </div>
+
+            <h1>Equipment Dashboard</h1>
+
+            <p>
+              Monitor available equipment stock, quantity and inventory records
+              across all projects.
+            </p>
+          </div>
+
+          <div className="equip-stat-card">
+            <span>Total Equipments</span>
+
+            <h2>{fetchedEquip.length}</h2>
+          </div>
+
+          {/* Decorative Circles */}
+          <div className="equip-bg-circle one"></div>
+          <div className="equip-bg-circle two"></div>
+        </div>
+
+        {/* Table Card */}
+        <div className="equip-table-card">
+          <div className="equip-table-top">
+            <div>
+              <h3>Available Equipments</h3>
+              <p>Current in-stock equipment inventory</p>
+            </div>
+
+            <div className="table-status">
+              <span className="status-dot"></span>
+              Live Inventory
+            </div>
+          </div>
+
           <div className="table-responsive">
-            <table className="table table-bordered cust-table">
+            <table className="equip-table">
               <thead>
                 <tr>
-                  <th className="tbl-head">Sr. No.</th>
-                  <th className="tbl-head">Equipment Name</th>
-                  <th className="tbl-head">Total Quantity</th>
+                  <th>Sr. No.</th>
+                  <th>Equipment Name</th>
+                  <th>Total Quantity</th>
                 </tr>
               </thead>
+
               <tbody>
                 {fetchedEquip.map((data, index) => (
-                  <tr>
-                    <td>{index + 1}</td>
-                    <td>{data.Equipment_Name}</td>
-                    <td>{data.Total_Quantity}</td>
+                  <tr key={index}>
+                    <td>
+                      <div className="serial-circle">{index + 1}</div>
+                    </td>
+
+                    <td>
+                      <div className="equip-name">
+                        
+
+                        <span>{data.Equipment_Name}</span>
+                      </div>
+                    </td>
+
+                    <td>
+                      <div className="qty-pill">
+                        {data.Total_Quantity} Units
+                      </div>
+                    </td>
                   </tr>
                 ))}
               </tbody>
             </table>
+
+            {fetchedEquip.length === 0 && (
+              <div className="empty-equip">
+                <i className="ri-inbox-line"></i>
+
+                <h4>No Equipments Found</h4>
+
+                <p>Equipment inventory data will appear here.</p>
+              </div>
+            )}
           </div>
         </div>
-      </motion.div>
-    </>
+      </div>
+    </motion.div>
   );
 }

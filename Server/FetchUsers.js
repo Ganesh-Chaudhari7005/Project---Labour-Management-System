@@ -7,7 +7,7 @@ async function FetchUsers(){
       db = await mysql.createConnection(db_details);
       console.log("Database Connected Successfully");
     } catch (err) {
-      console.log("Failed to Connect Database");
+      console.log("Failed to Connect Database", err);
       return {
         success: false,
         message: "Something went wrong. Please try again later.",

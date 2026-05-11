@@ -52,6 +52,10 @@ import ServiceRequestsAdmin from "./Components/ServiceRequestsAdmin.jsx";
 import Tiles404Page from "./Components/HandlePageNotFound.jsx";
 import AdminTestimonials from "./Components/ManageTestimonials.jsx";
 import DashboardInner from "./Components/DashboardInner.jsx";
+import WageManagement from "./Components/WageManagement.jsx";
+import ForgotPassword from "./Components/ForgotPassword.jsx";
+import ResetPassword from "./Components/ResetPassword.jsx";
+import ViewPDF from "./Components/ViewPDF.jsx";
 const router = createBrowserRouter(
   createRoutesFromElements(
     <>
@@ -74,7 +78,8 @@ const router = createBrowserRouter(
             </ProtectedRoute>
           }
         ></Route>
-
+        <Route path="forgot-password" element={<ForgotPassword />} />
+        <Route path="reset-password/:token" element={<ResetPassword />} />
         <Route
           path="/dashboard"
           element={
@@ -83,6 +88,8 @@ const router = createBrowserRouter(
             </ProtectedRoute>
           }
         >
+          {" "}
+          <Route path="view-pdf" element={<ViewPDF />} />
           <Route index element={<DashboardInner />} />
           <Route path="dash" element={<DashboardInner />} />{" "}
           <Route path="project-management" element={<ProjectManagement />}>
@@ -90,9 +97,9 @@ const router = createBrowserRouter(
             <Route path="create-project" element={<CreateProject />} />
 
             <Route path="manage-project/:id" element={<ManageProject />}>
-              <Route index element={<ProjectDetails />} />
-              <Route path="assign-labours" element={<AssignLabours />} />
-              <Route path="project-status" element={<ProjectStatus />} />
+              <Route path="project-details" element={<ProjectDetails />} />
+              <Route index element={<ProjectStatus />} />
+
               <Route path="generate-bill" element={<GenerateBill />} />
               <Route
                 path="view-past-bills"
@@ -125,9 +132,11 @@ const router = createBrowserRouter(
             />
           </Route>
           <Route path="profile" element={<Profile />} />
+          <Route path="manage-wages" element={<WageManagement />} />
           <Route path="manage-labours" element={<LabourManagement />}>
             <Route index element={<ViewAllLabour />} />
             <Route path="add-labour" element={<AddLabour />} />
+            <Route path="assign-labours" element={<AssignLabours />} />
           </Route>
         </Route>
       </Route>

@@ -40,11 +40,13 @@ import RemoveCarouselImage from "./DeleteCarouselImageHandler.js";
 import { insertServiceRequest } from "./serviceRequestController.js";
 import { getServiceRequests } from "./FetchServiceRequests.js";
 import { deleteServiceRequest } from "./serviceRequestController.js";
-import {
-  getTestimonials,
-  addTestimonial,
-  deleteTestimonial,
-} from "./testimonialController.js";
+import {getTestimonials,addTestimonial, deleteTestimonial} from "./testimonialController.js";
+import {getLabours, getProjects, assignLabour,getAssignments,removeAssignment,
+} from "./LabourAssignmentController.js";
+import generateInvoice from "./utils/generateinvoice.js";
+import { ForgotPasswordHandler } from "./ForgotPasswordhandler.js";
+import { ResetPasswordHandler } from "./ResetPasswordhandler.js"; 
+import fs from "fs";
 const app = express();
 
 app.use(express.json());
@@ -57,8 +59,14 @@ app.use((req, res, next) => {
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-app.use("/uploads", express.static(path.join(__dirname, "uploads")));
-
+app.use(
+  "/uploads",
+  express.static(path.join(__dirname, "uploads"), {
+    setHeaders: (res) => {
+      res.setHeader("Content-Type", "application/pdf");
+    },
+  }),
+);
 //uncomment during deployment
 // app.use(express.static(path.join(__dirname, 'dist')));
 // app.use((req, res, next) => {
@@ -91,25 +99,40 @@ const billStorage = multer.diskStorage({
 
 const uploadBill = multer({ storage: billStorage });
 
-app.post("/create-bill", uploadBill.single("pdf"), async (req, res) => {
+app.post("/create-bill", async (req, res) => {
   try {
-    const file = req.file;
+    const data = req.body;
 
-    const data = JSON.parse(req.body.data);
+    console.log("Bill Data:", data);
 
-    const filePath = file.path.replace(/\\/g, "/");
-    let saveStatus = await SaveBill(data, filePath);
+    // ✅ Generate PDF
+    const pdfBuffer = await generateInvoice({
+      ...data,
+      date: new Date().toLocaleDateString(),
+    });
+
+    // ✅ Create file name
+    const fileName = `invoice-${Date.now()}.pdf`;
+
+    // ✅ Save path
+    const filePath = `uploads/bills/${fileName}`;
+
+    // ✅ Save PDF to folder
+    fs.writeFileSync(filePath, pdfBuffer);
+
+    await SaveBill(data, filePath);
 
     res.json({
       success: true,
-      message: "Bill saved successfully",
+      message: "Bill Created Successfully",
       filePath,
     });
   } catch (err) {
-    console.error(err);
+    console.log(err);
+
     res.status(500).json({
       success: false,
-      message: "Error saving bill",
+      message: "Bill creation failed",
     });
   }
 });
@@ -611,3 +634,75 @@ app.post("/add-testimonials", addTestimonial);
 
 // DELETE
 app.delete("/testimonials/:id", deleteTestimonial);
+
+app.get("/labours", getLabours);
+app.get("/projects", getProjects);
+app.get("/assignments", getAssignments);
+
+// POST
+app.post("/assign", assignLabour);
+
+// DELETE
+app.delete("/assign/:id", removeAssignment);
+
+app.post("/forgot-password", async (req, res) => {
+  let { email } = req.body;
+  let resetres = ForgotPasswordHandler(email);
+  res.json(resetres);
+});
+
+app.post("/reset-password/:token", async (req, res) => {
+  try {
+    const { token } = req.params;
+    const { newPassword } = req.body;
+
+    if (!newPassword) {
+      return res.status(400).json({
+        success: false,
+        message: "Password is required",
+      });
+    }
+
+    const result = await ResetPasswordHandler(token, newPassword);
+
+    if (!result.success) {
+      return res.status(400).json(result);
+    }
+
+    return res.status(200).json(result);
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json({
+      success: false,
+      message: "Server error",
+    });
+  }
+});
+
+
+// app.post("/generate-bill-pdf", async (req, res) => {
+//   try {
+//     const data = req.body;
+// console.log("data:", data);
+
+//     const pdfBuffer = await generateInvoice({
+//       ...data,
+//       date: new Date().toLocaleDateString(),
+//     });
+
+//     res.set({
+//       "Content-Type": "application/pdf",
+
+//       "Content-Disposition": 'attachment; filename="invoice.pdf"',
+//     });
+
+//     res.send(pdfBuffer); 
+//   } catch (err) {
+//     console.log(err);
+
+//     res.status(500).json({
+//       success: false,
+//       message: "PDF generation failed",
+//     });
+//   }
+// });

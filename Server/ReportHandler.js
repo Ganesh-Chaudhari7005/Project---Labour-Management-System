@@ -38,19 +38,21 @@ export const getReportData = async (data) => {
 
     // 🔹 Fetch records (format date directly in SQL)
     const query = `
-      SELECT 
-        DATE_FORMAT(attendance.date, '%Y-%m-%d') AS date,
-        attendance.labour_id,
-        attendance.status,
-        attendance.advance,
-        attendance.Day_Total,
-        attendance.Work_Done,
-        labours.Name
-      FROM attendance
-      JOIN labours ON labours.ID = attendance.labour_id
-      ${where}
-      ORDER BY date DESC
-    `;
+  SELECT 
+    DATE_FORMAT(attendance.date, '%Y-%m-%d') AS date,
+    attendance.labour_id,
+    attendance.status,
+    attendance.advance,
+    attendance.Day_Total,
+    attendance.Work_Done,
+    labours.Name,
+    projects.ProjectName
+  FROM attendance
+  JOIN labours ON labours.ID = attendance.labour_id
+  LEFT JOIN projects ON projects.ProjectID = attendance.ProjectID
+  ${where}
+  ORDER BY date DESC
+`;
 
     const [rows] = await db.execute(query, params);
 
