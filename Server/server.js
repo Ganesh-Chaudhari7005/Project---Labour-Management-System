@@ -40,13 +40,28 @@ import RemoveCarouselImage from "./DeleteCarouselImageHandler.js";
 import { insertServiceRequest } from "./serviceRequestController.js";
 import { getServiceRequests } from "./FetchServiceRequests.js";
 import { deleteServiceRequest } from "./serviceRequestController.js";
-import {getTestimonials,addTestimonial, deleteTestimonial} from "./testimonialController.js";
-import {getLabours, getProjects, assignLabour,getAssignments,removeAssignment,
+import {
+  getTestimonials,
+  addTestimonial,
+  deleteTestimonial,
+} from "./testimonialController.js";
+import {
+  getLabours,
+  getProjects,
+  assignLabour,
+  getAssignments,
+  removeAssignment,
 } from "./LabourAssignmentController.js";
 import generateInvoice from "./utils/generateinvoice.js";
 import { ForgotPasswordHandler } from "./ForgotPasswordhandler.js";
-import { ResetPasswordHandler } from "./ResetPasswordhandler.js"; 
+import { ResetPasswordHandler } from "./ResetPasswordhandler.js";
 import fs from "fs";
+import GetCllientPendingBills from "./GetPendingBillClientHandler.js";
+import GetCllientPaidBills from "./GetCllientPaidBills.js";
+import { razorpay } from "./RazorPay/razorpay.js";
+import crypto from "crypto";
+import { RAZORPAY_SECRET } from "./RazorPay/razorpay.js";
+import generateReceipt from "./generatereceipt.js";
 const app = express();
 
 app.use(express.json());
@@ -59,14 +74,8 @@ app.use((req, res, next) => {
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-app.use(
-  "/uploads",
-  express.static(path.join(__dirname, "uploads"), {
-    setHeaders: (res) => {
-      res.setHeader("Content-Type", "application/pdf");
-    },
-  }),
-);
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+
 //uncomment during deployment
 // app.use(express.static(path.join(__dirname, 'dist')));
 // app.use((req, res, next) => {
@@ -105,19 +114,19 @@ app.post("/create-bill", async (req, res) => {
 
     console.log("Bill Data:", data);
 
-    // ✅ Generate PDF
+    //  Generate PDF
     const pdfBuffer = await generateInvoice({
       ...data,
       date: new Date().toLocaleDateString(),
     });
 
-    // ✅ Create file name
+    //  Create file name
     const fileName = `invoice-${Date.now()}.pdf`;
 
-    // ✅ Save path
+    //  Save path
     const filePath = `uploads/bills/${fileName}`;
 
-    // ✅ Save PDF to folder
+    //  Save PDF to folder
     fs.writeFileSync(filePath, pdfBuffer);
 
     await SaveBill(data, filePath);
@@ -135,6 +144,23 @@ app.post("/create-bill", async (req, res) => {
       message: "Bill creation failed",
     });
   }
+});
+
+app.post("/getPaidBills", async (req, res) => {
+
+  let { ClientID } = req.body;
+
+  let Bills = await GetCllientPaidBills(ClientID);
+  res.json(Bills);
+});
+
+app.post("/getPendingBill", async (req, res) => {
+  console.log("Called");
+
+  let { ClientID } = req.body;
+
+  let Bills = await GetCllientPendingBills(ClientID);
+  res.json(Bills);
 });
 app.post("/login", async (req, res) => {
   let { loginUserEmail, loginUserPassword } = req.body;
@@ -679,7 +705,6 @@ app.post("/reset-password/:token", async (req, res) => {
   }
 });
 
-
 // app.post("/generate-bill-pdf", async (req, res) => {
 //   try {
 //     const data = req.body;
@@ -696,7 +721,7 @@ app.post("/reset-password/:token", async (req, res) => {
 //       "Content-Disposition": 'attachment; filename="invoice.pdf"',
 //     });
 
-//     res.send(pdfBuffer); 
+//     res.send(pdfBuffer);
 //   } catch (err) {
 //     console.log(err);
 
@@ -706,3 +731,125 @@ app.post("/reset-password/:token", async (req, res) => {
 //     });
 //   }
 // });
+
+
+app.post("/create-order", async (req, res) => {
+  try {
+    const { amount } = req.body;
+
+    const options = {
+      amount: Number(amount) * 100,
+      currency: "INR",
+      receipt: `receipt_${Date.now()}`,
+    };
+
+    // 1. Create order in Razorpay
+    const order = await razorpay.orders.create(options);
+
+    // 2. Insert order into MySQL (IMPORTANT)
+    let db;
+      try {
+          db = await mysql.createConnection(db_details);
+          console.log("Database Connected Successfully");
+        } catch (err) {
+          console.log("Failed to Connect Database");
+          return {
+            success: false,
+            message: "Something went wrong. Please try again later.",
+          };
+        }
+
+    await db.execute(
+      "INSERT INTO razorpayorders (razorpay_order_id, amount, status) VALUES (?, ?, ?)",
+      [order.id, Number(options.amount), "created"],
+    );
+
+    res.json({
+      success: true,
+      order,
+    });
+  } catch (err) {
+    console.log(err);
+
+    res.status(500).json({
+      success: false,
+      message: "Order creation failed",
+    });
+  }
+});
+
+
+app.post("/verify-payment", async (req, res) => {
+  
+  try {
+    const {
+      razorpay_order_id,
+      razorpay_payment_id,
+      razorpay_signature,
+      billid,
+    } = req.body;
+
+    const generatedSignature = crypto
+      .createHmac("sha256", RAZORPAY_SECRET)
+      .update(razorpay_order_id + "|" + razorpay_payment_id)
+      .digest("hex");
+
+    if (generatedSignature !== razorpay_signature) {
+      return res.json({ success: false, message: "Invalid signature" });
+    }
+    let db;
+    try {
+      db = await mysql.createConnection(db_details);
+      console.log("Database Connected Successfully");
+    } catch (err) {
+      console.log("Failed to Connect Database");
+      return {
+        success: false,
+        message: "Something went wrong. Please try again later.",
+      };
+    }
+    // ✅ MYSQL UPDATE QUERY
+    await db.execute(
+      "UPDATE razorpayorders SET status = ?, razorpay_payment_id = ? WHERE razorpay_order_id = ?",
+      ["paid", razorpay_payment_id, razorpay_order_id],
+    );
+
+    await db.execute("UPDATE all_bills SET Status=? where BillID=?", [
+      "Paid",
+      billid,
+    ]);
+    console.log("Payment verified & DB updated");
+
+    // Fetch bill details
+    const [billRows] = await db.execute(
+      "SELECT * FROM all_bills WHERE BillID=?",
+      [billid],
+    );
+    
+    const bill = billRows[0];
+    console.log("bill:",bill);
+    
+    // Generate Receipt PDF
+    const receiptPath = await generateReceipt({
+      receiptNo: `RCPT-${Date.now()}`,
+
+      billno: bill.BillNo,
+
+      clientName: bill.ClientName,
+
+      payment_id: razorpay_payment_id,
+
+      order_id: razorpay_order_id,
+
+      amount: bill.TotalAmount,
+
+      paymentDate: new Date().toLocaleString("en-IN"),
+    });
+
+    console.log("Receipt Generated:", receiptPath);
+    res.json({ success: true });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ success: false });
+  }
+});

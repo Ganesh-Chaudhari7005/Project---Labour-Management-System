@@ -56,6 +56,11 @@ import WageManagement from "./Components/WageManagement.jsx";
 import ForgotPassword from "./Components/ForgotPassword.jsx";
 import ResetPassword from "./Components/ResetPassword.jsx";
 import ViewPDF from "./Components/ViewPDF.jsx";
+import ClientBilling from "./Components/ClientBillingCont.jsx";
+import BillPendingClient from "./Components/BillPendingClient.jsx";
+import BillPaidClient from "./Components/BillPaidClient.jsx";
+import BillReceiptsClient from "./Components/BillReceiptsClient.jsx";
+import AllBillClient from "./Components/AllBillClient.jsx";
 const router = createBrowserRouter(
   createRoutesFromElements(
     <>
@@ -89,6 +94,7 @@ const router = createBrowserRouter(
           }
         >
           {" "}
+
           <Route path="view-pdf" element={<ViewPDF />} />
           <Route index element={<DashboardInner />} />
           <Route path="dash" element={<DashboardInner />} />{" "}
@@ -137,6 +143,13 @@ const router = createBrowserRouter(
             <Route index element={<ViewAllLabour />} />
             <Route path="add-labour" element={<AddLabour />} />
             <Route path="assign-labours" element={<AssignLabours />} />
+          </Route>
+
+          <Route path="billing" element={<ClientBilling/>}>
+            <Route index element={<BillPendingClient/>}/>
+            <Route path="client-paid-bills" element={<BillPaidClient/>}/>
+            <Route path="client-all-bills" element={<AllBillClient/>}/>
+            <Route path="client-bill-receipts" element={<BillReceiptsClient/>}/>
           </Route>
         </Route>
       </Route>

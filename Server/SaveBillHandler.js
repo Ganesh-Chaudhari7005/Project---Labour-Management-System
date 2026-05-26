@@ -1,5 +1,6 @@
   import mysql from "mysql2/promise";
   import { db_details } from "./dbconfig.js";
+import { log } from "console";
 
   export async function SaveBill(data, filepath) {
     console.log("SaveBill called");
@@ -15,7 +16,7 @@
       };
     }
 
-    const { projectId, totalAmount, details } = data;
+    const { projectId, totalAmount, details, sendToClient } = data;
     console.log(projectId);
     console.log(totalAmount);
     console.log(details);
@@ -37,9 +38,9 @@
       }
 
   const [insertStatus] = await db.execute(
-    `INSERT INTO all_bills (BillNo, ProjectID, TotalAmount, PDFPath)
-    VALUES (?, ?, ?, ?)`,
-    [BillNumber, projectId, totalAmount, filepath],
+    `INSERT INTO all_bills (BillNo, ProjectID, TotalAmount, PDFPath,  send_to_client)
+    VALUES (?, ?, ?, ?, ?)`,
+    [BillNumber, projectId, totalAmount, filepath, sendToClient],
   );
 
   let billId = insertStatus.insertId;

@@ -17,6 +17,7 @@ export default function GenerateBill() {
   const [billno, setbillno] = useState();
   const [loading, setLoading] = useState(false);
   const [dup, setdup] = useState([]);
+  const [sendToClient, setSendtoClient] = useState(false);
   const[rows, setRows] = useState([])  
   const fetchStatus = async () => {
     const req = await fetch(`${ApiRoute}get-project-status`, {
@@ -215,6 +216,8 @@ const createBill = async () => {
         totalAmount: grandTotal,
 
         items: selectedItems,
+
+        sendToClient,
 
         customRows: rows,
 
@@ -523,7 +526,11 @@ const createBill = async () => {
 
       <div style={{ textAlign: "right", marginTop: "20px" }}>
         <div className="d-flex align-content-center mb-4">
-          <input type="checkbox" name="sendClient" className="mx-3" />
+          <input type="checkbox"
+           name="sendClient" 
+           checked={sendToClient}
+           onChange={()=>setSendtoClient((prev)=>!prev)}
+           className="mx-3" />
           <label htmlFor="sendClient">Send to client</label>
         </div>
         <button

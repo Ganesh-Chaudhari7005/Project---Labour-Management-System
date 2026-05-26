@@ -17,12 +17,26 @@ import bcrypt from 'bcrypt';
 
     let rows;
     let rows2;
-
+    let clientID;
     try {
       [rows] = await db.execute(
         `Select * from Users where User_Email=?`,
         [UserEmail],
       );
+
+      let userRole = rows[0].User_Role;
+      let clientEmail = rows[0].User_Email;
+      console.log(clientEmail);
+      
+      if(userRole === 'Client'){
+        let [getClientId] = await db.execute(`Select ID from clients where Email=?`,[clientEmail]);
+ 
+         clientID = getClientId[0].ID;
+        console.log("IDis",getClientId);
+        
+      }
+      
+      
     } catch (err) {
       console.log("Failed to Fetch Details");
       console.log(err);
@@ -76,6 +90,7 @@ console.log("rows:", rows[0].User_Pass);
           return {
             token,
             success: true,
+            clientID : clientID,
             funame: rows[0].User_Name,
             urole: rows[0].User_Role,
             uemail: rows[0]?.User_Email,

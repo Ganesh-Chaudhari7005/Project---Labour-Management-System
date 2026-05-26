@@ -1,17 +1,65 @@
-import React from "react";
+import { ApiRoute } from "./ApiConfig.js";
+const handlePayment = async (bill) => {
+  try {
+    const response = await fetch(`${ApiRoute}create-order`, {
+      method: "POST",
 
-export default function RazorpayTest() {
-  const handlePayment = () => {
+      headers: {
+        "Content-Type": "application/json",
+      },
+
+      body: JSON.stringify({
+        amount: bill.TotalAmount,
+      }),
+    });
+
+    const data = await response.json();
+
+    if (!data.success) {
+      alert("Order creation failed");
+      return;
+    }
+
+      const billid = bill.BillID;
+
+
     const options = {
-      key: "rzp_test_SbpSlPwd37raNJ", // 👈 use your TEST key
-      amount: 50000, // 50000 paise = ₹500
-      currency: "INR",
-      name: "Test Company",
-      description: "Test Payment",
+      key: "rzp_test_St8JFvkecQuVR0",
 
-      handler: function (response) {
-        console.log("Payment Success:", response);
-        alert("Payment Successful!");
+      amount: data.order.amount,
+
+      currency: data.order.currency,
+
+      name: "Royal Enterprises",
+
+      description: "Bill Payment",
+
+      order_id: data.order.id,
+
+      handler: async function (response) {
+        try {
+          const verifyRes = await fetch(`${ApiRoute}verify-payment`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              ...response,
+              billid: billid,
+            
+            }),
+          });
+
+          const data = await verifyRes.json();
+
+          if (data.success) {
+            alert("Payment Verified & Successful");
+          } else {
+            alert("Payment Verification Failed");
+          }
+        } catch (err) {
+          console.log(err);
+        } 
       },
 
       prefill: {
@@ -26,13 +74,11 @@ export default function RazorpayTest() {
     };
 
     const rzp = new window.Razorpay(options);
-    rzp.open();
-  };
 
-  return (
-    <div style={{ padding: "40px" }}>
-      <h2>Razorpay Test</h2>
-      <button onClick={handlePayment}>Pay ₹500</button>
-    </div>
-  );
-}
+    rzp.open();
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+export default handlePayment;

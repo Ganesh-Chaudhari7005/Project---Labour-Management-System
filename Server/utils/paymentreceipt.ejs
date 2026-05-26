@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+
+    <style>
+      @page {
+        size: A4;
+        margin: 0;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        padding: 0;
+        background: #eef2f7;
+        font-family: Arial, sans-serif;
+        color: #1f2937;
+      }
+
+      .page {
+        width: 210mm;
+        height: 297mm;
+        background: #ffffff;
+        padding: 18mm;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .top-bar {
+        height: 10px;
+        background: linear-gradient(90deg, #2563eb, #1d4ed8);
+        border-radius: 10px;
+        margin-bottom: 30px;
+      }
+
+      .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 40px;
+      }
+
+      .company h1 {
+        margin: 0;
+        font-size: 34px;
+        color: #111827;
+      }
+
+      .company p {
+        margin-top: 8px;
+        color: #6b7280;
+        font-size: 14px;
+      }
+
+      .receipt-badge {
+        background: #dcfce7;
+        color: #15803d;
+        padding: 12px 20px;
+        border-radius: 999px;
+        font-size: 14px;
+        font-weight: bold;
+        border: 1px solid #bbf7d0;
+      }
+
+      .main-card {
+        border: 1px solid #e5e7eb;
+        /* border-radius: 18px; */
+        overflow: hidden;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+      }
+
+      .card-header {
+        background: #15803d;
+        color: white;
+        padding: 22px 28px;
+      }
+
+      .card-header h2 {
+        margin: 0;
+        font-size: 24px;
+      }
+
+      .card-header p {
+        margin-top: 6px;
+        color: #d1d5db;
+        font-size: 13px;
+      }
+
+      .details {
+        padding: 30px 28px;
+      }
+
+      .row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 16px 0;
+        border-bottom: 1px solid #f3f4f6;
+      }
+
+      .row:last-child {
+        border-bottom: none;
+      }
+
+      .label {
+        font-size: 14px;
+        color: #6b7280;
+      }
+
+      .value {
+        font-size: 15px;
+        font-weight: 600;
+        color: #111827;
+      }
+
+      .amount-box {
+        margin-top: 30px;
+        background: linear-gradient(135deg, #2563eb, #1d4ed8);
+        border-radius: 18px;
+        padding: 28px;
+        color: white;
+      }
+
+      .amount-label {
+        font-size: 14px;
+        opacity: 0.9;
+      }
+
+      .amount {
+        font-size: 42px;
+        font-weight: bold;
+        margin-top: 10px;
+      }
+
+      .status {
+        margin-top: 14px;
+        display: inline-block;
+        background: rgba(255, 255, 255, 0.18);
+        padding: 8px 14px;
+        border-radius: 999px;
+        font-size: 13px;
+      }
+
+      .footer {
+        position: absolute;
+        bottom: 18mm;
+        left: 18mm;
+        right: 18mm;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .footer-left {
+        color: #6b7280;
+        font-size: 13px;
+      }
+
+      .footer-right {
+        text-align: right;
+      }
+
+      .footer-right strong {
+        display: block;
+        font-size: 16px;
+        color: #111827;
+      }
+
+      .footer-right span {
+        font-size: 13px;
+        color: #6b7280;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="page">
+      <div class="top-bar"></div>
+
+      <div class="header">
+        <div class="company">
+          <h1>Royal Enterprises</h1>
+          <p>Official Payment Receipt</p>
+        </div>
+
+        <div class="receipt-badge">
+          PAYMENT SUCCESSFUL
+        </div>
+      </div>
+
+      <div class="main-card">
+        <div class="card-header">
+          <h2>Receipt Confirmation</h2>
+          <p>Your payment has been received successfully.</p>
+        </div>
+
+        <div class="details">
+          <div class="row">
+            <span class="label">Receipt Number</span>
+            <span class="value"><%= receiptNo %></span>
+          </div>
+
+          <div class="row">
+            <span class="label">Bill Number</span>
+            <span class="value">#<%= billno %></span>
+          </div>
+
+          <div class="row">
+            <span class="label">Razorpay Payment ID</span>
+            <span class="value"><%= payment_id %></span>
+          </div>
+
+          <div class="row">
+            <span class="label">Razorpay Order ID</span>
+            <span class="value"><%= order_id %></span>
+          </div>
+
+          <div class="row">
+            <span class="label">Payment Date</span>
+            <span class="value"><%= paymentDate %></span>
+          </div>
+
+          <div class="amount-box">
+            <div class="amount-label">Amount Paid</div>
+
+            <div class="amount">
+             ₹ <%= Number(amount || 0).toLocaleString("en-IN", {
+  minimumFractionDigits: 2,
+  maximumFractionDigits: 2
+}) %>
+            </div>
+
+            <div class="status">
+              Transaction Completed Successfully
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer">
+        <div class="footer-left">
+          This is a computer-generated receipt and does not require a signature.
+        </div>
+
+        <div class="footer-right">
+          <strong>Royal Enterprises</strong>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
+```

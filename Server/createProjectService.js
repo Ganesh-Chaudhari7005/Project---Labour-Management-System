@@ -97,6 +97,7 @@ export const HandleCreateProject = async (prjdata) => {
    if (systemAccess === true) {
      let Userid = CreateUserId();
      let Userpassword = PasswordGenerator();
+      console.log("pass :", Userpassword);
 
      const saltrounds = 10;
      const hashedPassword = await bcrypt.hash(Userpassword, saltrounds);

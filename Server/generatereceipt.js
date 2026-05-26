@@ -1,13 +1,14 @@
 import puppeteer from "puppeteer-core";
 import ejs from "ejs";
 import path from "path";
-import fs from "fs";
 import { fileURLToPath } from "url";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const generateInvoice = async (data) => {
+const generateReceipt = async (data) => {
+    console.log("data is",data);
+    
   const browser = await puppeteer.launch({
     executablePath:
       "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
@@ -20,7 +21,7 @@ const generateInvoice = async (data) => {
   const page = await browser.newPage();
 
   const html = await ejs.renderFile(
-    path.join(__dirname, "/invoice.ejs"),
+    path.join(__dirname, "./utils/paymentreceipt.ejs"),
     data,
   );
 
@@ -28,24 +29,28 @@ const generateInvoice = async (data) => {
     waitUntil: "networkidle0",
   });
 
- const pdfBuffer = await page.pdf({
-   path: `./uploads/bills/bill-${data.billno}.pdf`,
-   format: "A4",
+  await page.emulateMediaType("screen");
 
-   printBackground: true,
+  const pdfPath = `./uploads/receipts/receipt-${data.billno}.pdf`;
 
-   preferCSSPageSize: true,
+  await page.pdf({
+    path: pdfPath,
+    format: "A4",
+    printBackground: true,
 
-   margin: {
-     top: "0mm",
-     right: "0mm",
-     bottom: "0mm",
-     left: "0mm",
-   },
- });
+    preferCSSPageSize: true,
+
+    margin: {
+      top: "0mm",
+      right: "0mm",
+      bottom: "0mm",
+      left: "0mm",
+    },
+  });
+
   await browser.close();
 
-  return pdfBuffer;
+  return pdfPath;
 };
 
-export default generateInvoice;
+export default generateReceipt;

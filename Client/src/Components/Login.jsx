@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { use, useContext, useState } from "react";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import LoginContext from "../Context/LoginContext";
@@ -8,7 +8,7 @@ import Swal from "sweetalert2";
 
 export default function Login() {
   const navigate = useNavigate();
-
+  const [userId, setuserId]= useState("");
   const [userEmail, setUserEmial] = useState("");
   const [userPassword, setUserPassword] = useState("");
   const [showPass, setShowPass] = useState(false);
@@ -52,7 +52,8 @@ export default function Login() {
           timer: 1000,
           showConfirmButton: false,
         });
-
+        console.log(data);
+        
         const user = {
           UserEmail: data.uemail,
           UserName: data.funame,
@@ -61,8 +62,13 @@ export default function Login() {
           UserRole: data.urole,
           UserImgPath: data.profileimgpath,
         };
-
-        setLoggedInUser(user);
+      
+       
+         setLoggedInUser(user);
+         
+          if (data.urole === "Client") {
+            sessionStorage.setItem("ClientID", data.clientID);
+          }
         sessionStorage.setItem("user", JSON.stringify(user));
         sessionStorage.setItem("token", data.token);
 
