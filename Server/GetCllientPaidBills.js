@@ -1,6 +1,5 @@
-
-import mysql from 'mysql2/promise';
-import { db_details } from './dbconfig.js';
+import mysql from "mysql2/promise";
+import { db_details } from "./dbconfig.js";
 
 async function GetCllientPaidBills(ClientId) {
   let db;
@@ -17,11 +16,16 @@ async function GetCllientPaidBills(ClientId) {
 
   try {
     let [PaidBills] = await db.execute(`
-        SELECT all_bills.*
-        FROM all_bills
-        JOIN projects
-        ON projects.ProjectID = all_bills.ProjectID
-        WHERE projects.ClientID = '${ClientId}' and all_bills.send_to_client = 1 and all_bills.Status = 'Paid' ;`);
+        SELECT 
+    all_bills.*,
+    projects.ProjectName
+FROM all_bills
+JOIN projects
+ON projects.ProjectID = all_bills.ProjectID
+WHERE 
+    projects.ClientID = '${ClientId}'
+    AND all_bills.send_to_client = 1
+    AND all_bills.Status = 'Paid';`);
 
     if (PaidBills.length === 0) {
       return {

@@ -15,6 +15,9 @@ import {
   FaNewspaper,
   FaMoneyBillWave,
   FaUserTie,
+  FaReceipt,
+  FaQuestionCircle,
+  FaCommentDots,
 } from "react-icons/fa";
 import { MdDashboard } from "react-icons/md";
 import { warning } from "framer-motion";
@@ -33,6 +36,10 @@ export default function Dashboard() {
     CMS: FaNewspaper,
     "Manage Wages": FaMoneyBillWave,
     "Manage Supervisors": FaUserTie,
+    "Your Projects": FaFolderOpen,
+    Billing: FaReceipt,
+    "Report Issues": FaQuestionCircle,
+    "Feedback" : FaCommentDots
   };
   const location = useLocation(); 
   const permissions = {
@@ -47,9 +54,15 @@ export default function Dashboard() {
       "Manage Equipments",
       "CMS",
     ],
-    Supervisor: ["Profile","Manage-Labours", "Attendance", "Manage Equipments", "CMS"],
-    labour: ["Profile","View Attendance"],
-    Client: ["Profile","Work Status","Feedback","Billing"],
+    Supervisor: [
+      "Profile",
+      "Manage-Labours",
+      "Attendance",
+      "Manage Equipments",
+      "CMS",
+    ],
+    labour: ["Profile", "View Attendance"],
+    Client: ["Profile", "Your Projects", "Billing", "Report Issues","Feedback"],
   };
 
   const HandleLogOut =()=>{

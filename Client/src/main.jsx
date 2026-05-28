@@ -61,6 +61,11 @@ import BillPendingClient from "./Components/BillPendingClient.jsx";
 import BillPaidClient from "./Components/BillPaidClient.jsx";
 import BillReceiptsClient from "./Components/BillReceiptsClient.jsx";
 import AllBillClient from "./Components/AllBillClient.jsx";
+import ClientReportIssues from "./Components/ClientReportIssues.jsx";
+import ClientFeedback from "./Components/ClientFeedback.jsx";
+import ClientProjects from "./Components/ClientProjects.jsx";
+import ProjectContClient from "./Components/ProjectContClient.jsx";
+import ProjectStatusClient from "./Components/ProjectStatusClient.jsx";
 const router = createBrowserRouter(
   createRoutesFromElements(
     <>
@@ -94,7 +99,6 @@ const router = createBrowserRouter(
           }
         >
           {" "}
-
           <Route path="view-pdf" element={<ViewPDF />} />
           <Route index element={<DashboardInner />} />
           <Route path="dash" element={<DashboardInner />} />{" "}
@@ -144,12 +148,20 @@ const router = createBrowserRouter(
             <Route path="add-labour" element={<AddLabour />} />
             <Route path="assign-labours" element={<AssignLabours />} />
           </Route>
-
-          <Route path="billing" element={<ClientBilling/>}>
-            <Route index element={<BillPendingClient/>}/>
-            <Route path="client-paid-bills" element={<BillPaidClient/>}/>
-            <Route path="client-all-bills" element={<AllBillClient/>}/>
-            <Route path="client-bill-receipts" element={<BillReceiptsClient/>}/>
+          <Route path="billing" element={<ClientBilling />}>
+            <Route index element={<BillPendingClient />} />
+            <Route path="client-paid-bills" element={<BillPaidClient />} />
+            <Route path="client-all-bills" element={<AllBillClient />} />
+            <Route
+              path="client-bill-receipts"
+              element={<BillReceiptsClient />}
+            />
+          </Route>
+          <Route path="report-issues" element={<ClientReportIssues />} />
+          <Route path="feedback" element={<ClientFeedback />} />
+          <Route path="your-projects" element={<ClientProjects />} />
+          <Route path="view-project-client/:id" element={<ProjectContClient />}>
+            <Route index element={<ProjectStatusClient />} />
           </Route>
         </Route>
       </Route>

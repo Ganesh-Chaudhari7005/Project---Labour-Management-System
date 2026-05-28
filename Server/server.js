@@ -15,6 +15,7 @@ import { authenticateToken } from "./middleware/authenticate.js";
 import RemoveLabour from "./RemoveLabour.js";
 import { HandleCreateProject } from "./createProjectService.js";
 import FetchProjects from "./FetchProjects.js";
+import FetchProjectsClient from "./FetchProjectsClient.js";
 import GetProjectDetails from "./GetProjectDetails.js";
 import FetchEquipments from "./FetchAllEquipments.js";
 import { AddEquipment } from "./HandleEquipmentManagement.js";
@@ -39,7 +40,10 @@ import RemoveGalleryImage from "./HandleGallerPhotoDelete.js";
 import RemoveCarouselImage from "./DeleteCarouselImageHandler.js";
 import { insertServiceRequest } from "./serviceRequestController.js";
 import { getServiceRequests } from "./FetchServiceRequests.js";
+import insertFeedback from "./insertFeedback.js";
 import { deleteServiceRequest } from "./serviceRequestController.js";
+import GetProjectNames from "./getProjectNameList.js";
+import insertIssue from "./insertIssue.js";
 import {
   getTestimonials,
   addTestimonial,
@@ -647,6 +651,14 @@ app.post("/delete-Photo-carousel", async (req, res) => {
   res.json(resDelete);
 });
 
+app.post("/fetch-projects-client", async (req, res) => {
+  let {clientID} = req.body;
+  console.log(clientID);
+  
+  let AllProjects = await FetchProjectsClient(clientID);
+  res.json(AllProjects);
+});
+
 app.post("/insert-reqform-data", insertServiceRequest);
 
 app.get("/get-service-requests", getServiceRequests);
@@ -846,6 +858,14 @@ app.post("/verify-payment", async (req, res) => {
       paymentDate: new Date().toLocaleString("en-IN"),
     });
 
+    console.log("path si",receiptPath);
+
+    
+    await db.execute("UPDATE all_bills SET PaidBillReceipt=? where BillID=?", [
+      receiptPath,
+      billid,
+    ]);
+    
     console.log("Receipt Generated:", receiptPath);
     res.json({ success: true });
   } catch (err) {
@@ -853,3 +873,16 @@ app.post("/verify-payment", async (req, res) => {
     res.status(500).json({ success: false });
   }
 });
+
+app.post("/getProjectsList", async(req, res)=>{
+  let { clientID } = req.body;
+  console.log(clientID);
+  let ProjectList = await GetProjectNames(clientID);
+console.log(ProjectList);
+
+  res.json(ProjectList);
+
+});
+
+app.post("/insertFeedback", insertFeedback);
+app.post("/insertIssue", insertIssue);

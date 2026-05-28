@@ -1,8 +1,7 @@
-
 import mysql from 'mysql2/promise';
 import { db_details } from './dbconfig.js';
 
-async function GetPastBills(projectid){
+async function FetchProjects(clientID){
     
   let db;
   try {
@@ -17,24 +16,11 @@ async function GetPastBills(projectid){
     }
 
     let rows;
-console.log("projectid is", projectid);
 
     try{
-        [rows] = await db.execute("SELECT * FROM all_bills where ProjectID=?", [projectid]);
+        [rows] = await db.execute("SELECT * FROM projects where ClientID=?",[clientID]);
 
-        if(rows.length === 0){
-            return{
-                success :false,
-                message : "No Bills Generated yet"
-            }
-        }else{
-            console.log(rows);
-            
-            return{
-                success : true,
-                Bills : rows
-            }
-        }
+         return rows;
     }catch(err){
         console.log(err);
     }finally{
@@ -42,4 +28,4 @@ console.log("projectid is", projectid);
     }
 } 
 
-export default GetPastBills;
+export default FetchProjects;

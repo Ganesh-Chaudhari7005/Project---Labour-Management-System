@@ -4,7 +4,9 @@ import { ApiRoute } from "./ApiConfig";
 import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { BASE_URL } from "./BaseUrl.js";
-
+import { FaDownload } from "react-icons/fa";
+import { FaFileDownload } from "react-icons/fa";
+<FaDownload />;
 export default function ViewPastProjectBills() {
   const { id } = useParams();
 
@@ -46,16 +48,16 @@ export default function ViewPastProjectBills() {
 
         <br />
 
-        <div className="table-responsive">
-          <table className="table table-bordered">
+        <div className="pendingBillsTableWrapper">
+          <table className="pendingBillsTable">
             <thead>
               <tr>
                 <th className="tbl-head">Bill Number</th>
                 <th className="tbl-head">Bill Date</th>
                 <th className="tbl-head">Total Amount</th>
                 <th className="tbl-head">Bill Status</th>
-                <th className="tbl-head">View</th>
-                <th className="tbl-head">Download</th>
+                <th className="tbl-head">View/Download</th>
+                <th className="tbl-head">Receipt</th>
               </tr>
             </thead>
 
@@ -84,9 +86,27 @@ export default function ViewPastProjectBills() {
 
                       <td>₹ {Math.round(data.TotalAmount)}</td>
 
-                      <td>{data.Status}</td>
-
                       <td>
+                        <span
+                          className={
+                            data.Status === "Paid"
+                              ? "pendingBillsDownloadBtn"
+                              : "pendingBillsStatusBadge"
+                          }
+                        >
+                          {data.Status}
+                        </span>
+                      </td>
+
+                      <td
+                        style={{
+                          position: "relative",
+                          display: "flex",
+                          flexDirection: "row",
+                          alignItems: "center",
+                          gap: "10px",
+                        }}
+                      >
                         <button
                           className="btn btn-primary btn-sm"
                           onClick={() => {
@@ -97,44 +117,91 @@ export default function ViewPastProjectBills() {
                         >
                           View Bill
                         </button>
+                        <FaDownload
+                          style={{ cursor: "pointer" }}
+                          onClick={async () => {
+                            try {
+                              const response = await fetch(
+                                `${BASE_URL}${data.PDFPath}`,
+                              );
+
+                              const blob = await response.blob();
+
+                              const url = window.URL.createObjectURL(blob);
+
+                              const link = document.createElement("a");
+
+                              link.href = url;
+
+                              link.download = `Bill-${data.BillNo}.pdf`;
+
+                              document.body.appendChild(link);
+
+                              link.click();
+
+                              link.remove();
+
+                              window.URL.revokeObjectURL(url);
+                            } catch (err) {
+                              console.log(err);
+
+                              toast.error("Failed to download bill");
+                            }
+                          }}
+                        />
                       </td>
+
                       <td>
-                        <td>
-                          <button
-                            className="btn btn-success btn-sm"
-                            onClick={async () => {
-                              try {
-                                const response = await fetch(
-                                  `${BASE_URL}${data.PDFPath}`,
+                        {data.PaidBillReceipt != null ? (
+                          <>
+                            <button
+                              className="btn btn-primary btn-sm"
+                              onClick={() => {
+                                setPdfUrl(
+                                  `${BASE_URL}${data.PaidBillReceipt}#toolbar=0`,
                                 );
 
-                                const blob = await response.blob();
+                                setShowPDF(true);
+                              }}
+                            >
+                              View Receipt
+                            </button>
+                            <FaDownload
+                              style={{ cursor: "pointer" }}
+                              onClick={async () => {
+                                try {
+                                  const response = await fetch(
+                                    `${BASE_URL}${data.PaidBillReceipt}`,
+                                  );
 
-                                const url = window.URL.createObjectURL(blob);
+                                  const blob = await response.blob();
 
-                                const link = document.createElement("a");
+                                  const url = window.URL.createObjectURL(blob);
 
-                                link.href = url;
+                                  const link = document.createElement("a");
 
-                                link.download = `Bill-${data.BillNo}.pdf`;
+                                  link.href = url;
 
-                                document.body.appendChild(link);
+                                  link.download = `Bill-${data.BillNo}.pdf`;
 
-                                link.click();
+                                  document.body.appendChild(link);
 
-                                link.remove();
+                                  link.click();
 
-                                window.URL.revokeObjectURL(url);
-                              } catch (err) {
-                                console.log(err);
+                                  link.remove();
 
-                                toast.error("Failed to download bill");
-                              }
-                            }}
-                          >
-                            Download
-                          </button>
-                        </td>
+                                  window.URL.revokeObjectURL(url);
+                                } catch (err) {
+                                  console.log(err);
+
+                                  toast.error("Failed to download bill");
+                                }
+                              }}
+                            />
+                          </>
+                        ) : (
+                          "-"
+                        )}
                       </td>
                     </tr>
                   );

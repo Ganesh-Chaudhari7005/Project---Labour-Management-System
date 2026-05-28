@@ -15,16 +15,7 @@ export default function ClientBilling() {
       path: "client-paid-bills",
       icon: "ri-tools-line",
     },
-    {
-      name: "All Bills",
-      path: "client-all-bills",
-      icon: "ri-file-list-3-line",
-    },
-    {
-      name: "Bill Receipts",
-      path: "client-bill-receipts",
-      icon: "ri-money-rupee-circle-line",
-    },
+    
   ];
 
   const [ActiveTab, setActiveTab] = useState("Pending Bills")

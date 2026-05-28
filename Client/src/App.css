@@ -1546,14 +1546,14 @@ a.text-white.adminnavbtn {
   padding: 9px;
   border-radius: 10px;
   border: none;
-  background: #0f172a;
+  background: var(--primary);
   color: #fff;
   font-size: 13px;
   transition: 0.3s;
 }
 
 .pjx-btn-manage:hover {
-  background: #2563eb;
+  background: #183e8f;
 }
 
 /* STATUS CHIPS */

@@ -4,6 +4,8 @@ import { useApi } from "./ApiCaller";
 import { ApiRoute } from "./ApiConfig";
 import { BASE_URL } from "./BaseUrl";
 import handlePayment from "./RazorpayTest";
+import { FaDownload } from "react-icons/fa";
+
 export default function BillPaidClient() {
   const [Bills, setBills] = useState([]);
   const callApi = useApi();
@@ -23,6 +25,8 @@ export default function BillPaidClient() {
     });
 
     if (reqDet.success) {
+      console.log(reqDet);
+      
       setBills(reqDet.Bills);
     } else {
       console.log("No pending Bills");
@@ -43,19 +47,18 @@ export default function BillPaidClient() {
       transition={{ duration: 0.3 }}
       style={{ padding: "10px" }}
     >
-      <div className="pendingBillsTableWrapper">
-        <table className="pendingBillsTable">
+      <div className="table-responsive">
+        <table className="table table-bordered">
           <thead>
             <tr>
-              <th className="text-center">Sr. No.</th>
-              <th>Project Name</th>
-              <th>Bill No</th>
-              <th>Bill Date</th>
-              <th>Total Amount</th>
-              <th>Status</th>
-              <th>View Bill</th>
-              <th>Download Bill</th>
-              <th>Pay Bill</th>
+              <th className="text-center tbl-head">Sr. No.</th>
+              <th className="tbl-head">Project Name</th>
+              <th className="tbl-head">Bill No</th>
+              <th className="tbl-head">Bill Date</th>
+              <th className="tbl-head">Total Amount</th>
+              <th className="tbl-head">Status</th>
+              <th className="tbl-head">View/Download</th>
+              <th className="tbl-head">Payment Receipt</th>
             </tr>
           </thead>
 
@@ -63,17 +66,18 @@ export default function BillPaidClient() {
             {Bills.map((bill, index) => (
               <tr key={index}>
                 <td className="text-center">{index + 1}</td>
-                <td>Project Name</td>
+                <td>{bill.ProjectName || "Project Name"}</td>
                 <td>{bill.BillNo}</td>
                 <td>
                   {new Date(bill.billdate).toLocaleDateString("en-GB")}
                 </td>{" "}
                 <td>₹ {bill.TotalAmount}</td>
                 <td>
-                  <span className="pendingBillsStatusBadge">{bill.Status}</span>
+                  <span className="pendingBillsDownloadBtn">{bill.Status}</span>
                 </td>
                 <td>
                   <button
+                    style={{ marginRight: "15px" }}
                     className="pendingBillsViewBtn"
                     onClick={() => {
                       setPdfUrl(`${BASE_URL}${bill.PDFPath}#toolbar=0`);
@@ -83,10 +87,8 @@ export default function BillPaidClient() {
                   >
                     View Bill
                   </button>
-                </td>
-                <td>
-                  <button
-                    className="pendingBillsViewBtn"
+                  <FaDownload
+                    style={{ cursor: "pointer" }}
                     onClick={async () => {
                       try {
                         const response = await fetch(
@@ -116,19 +118,63 @@ export default function BillPaidClient() {
                         toast.error("Failed to download bill");
                       }
                     }}
-                  >
-                    Download
-                  </button>
+                  />
                 </td>
                 <td>
-                  <td>
-                    <button
-                      onClick={() => handlePayment(bill)}
-                      className="pendingBillsDownloadBtn"
-                    >
-                      Pay Now
-                    </button>
-                  </td>
+                    {bill.PaidBillReceipt != null ? (
+                      <>
+                        <button
+                          className="pendingBillsViewBtn"
+                          onClick={() => {
+                            setPdfUrl(
+                              `${BASE_URL}${bill.PaidBillReceipt}#toolbar=0`,
+                            );
+
+                            setShowPDF(true);
+                          }}
+                        >
+                          View Receipt
+                        </button>
+                        <FaDownload
+                          style={{
+                            cursor: "pointer",
+                            position: "relative",
+                            right: "-15px",
+                          }}
+                          onClick={async () => {
+                            try {
+                              const response = await fetch(
+                                `${BASE_URL}${bill.PaidBillReceipt}`,
+                              );
+
+                              const blob = await response.blob();
+
+                              const url = window.URL.createObjectURL(blob);
+
+                              const link = document.createElement("a");
+
+                              link.href = url;
+
+                              link.download = `PaymentReceipt-${bill.BillNo}.pdf`;
+
+                              document.body.appendChild(link);
+
+                              link.click();
+
+                              link.remove();
+
+                              window.URL.revokeObjectURL(url);
+                            } catch (err) {
+                              console.log(err);
+
+                              toast.error("Failed to download bill");
+                            }
+                          }}
+                        />
+                      </>
+                    ) : (
+                      <span>Receipt Not Found</span>
+                    )}
                 </td>
               </tr>
             ))}

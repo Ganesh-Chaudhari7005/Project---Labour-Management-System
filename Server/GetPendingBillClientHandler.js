@@ -30,9 +30,25 @@ async function GetCllientPendingBills(ClientId){
                 message : "No Pending Bills"
             }
         }else{
+            let projectid = PendingBills[0].ProjectID;
+
+            let [getProjectName] = await db.execute(
+              `SELECT ProjectName FROM projects WHERE ProjectID=?`,[projectid]
+            );
+
+
+            let ProjectName = getProjectName[0].ProjectName;
+            console.log(PendingBills);
+
+            PendingBills[0] = {
+                ...PendingBills[0],
+                 ProjectName : ProjectName
+                }
+            console.log(PendingBills);
+
             return{
                 success : true,
-                Bills : PendingBills
+                Bills : PendingBills,
             }
         }
         
