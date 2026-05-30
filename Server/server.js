@@ -36,6 +36,7 @@ import { handlePhotoUpload } from "./HandlePhotoGalleryFileUpload.js";
 import { handleCarouselPhotoUpload } from "./HandleHomeCarouselPhotoUpload.js";
 import { db_details } from "./dbconfig.js";
 import mysql from "mysql2/promise";
+import { GetLabourWages, UpdateLabourWages } from "./WagesHandler.js";
 import RemoveGalleryImage from "./HandleGallerPhotoDelete.js";
 import RemoveCarouselImage from "./DeleteCarouselImageHandler.js";
 import { insertServiceRequest } from "./serviceRequestController.js";
@@ -44,6 +45,14 @@ import insertFeedback from "./insertFeedback.js";
 import { deleteServiceRequest } from "./serviceRequestController.js";
 import GetProjectNames from "./getProjectNameList.js";
 import insertIssue from "./insertIssue.js";
+import FetchSupervisors from "./FetchSupervisor.js";
+import RemoveSupervisor from "./RemoveSupervisor.js";
+import {
+  getSupervisors,
+  assignSupervisor,
+  getSupervisorAssignments,
+  removeSupervisorAssignment,
+} from "./SupervisorAssignmentHandler.js";
 import {
   getTestimonials,
   addTestimonial,
@@ -66,6 +75,7 @@ import { razorpay } from "./RazorPay/razorpay.js";
 import crypto from "crypto";
 import { RAZORPAY_SECRET } from "./RazorPay/razorpay.js";
 import generateReceipt from "./generatereceipt.js";
+import AddSupervisorHandler from "./AddSupervisorHandler.js";
 const app = express();
 
 app.use(express.json());
@@ -208,17 +218,6 @@ app.post(
       LabType,
     } = req.body;
 
-    console.log(
-      LabName,
-      LabEmail,
-      LabContact,
-      LabAddr,
-      LabWage,
-      LabGen,
-      Labdob,
-      filepath,
-      LabAccess,
-    );
 
     let addLabRes = await AddLabourHandlerFunction(
       LabName,
@@ -236,6 +235,41 @@ app.post(
     res.json(addLabRes);
   },
 );
+
+app.post(
+  "/add-Supervisor",
+  authenticateToken,
+  upload.single("SupervisorPhoto"),
+  async (req, res) => {
+    let filepath = null;
+
+    if (req.file) {
+      filepath = req.file.path.replace(/\\/g, "/");
+    }
+
+    let {
+      SupervisorName,
+      SupervisorEmail,
+      SupervisorContact,
+      SupervisorAddress,
+      SupervisorSalary,
+      SupervisorAccess,
+    } = req.body;
+
+    let addSupervisorRes = await AddSupervisorHandler(
+      SupervisorName,
+      SupervisorEmail,
+      SupervisorContact,
+      SupervisorAddress,
+      SupervisorSalary,
+      SupervisorAccess,
+      filepath,
+    );
+
+    res.json(addSupervisorRes);
+  },
+);
+
 app.post(
   "/update-profile",
   authenticateToken,
@@ -304,6 +338,12 @@ app.post("/remove-labour", async (req, res) => {
   let { email } = req.body;
   let removeStatus = await RemoveLabour(email);
   res.json(removeStatus);
+});   
+
+app.post("/remove-supervisor", async (req, res) => {
+  let { email } = req.body;
+  let removeStatus = await RemoveSupervisor(email);
+  res.json(removeStatus);
 });
 
 app.post("/add-equipments", authenticateToken, async (req, res) => {
@@ -321,6 +361,73 @@ app.get("/get-all-equipments-list", async (req, res) => {
 app.get("/fetch-labours", async (req, res) => {
   let AllLabours = await FetchLabours();
   res.json(AllLabours);
+});
+
+app.get("/fetch-supervisors", async (req, res) => {
+  let AllSup = await FetchSupervisors();
+  res.json(AllSup);
+});
+
+app.get("/supervisors" , getSupervisors);
+
+app.get("/supervisor-assignments", getSupervisorAssignments);
+app.post("/assign-supervisor", assignSupervisor);
+app.delete("/assign-supervisor", removeSupervisorAssignment);
+
+app.get("/getsupID/:email", async(req, res)=>{
+let {email} = req.params;
+let db;
+try {
+    db = await mysql.createConnection(db_details);
+
+    console.log("Database Connected Successfully");
+  } catch (err) {
+    console.log("Failed to Connect Database");
+  }
+
+  let rows;
+
+  [rows] = await db.query(`select ID from supervisors where Email=?`,[email]);
+
+  
+   let ID = rows[0].ID;
+   console.log(ID);
+   
+  
+res.json(ID);
+});
+
+
+app.get("/check-sup-assign/:ID", async (req, res) => {
+  let { ID } = req.params;
+  console.log(ID);
+  
+  let db;
+  try {
+    db = await mysql.createConnection(db_details);
+
+    console.log("Database Connected Successfully");
+  } catch (err) {
+    console.log("Failed to Connect Database");
+  }
+
+  let rows;
+
+  [rows] = await db.query(
+    `select * from supervisor_assignments where SupervisorID=?`,
+    [ID],
+  );
+
+  if(rows.length === 0){
+    res.json({
+      success : false,
+    })
+  }else{
+    res.json({
+      success : true,
+      Data : rows
+    })
+  }
 });
 
 app.get("/fetch-projects", async (req, res) => {
@@ -743,7 +850,9 @@ app.post("/reset-password/:token", async (req, res) => {
 //     });
 //   }
 // });
+app.post("/getLabourWages", GetLabourWages);
 
+app.post("/updateLabourWages", UpdateLabourWages);
 
 app.post("/create-order", async (req, res) => {
   try {

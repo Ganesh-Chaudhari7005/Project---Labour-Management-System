@@ -66,6 +66,13 @@ import ClientFeedback from "./Components/ClientFeedback.jsx";
 import ClientProjects from "./Components/ClientProjects.jsx";
 import ProjectContClient from "./Components/ProjectContClient.jsx";
 import ProjectStatusClient from "./Components/ProjectStatusClient.jsx";
+import SupervisorManagement from "./Components/SupervisorManagement.jsx";
+import ViewAllSupervisors from "./Components/ViewAllSupervisors.jsx";
+import AddSupervisor from "./Components/AddSupervisor.jsx";
+import AssignSupervisor from "./Components/AssignSupervisor.jsx";
+import AttendanceContSup from "./Components/AttendanceConpSup.jsx";
+import SaveAttendanceSupervisor from "./Components/SaveAttendanceSupervisor.jsx";
+import AttendanceSup from "./Components/AttendanceSup.jsx";
 const router = createBrowserRouter(
   createRoutesFromElements(
     <>
@@ -148,6 +155,11 @@ const router = createBrowserRouter(
             <Route path="add-labour" element={<AddLabour />} />
             <Route path="assign-labours" element={<AssignLabours />} />
           </Route>
+          <Route path="manage-supervisors" element={<SupervisorManagement />}>
+            <Route index element={<ViewAllSupervisors />} />
+            <Route path="add-supervisor" element={<AddSupervisor />} />
+            <Route path="assign-supervisor" element={<AssignSupervisor />} />
+          </Route>
           <Route path="billing" element={<ClientBilling />}>
             <Route index element={<BillPendingClient />} />
             <Route path="client-paid-bills" element={<BillPaidClient />} />
@@ -162,6 +174,10 @@ const router = createBrowserRouter(
           <Route path="your-projects" element={<ClientProjects />} />
           <Route path="view-project-client/:id" element={<ProjectContClient />}>
             <Route index element={<ProjectStatusClient />} />
+          </Route>
+          <Route path="labour-attendance" element={<AttendanceContSup />}>
+            <Route index element={<SaveAttendanceSupervisor />} />
+            <Route path="attendance-report-sup" element={<AttendanceSup />} />
           </Route>
         </Route>
       </Route>

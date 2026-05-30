@@ -17,7 +17,7 @@ const LoginContextProvider = ({children}) =>{
           setLoggedInUser(JSON.parse(user));
         }
     },[])
-    // console.log("userloggedin:",loggedInUser);
+    console.log("userloggedin:",loggedInUser);
     
     return (
       <LoginContext.Provider value={{ loggedInUser, setLoggedInUser }}>

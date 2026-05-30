@@ -149,3 +149,39 @@ export function CreateEquipmentID() {
 
   return EquiPID;
 }
+
+export function CreateSupervisorId() {
+  let SupervisorID;
+  let chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
+  let random_char_num = Math.floor(Math.random() * chars.length);
+  let random_char_num2 = Math.floor(Math.random() * chars.length);
+  let random_char2 = chars.charAt(random_char_num2);
+  let random_char = chars.charAt(random_char_num);
+
+  let random_num1 = Math.floor(Math.random() * 10);
+  let random_num2 = Math.floor(Math.random() * 10);
+  let random_num3 = Math.floor(Math.random() * 10);
+
+  SupervisorID = `SUP-${random_char}${random_char2}${random_num1}${random_num2}${random_num3}`;
+
+  return SupervisorID;
+}
+
+export function CreateSalaryId() {
+  let SalaryId;
+  let chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
+  let random_char_num = Math.floor(Math.random() * chars.length);
+  let random_char_num2 = Math.floor(Math.random() * chars.length);
+  let random_char2 = chars.charAt(random_char_num2);
+  let random_char = chars.charAt(random_char_num);
+
+  let random_num1 = Math.floor(Math.random() * 10);
+  let random_num2 = Math.floor(Math.random() * 10);
+  let random_num3 = Math.floor(Math.random() * 10);
+
+  SalaryId = `Sal-${random_char}${random_char2}${random_num1}${random_num2}${random_num3}`;
+
+  return SalaryId;
+}

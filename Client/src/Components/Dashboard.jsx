@@ -39,7 +39,8 @@ export default function Dashboard() {
     "Your Projects": FaFolderOpen,
     Billing: FaReceipt,
     "Report Issues": FaQuestionCircle,
-    "Feedback" : FaCommentDots
+    Feedback: FaCommentDots,
+    "Labour Attendance": FaCalendarCheck,
   };
   const location = useLocation(); 
   const permissions = {
@@ -54,10 +55,10 @@ export default function Dashboard() {
       "Manage Equipments",
       "CMS",
     ],
-    Supervisor: [
+    supervisor: [
       "Profile",
-      "Manage-Labours",
-      "Attendance",
+      "Manage Labours",
+      "Labour Attendance",
       "Manage Equipments",
       "CMS",
     ],

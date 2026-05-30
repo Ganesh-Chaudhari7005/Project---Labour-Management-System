@@ -1,56 +1,61 @@
 import React, { useEffect, useState } from "react";
-import { NavLink } from "react-router-dom";
 import { ApiRoute } from "./ApiConfig.js";
 import { uploadUrl } from "../uploadConfig";
-import ShowLabourDetails from "./ShowLabourDetails.jsx";
 import { motion } from "framer-motion";
 import { useApi } from "./ApiCaller.js";
 import { toast, ToastContainer } from "react-toastify";
 import Swal from "sweetalert2";
-ShowLabourDetails;
-export default function ViewAllLabour() {
-  const callapi = useApi();
-  const [AllLabours, setAllLabours] = useState([]);
-  const [currrentLabName, setLabName] = useState("");
-  const [currrentLabEmail, setLabEmail] = useState("");
-  const [currrentLabPhone, setLabPhone] = useState("");
-  const [currrentLabImg, setLabImg] = useState("");
-  const [currrentLabDOB, setLabDOB] = useState("");
-  const [currrentLabAddr, setLabAddr] = useState("");
-  const [currrentLabType, setLabType] = useState("");
-  const [search, setSearch] = useState("");
-  const [typeFilter, setTypeFilter] = useState("all");
-  const [isConVisible, setContisvisible] = useState(false);
-  const FetchLaboursFromDB = async () => {
-    let reqLab = await fetch(`${ApiRoute}fetch-labours`);
-    console.log(reqLab.status);
+import ShowLabourDetails from "./ShowLabourDetails.jsx";
 
-    let res = await reqLab.json();
-    setAllLabours(res);
+export default function ViewAllSupervisors() {
+  const callapi = useApi();
+
+  const [allSupervisors, setAllSupervisors] = useState([]);
+
+  const [currentSupName, setSupName] = useState("");
+  const [currentSupEmail, setSupEmail] = useState("");
+  const [currentSupPhone, setSupPhone] = useState("");
+  const [currentSupImg, setSupImg] = useState("");
+  const [currentSupAddr, setSupAddr] = useState("");
+
+  const [search, setSearch] = useState("");
+
+  const [isConVisible, setContisvisible] = useState(false);
+
+  const FetchSupervisorsFromDB = async () => {
+    let reqSup = await fetch(`${ApiRoute}fetch-supervisors`);
+
+    console.log(reqSup.status);
+
+    let res = await reqSup.json();
+
+    setAllSupervisors(res);
+
     console.log(res);
   };
+
   useEffect(() => {
-    FetchLaboursFromDB();
+    FetchSupervisorsFromDB();
   }, []);
 
-  const OpenFullView = (labour) => {
-    setLabName(labour.Name);
-    setLabImg(labour.profileImgPath);
-    setLabType(labour.LabType);
-    setLabEmail(labour.Email);
-    setLabPhone(labour.Phone);
-    setLabAddr(labour.Address);
+  const OpenFullView = (supervisor) => {
+    setSupName(supervisor.Name);
+    setSupImg(supervisor.profileImgPath);
+    setSupEmail(supervisor.Email);
+    setSupPhone(supervisor.Phone);
+    setSupAddr(supervisor.Address);
+
     setContisvisible((prev) => !prev);
   };
 
   const toggleVisibility = () => {
-    setContisvisible((prev) => (prev = !prev));
+    setContisvisible((prev) => !prev);
   };
 
-  const RemoveLabourHandler = async (email, name) => {
+  const RemoveSupervisorHandler = async (email, name) => {
     let Choiseresult = await Swal.fire({
       title: "Alert",
-      text: `Delete Labour ${name}`,
+      text: `Delete Supervisor ${name}`,
       icon: "warning",
       showCancelButton: true,
       confirmButtonColor: "#DC2626",
@@ -62,7 +67,7 @@ export default function ViewAllLabour() {
     });
 
     if (Choiseresult.isConfirmed) {
-      const req = await callapi(`${ApiRoute}remove-labour`, {
+      const req = await callapi(`${ApiRoute}remove-supervisor`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -73,27 +78,26 @@ export default function ViewAllLabour() {
       console.log("result is ", req.success);
 
       if (req.success) {
-        console.log("Labour Deleted Successfully");
+        console.log("Supervisor Deleted Successfully");
+
         toast.success(req.message);
-        FetchLaboursFromDB();
+
+        FetchSupervisorsFromDB();
       } else {
-        console.log("Failed to delete labour");
+        console.log("Failed to delete supervisor");
+
         toast.error(req.message || "Error");
       }
     }
   };
 
- const filteredLabours = AllLabours.filter((l) => {
-   const matchesSearch =
-     l.Name.toLowerCase().includes(search.toLowerCase()) ||
-     l.Email.toLowerCase().includes(search.toLowerCase()) ||
-     l.LabType.toLowerCase().includes(search.toLowerCase());
+const filteredSupervisors = allSupervisors.filter((s) => {
+  return (
+    (s.SupervisorName || "").toLowerCase().includes(search.toLowerCase()) ||
+    (s.SupervisorEmail || "").toLowerCase().includes(search.toLowerCase())
+  );
+});
 
-   const matchesType =
-     typeFilter === "all" || l.LabType.toLowerCase() === typeFilter;
-
-   return matchesSearch && matchesType;
- });
   return (
     <motion.div
       initial={{ opacity: 0, y: 10 }}
@@ -104,48 +108,43 @@ export default function ViewAllLabour() {
         toastClassName="custom-toast"
         bodyClassName="custom-toast-body"
       />
+
       <div className="container remuser-cont p-3">
         <div className="labour-title-bar">
           <div>
-            <h3>All Labours</h3>
+            <h3>All Supervisors</h3>
+
             <p>
-              Showing {filteredLabours.length} of {AllLabours.length} workers
+              Showing {filteredSupervisors.length} of {allSupervisors.length}{" "}
+              supervisors
             </p>
           </div>
 
-          <div className="labour-pill">Total: {AllLabours.length}</div>
+          <div className="labour-pill">Total: {allSupervisors.length}</div>
         </div>
 
         <ShowLabourDetails
           onClose={toggleVisibility}
           isVisible={isConVisible}
-          address={currrentLabAddr}
-          phone={currrentLabPhone}
-          email={currrentLabEmail}
-          type={currrentLabType}
-          imgpath={currrentLabImg}
-          Name={currrentLabName || ""}
+          address={currentSupAddr}
+          phone={currentSupPhone}
+          email={currentSupEmail}
+          imgpath={currentSupImg}
+          Name={currentSupName || ""}
         />
+
         <div className="labour-toolbar">
           <input
             type="text"
-            placeholder="Search by name, email, or type..."
+            placeholder="Search by name or email..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
-
-          <select
-            value={typeFilter}
-            onChange={(e) => setTypeFilter(e.target.value)}
-          >
-            <option value="all">All</option>
-            <option value="misteri">Misteri</option>
-            <option value="helper">Helper</option>
-          </select>
         </div>
+
         <div className="row g-3">
-          {filteredLabours.length > 0 ? (
-            filteredLabours.map((data, index) => (
+          {filteredSupervisors.length > 0 ? (
+            filteredSupervisors.map((data, index) => (
               <div className="col-12" key={index}>
                 <motion.div
                   whileHover={{ scale: 1.01 }}
@@ -154,8 +153,8 @@ export default function ViewAllLabour() {
                   {/* IMAGE */}
                   <div className="labour-row-img">
                     <img
-                      src={`${uploadUrl}${data.profileImgPath}`}
-                      alt={data.Name}
+                      src={`${uploadUrl}${data.SupervisorPhoto}`}
+                      alt={data.SupervisorName}
                       onError={(e) => {
                         e.target.src = "/defaultlabouricon.png";
                       }}
@@ -165,8 +164,8 @@ export default function ViewAllLabour() {
                   {/* INFO */}
                   <div className="labour-row-info">
                     <h5>{data.Name}</h5>
+
                     <p>{data.Email}</p>
-                    <span className="labour-type-tag">{data.LabType || 'Type'}</span>
                   </div>
 
                   {/* ACTIONS */}
@@ -180,7 +179,12 @@ export default function ViewAllLabour() {
 
                     <button
                       className="row-btn delete"
-                      onClick={() => RemoveLabourHandler(data.Email, data.Name)}
+                      onClick={() =>
+                        RemoveSupervisorHandler(
+                          data.Email,
+                          data.SupervisorName,
+                        )
+                      } 
                     >
                       Remove
                     </button>
@@ -192,17 +196,18 @@ export default function ViewAllLabour() {
             <div className="col-12">
               <div className="no-data-container">
                 <div className="no-data-icon">🔍</div>
-                <h5>No labour found</h5>
-                <p>Try changing search or filter</p>
+
+                <h5>No supervisor found</h5>
+
+                <p>Try changing search</p>
 
                 <button
                   className="clear-btn"
                   onClick={() => {
                     setSearch("");
-                    setTypeFilter("all");
                   }}
                 >
-                  Clear Filters
+                  Clear Search
                 </button>
               </div>
             </div>
