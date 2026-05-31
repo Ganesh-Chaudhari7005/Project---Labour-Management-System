@@ -76,6 +76,7 @@ import crypto from "crypto";
 import { RAZORPAY_SECRET } from "./RazorPay/razorpay.js";
 import generateReceipt from "./generatereceipt.js";
 import AddSupervisorHandler from "./AddSupervisorHandler.js";
+import { url } from "inspector";
 const app = express();
 
 app.use(express.json());
@@ -161,7 +162,6 @@ app.post("/create-bill", async (req, res) => {
 });
 
 app.post("/getPaidBills", async (req, res) => {
-
   let { ClientID } = req.body;
 
   let Bills = await GetCllientPaidBills(ClientID);
@@ -217,7 +217,6 @@ app.post(
       LabAccess,
       LabType,
     } = req.body;
-
 
     let addLabRes = await AddLabourHandlerFunction(
       LabName,
@@ -338,7 +337,7 @@ app.post("/remove-labour", async (req, res) => {
   let { email } = req.body;
   let removeStatus = await RemoveLabour(email);
   res.json(removeStatus);
-});   
+});
 
 app.post("/remove-supervisor", async (req, res) => {
   let { email } = req.body;
@@ -368,16 +367,16 @@ app.get("/fetch-supervisors", async (req, res) => {
   res.json(AllSup);
 });
 
-app.get("/supervisors" , getSupervisors);
+app.get("/supervisors", getSupervisors);
 
 app.get("/supervisor-assignments", getSupervisorAssignments);
 app.post("/assign-supervisor", assignSupervisor);
 app.delete("/assign-supervisor", removeSupervisorAssignment);
 
-app.get("/getsupID/:email", async(req, res)=>{
-let {email} = req.params;
-let db;
-try {
+app.get("/getsupID/:email", async (req, res) => {
+  let { email } = req.params;
+  let db;
+  try {
     db = await mysql.createConnection(db_details);
 
     console.log("Database Connected Successfully");
@@ -387,21 +386,18 @@ try {
 
   let rows;
 
-  [rows] = await db.query(`select ID from supervisors where Email=?`,[email]);
+  [rows] = await db.query(`select ID from supervisors where Email=?`, [email]);
 
-  
-   let ID = rows[0].ID;
-   console.log(ID);
-   
-  
-res.json(ID);
+  let ID = rows[0].ID;
+  console.log(ID);
+
+  res.json(ID);
 });
-
 
 app.get("/check-sup-assign/:ID", async (req, res) => {
   let { ID } = req.params;
   console.log(ID);
-  
+
   let db;
   try {
     db = await mysql.createConnection(db_details);
@@ -418,14 +414,47 @@ app.get("/check-sup-assign/:ID", async (req, res) => {
     [ID],
   );
 
-  if(rows.length === 0){
+  if (rows.length === 0) {
     res.json({
-      success : false,
-    })
-  }else{
+      success: false,
+    });
+  } else {
     res.json({
-      success : true,
-      Data : rows
+      success: true,
+      Data: rows,
+    });
+  }
+});
+
+app.get("/supAlcPrjList/:supAssignedPrjID", async (req, res) => {
+  let { supAssignedPrjID } = req.params;
+
+  let db;
+  try {
+    db = await mysql.createConnection(db_details);
+
+    console.log("Database Connected Successfully");
+  } catch (err) {
+    console.log("Failed to Connect Database");
+  }
+
+  let fetchedRows;
+
+  try {
+    [fetchedRows] = await db.query(
+      `select Name, LabType , labour_assignments.* from labours  join labour_assignments on labours.ID = labour_assignments.LabourID where labour_assignments.ProjectID=?`,
+      [supAssignedPrjID],
+    );
+
+
+    res.json({
+      success: true,
+      FetchedRows: fetchedRows,
+    });
+  } catch (err) {
+    console.log(err);
+    res.json({
+      success : false
     })
   }
 });
@@ -507,6 +536,18 @@ app.post("/remove-equipments", authenticateToken, async (req, res) => {
   res.json(removeRes);
 });
 
+app.get("/get-assigned-prj-WorkDetails/:ID", async(req,res) => {
+console.log("called....");
+
+  const { ID } = req.params;
+
+  console.log("heee",ID);
+
+  res.json({
+    success: true,
+  });
+});
+
 app.post("/add-attendance", async (req, res) => {
   try {
     const data = req.body;
@@ -517,6 +558,13 @@ app.post("/add-attendance", async (req, res) => {
         success: false,
         message: "Required fields missing",
       });
+    }
+
+    if(!data.workDone){
+       return res.status(400).json({
+         success: false,
+         message: "Enter Work Done",
+       });
     }
 
     const result = await insertAttendance(data);
@@ -759,9 +807,9 @@ app.post("/delete-Photo-carousel", async (req, res) => {
 });
 
 app.post("/fetch-projects-client", async (req, res) => {
-  let {clientID} = req.body;
+  let { clientID } = req.body;
   console.log(clientID);
-  
+
   let AllProjects = await FetchProjectsClient(clientID);
   res.json(AllProjects);
 });
@@ -869,16 +917,16 @@ app.post("/create-order", async (req, res) => {
 
     // 2. Insert order into MySQL (IMPORTANT)
     let db;
-      try {
-          db = await mysql.createConnection(db_details);
-          console.log("Database Connected Successfully");
-        } catch (err) {
-          console.log("Failed to Connect Database");
-          return {
-            success: false,
-            message: "Something went wrong. Please try again later.",
-          };
-        }
+    try {
+      db = await mysql.createConnection(db_details);
+      console.log("Database Connected Successfully");
+    } catch (err) {
+      console.log("Failed to Connect Database");
+      return {
+        success: false,
+        message: "Something went wrong. Please try again later.",
+      };
+    }
 
     await db.execute(
       "INSERT INTO razorpayorders (razorpay_order_id, amount, status) VALUES (?, ?, ?)",
@@ -899,9 +947,7 @@ app.post("/create-order", async (req, res) => {
   }
 });
 
-
 app.post("/verify-payment", async (req, res) => {
-  
   try {
     const {
       razorpay_order_id,
@@ -946,10 +992,10 @@ app.post("/verify-payment", async (req, res) => {
       "SELECT * FROM all_bills WHERE BillID=?",
       [billid],
     );
-    
+
     const bill = billRows[0];
-    console.log("bill:",bill);
-    
+    console.log("bill:", bill);
+
     // Generate Receipt PDF
     const receiptPath = await generateReceipt({
       receiptNo: `RCPT-${Date.now()}`,
@@ -967,14 +1013,13 @@ app.post("/verify-payment", async (req, res) => {
       paymentDate: new Date().toLocaleString("en-IN"),
     });
 
-    console.log("path si",receiptPath);
+    console.log("path si", receiptPath);
 
-    
     await db.execute("UPDATE all_bills SET PaidBillReceipt=? where BillID=?", [
       receiptPath,
       billid,
     ]);
-    
+
     console.log("Receipt Generated:", receiptPath);
     res.json({ success: true });
   } catch (err) {
@@ -983,14 +1028,13 @@ app.post("/verify-payment", async (req, res) => {
   }
 });
 
-app.post("/getProjectsList", async(req, res)=>{
+app.post("/getProjectsList", async (req, res) => {
   let { clientID } = req.body;
   console.log(clientID);
   let ProjectList = await GetProjectNames(clientID);
-console.log(ProjectList);
+  console.log(ProjectList);
 
   res.json(ProjectList);
-
 });
 
 app.post("/insertFeedback", insertFeedback);

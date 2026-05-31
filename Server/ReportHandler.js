@@ -7,7 +7,8 @@ export const getReportData = async (data) => {
   try {
     db = await mysql.createConnection(db_details);
 
-    const { labour, type, month, fromDate, toDate } = data;
+    const { labour, type, month, fromDate, toDate, LabourType } = data;
+    console.log("heee", data);
 
     let where = "WHERE 1=1";
     let params = [];
@@ -37,24 +38,47 @@ export const getReportData = async (data) => {
     }
 
     // 🔹 Fetch records (format date directly in SQL)
-    const query = `
-  SELECT 
-    DATE_FORMAT(attendance.date, '%Y-%m-%d') AS date,
-    attendance.labour_id,
-    attendance.status,
-    attendance.advance,
-    attendance.Day_Total,
-    attendance.Work_Done,
-    labours.Name,
-    projects.ProjectName
-  FROM attendance
-  JOIN labours ON labours.ID = attendance.labour_id
-  LEFT JOIN projects ON projects.ProjectID = attendance.ProjectID
-  ${where}
-  ORDER BY date DESC
-`;
 
-    const [rows] = await db.execute(query, params);
+    let Query;
+    if (LabourType.toLowerCase() === "helper") {
+      Query = `
+      SELECT 
+        DATE_FORMAT(attendance.date, '%Y-%m-%d') AS date,
+        attendance.labour_id,
+        attendance.status,
+        attendance.advance,
+        attendance.Day_Total,
+        attendance.WorkDoneHelper,
+        labours.Name,
+        projects.ProjectName
+      FROM attendance
+      JOIN labours ON labours.ID = attendance.labour_id
+      LEFT JOIN projects ON projects.ProjectID = attendance.ProjectID
+      ${where}
+      ORDER BY date DESC
+      `;
+    }else if(LabourType.toLowerCase() === "misteri"){
+        Query = `
+      SELECT 
+        DATE_FORMAT(attendance.date, '%Y-%m-%d') AS date,
+        attendance.labour_id,
+        attendance.status,
+        attendance.advance,
+        attendance.Day_Total,
+        attendance.Work_Done,
+        labours.Name,
+        projects.ProjectName
+      FROM attendance
+      JOIN labours ON labours.ID = attendance.labour_id
+      LEFT JOIN projects ON projects.ProjectID = attendance.ProjectID
+      ${where}
+      ORDER BY date DESC
+    `;
+    }
+
+    
+
+    const [rows] = await db.execute(Query, params);
 
     // 🔹 Summary
     let total = 0;

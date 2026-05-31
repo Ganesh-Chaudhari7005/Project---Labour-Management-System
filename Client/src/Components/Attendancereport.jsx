@@ -12,6 +12,7 @@ export default function AttendanceReport() {
   const [toDate, setToDate] = useState("");
   const [report, setReport] = useState([]);
   const [summary, setSummary] = useState(null);
+  const [selectedLabourType, setSelectedLabType] = useState('');
 
   // 🔹 Fetch labours
   useEffect(() => {
@@ -20,14 +21,24 @@ export default function AttendanceReport() {
       .then((data) => setLabours(data));
   }, []);
 
+  useEffect(()=>{
+    console.log("labour is",selectedLabour)
+  },[selectedLabour])
+
+  useEffect(() => {
+    console.log("labours are", labours);
+  }, [labours]);
   // 🔹 Fetch report
   const getReport = async (type) => {
+        
+    
     let body = {
       labour: selectedLabour,
       type,
       month,
       fromDate,
       toDate,
+      LabourType : selectedLabourType
     };
 
     const res = await fetch(`${ApiRoute}get-report`, {
@@ -40,6 +51,8 @@ export default function AttendanceReport() {
 
     const data = await res.json();
 
+    console.log("rp", data);
+    
     setReport(data.records || []);
     setSummary(data.summary || null);
   };
@@ -64,11 +77,18 @@ export default function AttendanceReport() {
             <select
               className="form-select"
               value={selectedLabour}
-              onChange={(e) => setSelectedLabour(e.target.value)}
+              onChange={(e) => {
+                const labour = labours.find(
+                  (l) => l.ID.toString() === e.target.value,
+                );
+
+                setSelectedLabour(e.target.value);
+                setSelectedLabType(labour?.LabType || "");
+              }}
             >
               <option value="">All</option>
               {labours.map((l) => (
-                <option key={l.ID} value={l.ID}>
+                <option key={l.ID} value={l.ID} Labtype={l.LabType}>
                   {l.Name}
                 </option>
               ))}
@@ -156,7 +176,7 @@ export default function AttendanceReport() {
                     <td>{r.Name}</td>
                     <td>{r.ProjectName || "—"}</td>
                     <td>{r.status}</td>
-                    <td>{r.Work_Done}</td>
+                    <td>{r.Work_Done || r.WorkDoneHelper}</td>
                     <td>{r.advance}</td>
                     <td>{r.Day_Total}</td>
                   </tr>

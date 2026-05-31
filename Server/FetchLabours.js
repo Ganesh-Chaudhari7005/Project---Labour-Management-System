@@ -2,6 +2,7 @@ import mysql from "mysql2/promise";
 import { db_details } from "./dbconfig.js";
 
 async function FetchLabours() {
+  
   let db;
   try {
     db = await mysql.createConnection(db_details);

@@ -177,7 +177,7 @@ const router = createBrowserRouter(
           </Route>
           <Route path="labour-attendance" element={<AttendanceContSup />}>
             <Route index element={<SaveAttendanceSupervisor />} />
-            <Route path="attendance-report-sup" element={<AttendanceSup />} />
+            <Route path="attendance-report-sup" element={<AttendanceReport />} />
           </Route>
         </Route>
       </Route>

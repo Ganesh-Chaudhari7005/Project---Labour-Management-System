@@ -3,8 +3,10 @@ import { ApiRoute } from "./ApiConfig.js";
 import { toast, ToastContainer } from "react-toastify";
 export default function SaveAttendanceSupervisor() {
   const [isSuphasPrj, setSuphasPrj] = useState(true);
+  const[workList, setWorkList] = useState([]);
   const todayDate = new Date().toISOString().split("T")[0];
-  const[supAssignedPrjID, setSupAssignedPrjID] = useState('');
+  const [supAssignedPrjID, setSupAssignedPrjID] = useState("");
+  const [isLabourSelected , setIsLabourSelected] = useState(true);
   const [selectedLabour, setSelectedLabour] = useState(null);
   const [status, setStatus] = useState("");
   const [advance, setAdvance] = useState(0);
@@ -12,51 +14,68 @@ export default function SaveAttendanceSupervisor() {
   const [date, setDate] = useState(todayDate);
   const [workDone, setworkdone] = useState("");
   const [AlllabourList, setLabourList] = useState([]);
+
   const getSiteLabours = async () => {
     let user = sessionStorage.getItem("user");
     const userObj = JSON.parse(user);
 
     let email = userObj.UserEmail;
-    console.log(email);
 
     let supervisorID = await fetch(`${ApiRoute}getsupID/${email}`);
     const ID = await supervisorID.json();
     const reqLabourList = await fetch(`${ApiRoute}check-sup-assign/${ID}`);
     const res = await reqLabourList.json();
-    console.log(res);
 
     if (res.success) {
       setLabourList(res.Data);
       setSuphasPrj(false);
-      console.log("Success");
+      const ProjectID = res.Data[0].ProjectID;
       setSupAssignedPrjID(res.Data[0].ProjectID);
 
-      
+      const getSupAllocatedPrjLabList = await fetch(
+        `${ApiRoute}supAlcPrjList/${ProjectID}`,
+      );
+
+      const responce = await getSupAllocatedPrjLabList.json();
+
+      setLabourList(responce.FetchedRows);
     } else {
       setSuphasPrj(true);
       console.log("Failed");
     }
-
-
   };
 
+  const getWorkDetails = async()=>{    
+    console.log("id is...",supAssignedPrjID);
+    
+    const Fetchdetails = await fetch(`${ApiRoute}get-assigned-prj-WorkDetails/${supAssignedPrjID}`);
+    const WorkList = await Fetchdetails.json();
+    console.log(WorkList);
+    
+  }
+ useEffect(() => {
+   getSiteLabours();
+ }, []);
 
-  useEffect(() => {
-    getSiteLabours();
-    // console.log);
-  }, []);
+ useEffect(() => {
+   if (supAssignedPrjID) {
+     getWorkDetails();
+   }
+ }, [supAssignedPrjID]);
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     const data = {
-      labour: selectedLabour?.ID,
+      labour: selectedLabour?.LabourID,
       project_id: selectedLabour?.ProjectID,
       status,
       advance,
       mode,
       date,
       workDone,
+      LabourType : selectedLabour?.LabType
     };
 
     try {
@@ -73,7 +92,7 @@ export default function SaveAttendanceSupervisor() {
       if (result.success) {
         toast.success("Attendance Saved!");
       } else {
-        toast.error("❌ " + result.message);
+        toast.error(result.message);
       }
     } catch (err) {
       console.error(err);
@@ -121,16 +140,32 @@ export default function SaveAttendanceSupervisor() {
                 </div>
                 <div className="col-md-6">
                   <div>
-                    <label className="form-label">
-                      Total Work Done (Sq. Ft./ R. Ft.)
-                    </label>
-                    <input
-                      type="number"
-                      className="form-control"
-                      value={workDone}
-                      onChange={(e) => setworkdone(e.target.value)}
-                      disabled={status === "A"}
-                    />
+                    {selectedLabour?.LabType?.toLowerCase() === "misteri" ? (
+                      <>
+                        <label className="form-label">
+                          Total Work Done (Sq. Ft./ R. Ft.)
+                        </label>
+                        <input
+                          type="number"
+                          className="form-control"
+                          value={workDone}
+                          onChange={(e) => setworkdone(e.target.value)}
+                          disabled={status === "A"}
+                        />
+                      </>
+                    ) : (
+                      <>
+                        <label className="form-label">Work Done</label>
+                        <input
+                          type="text"
+                          className="form-control"
+                          value={workDone}
+                          onChange={(e) => setworkdone(e.target.value)}
+                          disabled={isLabourSelected||status === "A"}
+                          
+                        />
+                      </>
+                    )}
                   </div>
                 </div>
               </div>
@@ -141,24 +176,26 @@ export default function SaveAttendanceSupervisor() {
                 <label className="form-label">Select Labour</label>
                 <select
                   className="form-select mb-3"
-                  value={selectedLabour?.ID || ""}
+                  value={selectedLabour?.LabourID || ""}
                   onChange={(e) => {
                     const selected = AlllabourList.find(
-                      (l) => l.ID === e.target.value,
+                      (l) => l.LabourID === e.target.value,
                     );
 
                     setSelectedLabour(selected);
+                    setIsLabourSelected(false);
                   }}
                   required
                 >
                   <option value="">-- Select Labour --</option>
 
                   {AlllabourList.map((data) => (
-                    <option key={data.ID} value={data.ID}>
-                      {data.Name}
+                    <option key={data.LabourID} value={data.LabourID}>
+                      {data.Name} ({data.LabType})
                     </option>
                   ))}
                 </select>
+
                 {selectedLabour?.ProjectName && (
                   <div className="project-info-box">
                     <strong>Currently Working on Site : </strong>{" "}
@@ -172,6 +209,7 @@ export default function SaveAttendanceSupervisor() {
                   value={status}
                   onChange={(e) => setStatus(e.target.value)}
                   required
+                  disabled={isLabourSelected}
                 >
                   <option value="">-- Select Status --</option>
                   <option value="P">Present (P)</option>
@@ -189,6 +227,7 @@ export default function SaveAttendanceSupervisor() {
                   className="form-control mb-3"
                   value={advance}
                   onChange={(e) => setAdvance(e.target.value)}
+                  disabled={isLabourSelected}
                 />
 
                 <label className="form-label">Payment Mode</label>
