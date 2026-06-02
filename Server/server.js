@@ -435,7 +435,7 @@ app.get("/getSupPrjsList-Att/:ID", async (req, res) => {
 
     console.log("Database Connected Successfully");
   } catch (err) {
-    console.log("Failed to Connect Database"); 
+    console.log("Failed to Connect Database");
   }
 
   let fetchedRows;
@@ -495,8 +495,7 @@ app.get("/supAlcPrjList/:supAssignedPrjID", async (req, res) => {
   }
 });
 
-app.get("/get-project-count", async(req, res)=>{
-
+app.get("/get-project-count", async (req, res) => {
   let db;
   try {
     db = await mysql.createConnection(db_details);
@@ -506,24 +505,227 @@ app.get("/get-project-count", async(req, res)=>{
     console.log("Failed to Connect Database");
   }
 
-  try{
+  try {
     let [getTotalounts] = await db.execute(`select * from projects`);
-    let [completedCount] = await db.execute(`select * from projects where Status='Completed'`)
-    let [pendingCount] = await db.execute(`select * from projects where Status='Pending'`)
+    let [completedCount] = await db.execute(
+      `select * from projects where Status='Completed'`,
+    );
+    let [pendingCount] = await db.execute(
+      `select * from projects where Status='Pending'`,
+    );
     // console.log(getTotalounts);
     res.json({
       TotalProjectCount: getTotalounts.length,
       CompletedCount: completedCount.length,
       PendingCount: pendingCount.length,
     });
-    
-  }catch(err){
-console.log(err);
+  } catch (err) {
+    console.log(err);
+  } finally {
+    if (db) await db.end();
+  }
+});
 
-  }finally{
-      if(db) await db.end();
+app.get("/get-labours-count", async (req, res) => {
+  let db;
+  try {
+    db = await mysql.createConnection(db_details);
+
+    console.log("Database Connected Successfully");
+  } catch (err) {
+    console.log("Failed to Connect Database");
   }
 
+  try {
+    let [getTotalLabours] = await db.execute(`select * from labours`);
+    let [MisteriCount] = await db.execute(
+      `select * from labours where LabType='Misteri'`,
+    );
+    let [HelperCount] = await db.execute(
+      `select * from labours where LabType='Helper'`,
+    );
+    // console.log(getTotalounts);
+    res.json({
+      TotalLabourCount: getTotalLabours.length,
+      MisteriCount: MisteriCount.length,
+      HelperCount: HelperCount.length,
+    });
+  } catch (err) {
+    console.log(err);
+  } finally {
+    if (db) await db.end();
+  }
+});
+
+app.get("/get-Users-count", async (req, res) => {
+  let db;
+  try {
+    db = await mysql.createConnection(db_details);
+
+    console.log("Database Connected Successfully");
+  } catch (err) {
+    console.log("Failed to Connect Database");
+  }
+
+  try {
+    let [getTotalUsers] = await db.execute(`select * from users`);
+    let [AdminCount] = await db.execute(
+      `select * from users where User_Role='Admin'`,
+    );
+    let [ClientUserCount] = await db.execute(
+      `select * from users where User_Role='Client'`,
+    );
+
+    let [SupUserCount] = await db.execute(
+      `select * from users where User_Role='supervisor'`,
+    );
+
+    let [LabUserCount] = await db.execute(
+      `select * from users where User_Role='supervisor'`,
+    );
+    // console.log(getTotalounts);
+    res.json({
+      TotalUsersCount: getTotalUsers.length,
+      AdminCount: AdminCount.length,
+      ClientUserCount: ClientUserCount.length,
+      SupUserCount: SupUserCount.length,
+      LabUserCount: LabUserCount.length,
+    });
+  } catch (err) {
+    console.log(err);
+  } finally {
+    if (db) await db.end();
+  }
+});
+
+app.get("/get-sup-count", async (req, res) => {
+  let db;
+  try {
+    db = await mysql.createConnection(db_details);
+
+    console.log("Database Connected Successfully");
+  } catch (err) {
+    console.log("Failed to Connect Database");
+  }
+
+  try {
+    let [getTotalSup] = await db.execute(`select * from supervisors`);
+
+    res.json({
+      TotalSupCount: getTotalSup.length,
+    });
+  } catch (err) {
+    console.log(err);
+  } finally {
+    if (db) await db.end();
+  }
+});
+
+app.get("/get-last-30-days-payment", async (req, res) => {
+  let db;
+  try {
+    db = await mysql.createConnection(db_details);
+
+    console.log("Database Connected Successfully");
+  } catch (err) {
+    console.log("Failed to Connect Database");
+  }
+  try {
+    const [rows] = await db.execute(`
+      SELECT
+        COALESCE(SUM(TotalAmount), 0) AS TotalReceivedLast30Days
+      FROM all_bills
+      WHERE Status = 'Paid'
+      AND BillPaymentDate >= CURDATE() - INTERVAL 30 DAY
+    `);
+
+    res.json(rows[0]);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Server Error" });
+  }finally{
+    if(db) await db.end();
+  }
+});
+
+app.get("/get-service-request-count", async (req, res) => {
+  let db;
+
+  try {
+    db = await mysql.createConnection(db_details);
+    console.log("Database Connected Successfully");
+  } catch (err) {
+    console.log("Failed to Connect Database");
+    return res.status(500).json({ error: "DB Connection Failed" });
+  }
+
+  try {
+    const [rows] = await db.execute(`
+      SELECT COUNT(*) AS TotalRequests
+      FROM servicerequestrecords
+      WHERE RequestTime >= NOW() - INTERVAL 2 DAY
+    `);
+
+    res.json(rows[0]);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Server Error" });
+  }
+});
+
+app.get("/get-issue-count", async (req, res) => {
+  let db;
+
+  try {
+    db = await mysql.createConnection(db_details);
+  } catch (err) {
+    return res.status(500).json({ error: "DB connection failed" });
+  }
+
+  try {
+    const [rows] = await db.execute(`
+      SELECT COUNT(*) AS TotalIssues
+      FROM reportissues
+    `);
+
+    res.json(rows[0]);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Server Error" });
+  }
+});
+
+app.get("/get-monthly-payments", async (req, res) => {
+  let db;
+
+  try {
+    db = await mysql.createConnection(db_details);
+  } catch (err) {
+    return res.status(500).json({ error: "DB connection failed" });
+  }
+
+  try {
+    const [rows] = await db.execute(`
+      SELECT 
+        BillID,
+        BillNo,
+        ProjectID,
+        TotalAmount,
+        BillPaymentDate,
+        PaidBillReceipt,
+        Status
+      FROM all_bills
+      WHERE Status = 'Paid'
+      AND MONTH(BillPaymentDate) = MONTH(CURDATE())
+      AND YEAR(BillPaymentDate) = YEAR(CURDATE())
+      ORDER BY BillPaymentDate DESC
+    `);
+
+    res.json(rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Server Error" });
+  }
 });
 app.get("/fetch-projects", async (req, res) => {
   let AllProjects = await FetchProjects();
@@ -561,6 +763,28 @@ app.get("/get-inStock-equipList", async (req, res) => {
   const allEquipments = await FetchInStockEquipments();
 
   res.json({ allEquipments });
+});
+
+app.get("/get-issue-count", async (req, res) => {
+  let db;
+
+  try {
+    db = await mysql.createConnection(db_details);
+  } catch (err) {
+    return res.status(500).json({ error: "DB connection failed" });
+  }
+
+  try {
+    const [rows] = await db.execute(`
+      SELECT COUNT(*) AS TotalIssues
+      FROM reportissues
+    `);
+
+    res.json(rows[0]);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Server Error" });
+  }
 });
 
 app.post("/Selected-Lab-Equip-Det", async (req, res) => {
@@ -1062,10 +1286,10 @@ app.post("/verify-payment", async (req, res) => {
       ["paid", razorpay_payment_id, razorpay_order_id],
     );
 
-    await db.execute("UPDATE all_bills SET Status=? where BillID=?", [
-      "Paid",
-      billid,
-    ]);
+    await db.execute(
+      "UPDATE all_bills SET Status = ?, BillPaymentDate = CURDATE() WHERE BillID = ?",
+      ["Paid", billid],
+    );
     console.log("Payment verified & DB updated");
 
     // Fetch bill details

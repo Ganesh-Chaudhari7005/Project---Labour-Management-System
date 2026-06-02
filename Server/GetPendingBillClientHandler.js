@@ -38,7 +38,7 @@ async function GetCllientPendingBills(ClientId){
 
 
             let ProjectName = getProjectName[0].ProjectName;
-            console.log(PendingBills);
+            console.log(ProjectName);
 
             PendingBills[0] = {
                 ...PendingBills[0],
