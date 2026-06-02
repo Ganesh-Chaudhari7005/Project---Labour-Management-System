@@ -156,14 +156,17 @@ export default function AttendanceReport() {
           <table className="table table-bordered">
             <thead>
               <tr>
-                <th>Sr No</th>
-                <th>Date</th>
-                <th>Labour</th>
-                <th>Site</th>
-                <th>Status</th>
-                <th>Work Done</th>
-                <th>Advance</th>
-                <th>Day Total</th>
+                <th className="tbl-head">Sr No</th>
+                <th className="tbl-head">Date</th>
+                <th className="tbl-head">Labour</th>
+                <th className="tbl-head">Site</th>
+                <th className="tbl-head">Status</th>
+                {selectedLabourType.toLowerCase() !== "helper" && (
+                  <th className="tbl-head">WorkType</th>
+                )}
+                <th className="tbl-head">Work Done</th>
+                <th className="tbl-head">Advance</th>
+                <th className="tbl-head">Day Total</th>
               </tr>
             </thead>
             <tbody>
@@ -176,6 +179,9 @@ export default function AttendanceReport() {
                     <td>{r.Name}</td>
                     <td>{r.ProjectName || "—"}</td>
                     <td>{r.status}</td>
+                    {selectedLabourType.toLowerCase() !== "helper" && (
+                      <td>{r.WorkName || "—"}</td>
+                    )}
                     <td>{r.Work_Done || r.WorkDoneHelper}</td>
                     <td>{r.advance}</td>
                     <td>{r.Day_Total}</td>

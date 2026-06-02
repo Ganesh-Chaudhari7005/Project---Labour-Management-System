@@ -73,6 +73,8 @@ import AssignSupervisor from "./Components/AssignSupervisor.jsx";
 import AttendanceContSup from "./Components/AttendanceConpSup.jsx";
 import SaveAttendanceSupervisor from "./Components/SaveAttendanceSupervisor.jsx";
 import AttendanceSup from "./Components/AttendanceSup.jsx";
+import SupAllocatedProjects from "./Components/SupAllocatedProjects.jsx";
+import SupProjectCont from "./Components/SupProjectCont.jsx";
 const router = createBrowserRouter(
   createRoutesFromElements(
     <>
@@ -177,7 +179,15 @@ const router = createBrowserRouter(
           </Route>
           <Route path="labour-attendance" element={<AttendanceContSup />}>
             <Route index element={<SaveAttendanceSupervisor />} />
-            <Route path="attendance-report-sup" element={<AttendanceReport />} />
+            <Route
+              path="attendance-report-sup"
+              element={<AttendanceReport />}
+            />
+          </Route>
+          <Route path="sites-allocated" element={<SupAllocatedProjects />} />
+          <Route path="sup-alc-prj/:id" element={<SupProjectCont />}>
+            <Route index element={<ProjectStatus />} />
+            <Route path="project-details-sup" element={<ProjectDetails />} />
           </Route>
         </Route>
       </Route>

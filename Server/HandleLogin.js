@@ -1,124 +1,153 @@
-  import { db_details } from "./dbconfig.js";
-  import mysql from "mysql2/promise";
-  import generateToken from "./utils/jwt.js";
-import bcrypt from 'bcrypt';
-  export async function HandleLogin(UserEmail, Pass) {
-    let db;
-    try {
-      db = await mysql.createConnection(db_details);
-    } catch (err) {
-      console.log("Failed to connect Database");
-      console.log(err);
-      return {
-        success: false,
-        message: "Something went wrong. Please try again later.",
-      };
-    }
+import { db_details } from "./dbconfig.js";
+import mysql from "mysql2/promise";
+import generateToken from "./utils/jwt.js";
+import bcrypt from "bcrypt";
 
-    let rows;
-    let rows2;
-    let clientID;
-    try {
-      [rows] = await db.execute(
-        `Select * from Users where User_Email=?`,
-        [UserEmail],
-      );
+export async function HandleLogin(UserEmail, Pass) {
+  let db;
 
-      let userRole = rows[0].User_Role;
-      let clientEmail = rows[0].User_Email;
-      console.log(clientEmail);
-      
-      if(userRole === 'Client'){
-        let [getClientId] = await db.execute(`Select ID from clients where Email=?`,[clientEmail]);
- 
-         clientID = getClientId[0].ID;
-        console.log("IDis",getClientId);
-        
-      }
-      
-      
-    } catch (err) {
-      console.log("Failed to Fetch Details");
-      console.log(err);
-      return {
-        success: false,
-        message: "Something went wrong. Please try again later.",
-      };
-    } 
+  try {
+    db = await mysql.createConnection(db_details);
 
-console.log("rows:", rows[0].User_Pass);
+    // Find user
+    const [rows] = await db.execute(
+      "SELECT * FROM Users WHERE User_Email = ?",
+      [UserEmail],
+    );
 
-    if (rows.length > 0) {
-
-      let userDBPass = rows[0].User_Pass;
-  
-        console.log("dbpass : ", userDBPass);
-        
-        const isMatch = await bcrypt.compare(Pass , userDBPass);
-
-        if (isMatch) {
-          const token = generateToken({
-            email: rows[0].User_Email,
-            role: rows[0].User_Role,
-          });
-          console.log(rows[0]);
-          let temptable;
-          if (rows[0].User_Role === "Admin") {
-            temptable = "System_Admin";
-          } else if (rows[0].User_Role === "Labour" || rows[0].User_Role === "labour") {
-            temptable = "Labours";
-          } else if (rows[0].User_Role === "Client") {
-            temptable = "Clients";
-          } else if (
-            rows[0].User_Role === "Supervisor" ||
-            rows[0].User_Role === "supervisor"
-          ) {
-            temptable = "Supervisors";
-          }
-          try {
-            console.log(temptable);
-            [rows2] = await db.execute(
-              `Select * from ${temptable} where Email = ?`,
-              [UserEmail]
-            );
-          } catch (err) {
-            console.log("Error in rows2", err);
-          } finally {
-            if (db) await db.end();
-          }
-          // console.log("ProfileImage is : ", rows2[0].profileImgPath);
-          // console.log("Address is ", rows2[0].Address)
-          console.log("Test det: ", rows2);
-
-          return {
-            token,
-            success: true,
-            clientID : clientID,
-            funame: rows[0].User_Name,
-            urole: rows[0].User_Role,
-            uemail: rows[0]?.User_Email,
-            uaddr: rows2[0]?.Address || "Not Set",
-            uphone: rows2[0]?.Phone || "Not Set",
-            profileimgpath: rows2[0]?.profileImgPath,
-            // databaseUserName: rows[0].username,
-            message: "Login Successfull",
-          };
-        } else {
-          console.log("No data");
-          return {
-            success: false,
-            message: "Invalid Credentials",
-          };
-        }
-      
-
-      
-      
-    } else if (rows.length == 0) {
-      console.log("No data");
+    if (rows.length === 0) {
       return {
         success: false,
         message: "Invalid Credentials",
       };
     }
+
+    const user = rows[0];
+
+    // Check password
+    const isMatch = await bcrypt.compare(Pass, user.User_Pass);
+
+    if (!isMatch) {
+      return {
+        success: false,
+        message: "Invalid Credentials",
+      };
+    }
+
+    // Generate token
+    const token = generateToken({
+      email: user.User_Email,
+      role: user.User_Role,
+    });
+
+    // Determine table
+    let tableName = "";
+    switch (user.User_Role.toLowerCase()) {
+      case "admin":
+        tableName = "System_Admin";
+        break;
+
+      case "labour":
+        tableName = "Labours";
+        break;
+
+      case "client":
+        tableName = "Clients";
+        break;
+
+      case "supervisor":
+        tableName = "Supervisors";
+        break;
+
+      default:
+        tableName = "";
+    }
+
+    let rows2 = [];
+
+    if (tableName) {
+      const [details] = await db.execute(
+        `SELECT * FROM ${tableName} WHERE Email = ?`,
+        [UserEmail],
+      );
+
+      rows2 = details;
+    }
+
+    let clientID = null;
+    let supervisorID = null;
+
+    // Client ID
+    if (user.User_Role.toLowerCase() === "client") {
+      const [clientRows] = await db.execute(
+        "SELECT ID FROM Clients WHERE Email = ?",
+        [UserEmail],
+      );
+
+      clientID = clientRows[0]?.ID || null;
+       return {
+         token,
+         success: true,
+         clientID,
+         funame: user.User_Name,
+         urole: user.User_Role,
+         uemail: user.User_Email,
+         uaddr: rows2[0]?.Address || "Not Set",
+         uphone: rows2[0]?.Phone || "Not Set",
+         profileimgpath: rows2[0]?.profileImgPath || null,
+         message: "Login Successful",
+       };
+    }
+
+    // Supervisor ID
+    if (user.User_Role.toLowerCase() === "supervisor") {
+      const [supRows] = await db.execute(
+        "SELECT ID FROM Supervisors WHERE Email = ?",
+        [UserEmail],
+      );
+
+      supervisorID = supRows[0]?.ID || null;
+
+       return {
+         token,
+         success: true,
+         supervisorID,
+         funame: user.User_Name,
+         urole: user.User_Role,
+         uemail: user.User_Email,
+         uaddr: rows2[0]?.Address || "Not Set",
+         uphone: rows2[0]?.Phone || "Not Set",
+         profileimgpath: rows2[0]?.profileImgPath || null,
+         message: "Login Successful",
+       };
+      
+    }
+
+    if (user.User_Role.toLowerCase() === "admin") {
+      return {
+        token,
+        success: true,
+        funame: user.User_Name,
+        urole: user.User_Role,
+        uemail: user.User_Email,
+        uaddr: rows2[0]?.Address || "Not Set",
+        uphone: rows2[0]?.Phone || "Not Set",
+        profileimgpath: rows2[0]?.profileImgPath || null,
+        message: "Login Successful",
+      };
+    }
+
+   
+  } catch (err) {
+    console.error("Login Error:", err);
+
+    return {
+      success: false,
+      message: "Something went wrong. Please try again later.",
+    };
+  } finally {
+    if (db) {
+      await db.end();
+    }
   }
+}

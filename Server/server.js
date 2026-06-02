@@ -35,6 +35,7 @@ import GetPastBills from "./GetPastBillsHandler.js";
 import { handlePhotoUpload } from "./HandlePhotoGalleryFileUpload.js";
 import { handleCarouselPhotoUpload } from "./HandleHomeCarouselPhotoUpload.js";
 import { db_details } from "./dbconfig.js";
+import FetchSupAllocatedPrjDet from "./FetchSupAllocatedPrjDet.js";
 import mysql from "mysql2/promise";
 import { GetLabourWages, UpdateLabourWages } from "./WagesHandler.js";
 import RemoveGalleryImage from "./HandleGallerPhotoDelete.js";
@@ -421,11 +422,47 @@ app.get("/check-sup-assign/:ID", async (req, res) => {
   } else {
     res.json({
       success: true,
-      Data: rows,
     });
   }
 });
 
+app.get("/getSupPrjsList-Att/:ID", async (req, res) => {
+  let { ID } = req.params;
+
+  let db;
+  try {
+    db = await mysql.createConnection(db_details);
+
+    console.log("Database Connected Successfully");
+  } catch (err) {
+    console.log("Failed to Connect Database"); 
+  }
+
+  let fetchedRows;
+
+  try {
+    [fetchedRows] = await db.query(
+      `select
+ projects.ProjectName,
+ projects.ProjectID
+ from projects
+ join supervisor_assignments
+ on projects.ProjectID = supervisor_assignments.ProjectID
+ where supervisor_assignments.SupervisorID =?`,
+      [ID],
+    );
+
+    res.json({
+      success: true,
+      FetchedRows: fetchedRows,
+    });
+  } catch (err) {
+    console.log(err);
+    res.json({
+      success: false,
+    });
+  }
+});
 app.get("/supAlcPrjList/:supAssignedPrjID", async (req, res) => {
   let { supAssignedPrjID } = req.params;
 
@@ -446,7 +483,6 @@ app.get("/supAlcPrjList/:supAssignedPrjID", async (req, res) => {
       [supAssignedPrjID],
     );
 
-
     res.json({
       success: true,
       FetchedRows: fetchedRows,
@@ -454,11 +490,41 @@ app.get("/supAlcPrjList/:supAssignedPrjID", async (req, res) => {
   } catch (err) {
     console.log(err);
     res.json({
-      success : false
-    })
+      success: false,
+    });
   }
 });
 
+app.get("/get-project-count", async(req, res)=>{
+
+  let db;
+  try {
+    db = await mysql.createConnection(db_details);
+
+    console.log("Database Connected Successfully");
+  } catch (err) {
+    console.log("Failed to Connect Database");
+  }
+
+  try{
+    let [getTotalounts] = await db.execute(`select * from projects`);
+    let [completedCount] = await db.execute(`select * from projects where Status='Completed'`)
+    let [pendingCount] = await db.execute(`select * from projects where Status='Pending'`)
+    // console.log(getTotalounts);
+    res.json({
+      TotalProjectCount: getTotalounts.length,
+      CompletedCount: completedCount.length,
+      PendingCount: pendingCount.length,
+    });
+    
+  }catch(err){
+console.log(err);
+
+  }finally{
+      if(db) await db.end();
+  }
+
+});
 app.get("/fetch-projects", async (req, res) => {
   let AllProjects = await FetchProjects();
   res.json(AllProjects);
@@ -536,15 +602,30 @@ app.post("/remove-equipments", authenticateToken, async (req, res) => {
   res.json(removeRes);
 });
 
-app.get("/get-assigned-prj-WorkDetails/:ID", async(req,res) => {
-console.log("called....");
-
+app.get("/get-assigned-prj-WorkDetails/:ID", async (req, res) => {
   const { ID } = req.params;
 
-  console.log("heee",ID);
+  let db;
+  try {
+    db = await mysql.createConnection(db_details);
+
+    console.log("Database Connected Successfully");
+  } catch (err) {
+    console.log("Failed to Connect Database");
+  }
+
+  let FetchWorkList;
+
+  [FetchWorkList] = await db.execute(
+    `Select * from work_details where ProjectID=?`,
+    [ID],
+  );
+
+  console.log(FetchWorkList);
 
   res.json({
     success: true,
+    WorkList: FetchWorkList,
   });
 });
 
@@ -560,11 +641,11 @@ app.post("/add-attendance", async (req, res) => {
       });
     }
 
-    if(!data.workDone){
-       return res.status(400).json({
-         success: false,
-         message: "Enter Work Done",
-       });
+    if (!data.workDone) {
+      return res.status(400).json({
+        success: false,
+        message: "Enter Work Done",
+      });
     }
 
     const result = await insertAttendance(data);
@@ -1039,3 +1120,12 @@ app.post("/getProjectsList", async (req, res) => {
 
 app.post("/insertFeedback", insertFeedback);
 app.post("/insertIssue", insertIssue);
+
+app.get("/getALcPrjDetSup/:SupId", async (req, res) => {
+  let { SupId } = req.params;
+  console.log("calling");
+
+  let getres = await FetchSupAllocatedPrjDet(SupId);
+
+  res.json(getres);
+});

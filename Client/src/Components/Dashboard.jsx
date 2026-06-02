@@ -18,6 +18,7 @@ import {
   FaReceipt,
   FaQuestionCircle,
   FaCommentDots,
+  FaClipboardList,
 } from "react-icons/fa";
 import { MdDashboard } from "react-icons/md";
 import { warning } from "framer-motion";
@@ -41,6 +42,7 @@ export default function Dashboard() {
     "Report Issues": FaQuestionCircle,
     Feedback: FaCommentDots,
     "Labour Attendance": FaCalendarCheck,
+    "Sites Allocated": FaClipboardList,
   };
   const location = useLocation(); 
   const permissions = {
@@ -58,6 +60,7 @@ export default function Dashboard() {
     supervisor: [
       "Profile",
       "Manage Labours",
+      "Sites Allocated",
       "Labour Attendance",
       "Manage Equipments",
       "CMS",

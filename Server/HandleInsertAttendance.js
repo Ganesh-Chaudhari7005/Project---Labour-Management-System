@@ -7,7 +7,18 @@ export const insertAttendance = async (data) => {
   try {
     db = await mysql.createConnection(db_details);
 
-    const { labour, project_id, status, advance, date, workDone , LabourType} = data;
+    const {
+      labour,
+      project_id,
+      status,
+      advance,
+      date,
+      workDone,
+      LabourType,
+      workType,
+    } = data;
+
+    console.log("lll", workType);
 
     // 🔹 1. Get wage of labour
     const [wageRows] = await db.execute(
@@ -43,30 +54,51 @@ export const insertAttendance = async (data) => {
 
     let Query;
 
-    if(LabourType.toLowerCase() === 'misteri'){
-       Query = `
+    if (LabourType.toLowerCase() === "misteri") {
+      Query = `
       INSERT INTO attendance 
-      (labour_id, ProjectID, date, status, advance, Day_Total, Work_Done)
-      VALUES (?, ?, ?, ?, ?, ?, ?)
+      (labour_id, ProjectID, date, status, advance, Day_Total, Work_Done,WorkTypeID)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?)
     `;
-    }else if(LabourType.toLowerCase() === 'helper'){
-       Query = `
+    } else if (LabourType.toLowerCase() === "helper") {
+      Query = `
       INSERT INTO attendance 
       (labour_id, ProjectID, date, status, advance, Day_Total, WorkDoneHelper)
       VALUES (?, ?, ?, ?, ?, ?, ?)
     `;
     }
-    
 
-    await db.execute(Query, [
-      labour,
-      project_id || null,
-      date,
-      status,
-      advance || 0,
-      dayTotal,
-      workDone || null,
-    ]);
+    if (LabourType.toLowerCase() === "misteri") {
+      await db.execute(Query, [
+        labour,
+        project_id || null,
+        date,
+        status,
+        advance || 0,
+        dayTotal,
+        workDone || null,
+        workType || null,
+      ]);
+    } else if (LabourType.toLowerCase() === "helper") {
+      await db.execute(Query, [
+        labour,
+        project_id || null,
+        date,
+        status,
+        advance || 0,
+        dayTotal,
+        workDone || null,
+      ]);
+    }
+
+  if (LabourType.toLowerCase() === "misteri") {
+    await db.execute(
+      `UPDATE work_details
+     SET CompletedArea = CompletedArea + ?
+     WHERE ProjectID = ? AND WorkID = ?`,
+      [workDone, project_id, workType],
+    );
+  }
 
     return {
       success: true,

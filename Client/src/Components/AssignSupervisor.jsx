@@ -52,19 +52,7 @@ const fetchAll = async () => {
       return toast.warning("Select both fields");
     }
 
-    if (selectedSupervisor?.IsAvailable === 0) {
-      return toast.error("Supervisor not available");
-    }
-
-    const alreadyAssigned = assignments.some(
-      (a) => a.SupervisorID === supervisorId && a.ProjectID === projectId,
-    );
-
-    if (alreadyAssigned) {
-      return toast.warning(
-        "This supervisor is already assigned to this project",
-      );
-    }
+   
 
     const res = await fetch(`${ApiRoute}assign-supervisor`, {
       method: "POST",
@@ -158,7 +146,7 @@ const fetchAll = async () => {
 
             {supervisors.map((s) => (
               <option key={s.ID} value={s.ID}>
-                {s.Name} ({s.IsAvailable ? "Available" : "Busy"})
+                {s.Name}
               </option>
             ))}
           </select>

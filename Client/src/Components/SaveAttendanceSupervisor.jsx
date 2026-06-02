@@ -2,67 +2,77 @@ import { useEffect, useState } from "react";
 import { ApiRoute } from "./ApiConfig.js";
 import { toast, ToastContainer } from "react-toastify";
 export default function SaveAttendanceSupervisor() {
-  const [isSuphasPrj, setSuphasPrj] = useState(true);
-  const[workList, setWorkList] = useState([]);
+  const [isSuphasPrj, setSuphasPrj] = useState();
+  const [workList, setWorkList] = useState([]);
   const todayDate = new Date().toISOString().split("T")[0];
   const [supAssignedPrjID, setSupAssignedPrjID] = useState("");
-  const [isLabourSelected , setIsLabourSelected] = useState(true);
+  const [isLabourSelected, setIsLabourSelected] = useState(true);
   const [selectedLabour, setSelectedLabour] = useState(null);
+const [selectedWorkID, setSelectedWorkID] = useState("");
   const [status, setStatus] = useState("");
   const [advance, setAdvance] = useState(0);
   const [mode, setMode] = useState("");
   const [date, setDate] = useState(todayDate);
   const [workDone, setworkdone] = useState("");
   const [AlllabourList, setLabourList] = useState([]);
+  const [projectList, setProjectList] = useState([]);
+  const [selectedProject, setSelectedProject] = useState("");
+  const ID = sessionStorage.getItem("SupId");
 
-  const getSiteLabours = async () => {
-    let user = sessionStorage.getItem("user");
-    const userObj = JSON.parse(user);
-
-    let email = userObj.UserEmail;
-
-    let supervisorID = await fetch(`${ApiRoute}getsupID/${email}`);
-    const ID = await supervisorID.json();
+  const getProjectList = async () => {
     const reqLabourList = await fetch(`${ApiRoute}check-sup-assign/${ID}`);
     const res = await reqLabourList.json();
-
     if (res.success) {
-      setLabourList(res.Data);
       setSuphasPrj(false);
-      const ProjectID = res.Data[0].ProjectID;
-      setSupAssignedPrjID(res.Data[0].ProjectID);
 
-      const getSupAllocatedPrjLabList = await fetch(
-        `${ApiRoute}supAlcPrjList/${ProjectID}`,
-      );
+      let req = await fetch(`${ApiRoute}getSupPrjsList-Att/${ID}`);
 
-      const responce = await getSupAllocatedPrjLabList.json();
+      let res = await req.json();
+      console.log(res);
 
-      setLabourList(responce.FetchedRows);
+      setProjectList(res.FetchedRows);
     } else {
       setSuphasPrj(true);
       console.log("Failed");
     }
   };
 
-  const getWorkDetails = async()=>{    
-    console.log("id is...",supAssignedPrjID);
-    
-    const Fetchdetails = await fetch(`${ApiRoute}get-assigned-prj-WorkDetails/${supAssignedPrjID}`);
-    const WorkList = await Fetchdetails.json();
-    console.log(WorkList);
-    
-  }
- useEffect(() => {
-   getSiteLabours();
- }, []);
+ const getSiteLabours = async (projectId) => {
+   try {
+     const req = await fetch(`${ApiRoute}supAlcPrjList/${projectId}`);
 
- useEffect(() => {
-   if (supAssignedPrjID) {
-     getWorkDetails();
+     const response = await req.json();
+     console.log(response);
+
+     setLabourList(response.FetchedRows || []);
+   } catch (err) {
+     console.error(err);
    }
- }, [supAssignedPrjID]);
+ };
+  const getWorkDetails = async () => {
+    console.log("id is...", supAssignedPrjID);
 
+    const Fetchdetails = await fetch(
+      `${ApiRoute}get-assigned-prj-WorkDetails/${supAssignedPrjID}`,
+    );
+    const WorkListObj = await Fetchdetails.json();
+    console.log(WorkListObj);
+    const fetchedWorkList = WorkListObj.WorkList;
+    setWorkList(fetchedWorkList);
+  };
+useEffect(() => {
+  getProjectList();
+}, []);
+
+
+
+
+  useEffect(() => {
+    if (selectedProject) {
+      getSiteLabours(selectedProject);
+      getWorkDetails();
+    }
+  }, [selectedProject]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -75,7 +85,8 @@ export default function SaveAttendanceSupervisor() {
       mode,
       date,
       workDone,
-      LabourType : selectedLabour?.LabType
+      LabourType: selectedLabour?.LabType,
+      workType: selectedWorkID,
     };
 
     try {
@@ -102,12 +113,12 @@ export default function SaveAttendanceSupervisor() {
   return (
     <div className="container mt-4">
       <ToastContainer />
-      <div className="p-4">
-        <h4 className="mb-4">Record Attendance</h4>
+      <div>
+        <h4 className="mb-3">Record Attendance</h4>
 
         <form onSubmit={handleSubmit}>
           <fieldset disabled={isSuphasPrj}>
-            <div className="mb-4">
+            <div className="mb-3">
               <label className="form-label">Select Date</label>
 
               <div className="row">
@@ -161,8 +172,7 @@ export default function SaveAttendanceSupervisor() {
                           className="form-control"
                           value={workDone}
                           onChange={(e) => setworkdone(e.target.value)}
-                          disabled={isLabourSelected||status === "A"}
-                          
+                          disabled={isLabourSelected || status === "A"}
                         />
                       </>
                     )}
@@ -173,6 +183,31 @@ export default function SaveAttendanceSupervisor() {
 
             <div className="row">
               <div className="col-md-6 mb-3">
+                <label>Select Project</label>
+                <select
+                  className="form-select mb-2"
+                  value={supAssignedPrjID}
+                  onChange={(e) => {
+                    const projectId = e.target.value;
+
+                    setSupAssignedPrjID(projectId);
+                    setSelectedProject(projectId);
+
+                    setSelectedLabour(null);
+                    setIsLabourSelected(true);
+                    setStatus("");
+                    setworkdone("");
+                    setSelectedWorkID("");
+                  }}
+                >
+                  <option value="">-- Select Project --</option>
+
+                  {projectList.map((p) => (
+                    <option key={p.ProjectID} value={p.ProjectID}>
+                      {p.ProjectName}
+                    </option>
+                  ))}
+                </select>
                 <label className="form-label">Select Labour</label>
                 <select
                   className="form-select mb-3"
@@ -218,6 +253,28 @@ export default function SaveAttendanceSupervisor() {
                   <option value="PH">Present 1.5 Hajari(PH)</option>
                   <option value="PP">Present 2 Hajari (PP)</option>
                 </select>
+                {selectedLabour?.LabType?.toLowerCase() === "misteri" ? (
+                  <>
+                    <label className="py-3">Select work Type</label>
+                    <select
+                      className="form-select"
+                      value={selectedWorkID}
+                      onChange={(e) => setSelectedWorkID(e.target.value)}
+                      required
+                      disabled={isLabourSelected}
+                    >
+                      <option value="">-- Select Work Type --</option>
+
+                      {workList.map((data) => (
+                        <option key={data.WorkID} value={data.WorkID}>
+                          {data.WorkName}
+                        </option>
+                      ))}
+                    </select>
+                  </>
+                ) : (
+                  ""
+                )}
               </div>
 
               <div className="col-md-6 mb-3">
@@ -244,7 +301,7 @@ export default function SaveAttendanceSupervisor() {
               </div>
             </div>
 
-            <div className="text-end py-3">
+            <div className="text-end">
               <button className="btn btn-primary px-4" type="submit">
                 Save Attendance
               </button>

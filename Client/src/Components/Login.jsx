@@ -69,6 +69,11 @@ export default function Login() {
           if (data.urole === "Client") {
             sessionStorage.setItem("ClientID", data.clientID);
           }
+
+           if (data.urole.toLowerCase() ==='supervisor'){
+                        sessionStorage.setItem("SupId", data.supervisorID);
+
+           } 
         sessionStorage.setItem("user", JSON.stringify(user));
         sessionStorage.setItem("token", data.token);
 
@@ -78,6 +83,8 @@ export default function Login() {
       }
     } catch (err) {
       toast.error("Server error. Try again.");
+      console.log(err);
+      
     } finally {
       setLoading(false);
     }

@@ -59,21 +59,27 @@ export const getReportData = async (data) => {
       `;
     }else if(LabourType.toLowerCase() === "misteri"){
         Query = `
-      SELECT 
-        DATE_FORMAT(attendance.date, '%Y-%m-%d') AS date,
-        attendance.labour_id,
-        attendance.status,
-        attendance.advance,
-        attendance.Day_Total,
-        attendance.Work_Done,
-        labours.Name,
-        projects.ProjectName
-      FROM attendance
-      JOIN labours ON labours.ID = attendance.labour_id
-      LEFT JOIN projects ON projects.ProjectID = attendance.ProjectID
-      ${where}
-      ORDER BY date DESC
-    `;
+  SELECT
+    DATE_FORMAT(attendance.date, '%Y-%m-%d') AS date,
+    attendance.labour_id,
+    attendance.status,
+    attendance.advance,
+    attendance.Day_Total,
+    attendance.Work_Done,
+    attendance.WorkTypeID,
+    work_details.WorkName,
+    labours.Name,
+    projects.ProjectName
+  FROM attendance
+  JOIN labours
+    ON labours.ID = attendance.labour_id
+  LEFT JOIN projects
+    ON projects.ProjectID = attendance.ProjectID
+  LEFT JOIN work_details
+    ON work_details.WorkID = attendance.WorkTypeID
+  ${where}
+  ORDER BY attendance.date DESC
+`;;
     }
 
     
