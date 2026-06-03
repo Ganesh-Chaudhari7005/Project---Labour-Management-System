@@ -1072,6 +1072,39 @@ app.get("/get-new-bills", async (req, res) => {
   }
 });
 
+
+app.get("/get-recent-paid-bills", async (req, res) => {
+  let db;
+
+  try {
+    db = await mysql.createConnection(db_details);
+  } catch (err) {
+    return res.status(500).json({ error: "DB connection failed" });
+  }
+
+  try {
+    const [rows] = await db.execute(`
+      SELECT 
+        b.BillID,
+        b.BillNo,
+        p.ProjectName,
+        b.TotalAmount,
+        b.BillPaymentDate,
+        b.PDFPath
+      FROM all_bills b
+      JOIN projects p ON b.ProjectID = p.ProjectID
+      WHERE b.Status = 'Paid'
+      ORDER BY b.BillPaymentDate DESC
+      LIMIT 2
+    `);
+
+    res.json(rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Server Error" });
+  }
+});
+
 app.post("/getPastBill-details", async (req, res) => {
   let { works } = req.body;
   let { projectID } = req.body;
@@ -1504,4 +1537,105 @@ app.get("/getALcPrjDetSup/:SupId", async (req, res) => {
   let getres = await FetchSupAllocatedPrjDet(SupId);
 
   res.json(getres);
+});
+
+app.get("/get-work-details/:projectId", async (req, res) => {
+  let db;
+    try {
+      db = await mysql.createConnection(db_details);
+      console.log("Database Connected Successfully");
+    } catch (err) {
+      console.log("Failed to Connect Database");
+    }
+
+    try{
+const { projectId } = req.params;
+
+  const [rows] = await db.execute(
+    `SELECT * 
+     FROM work_details
+     WHERE ProjectID = ?
+     ORDER BY WorkID`,
+    [projectId],
+  );
+
+  res.json(rows);
+    }catch(err){
+      console.log(err);
+      
+    }finally{
+      if(db) await db.end();
+    }
+  
+});
+
+app.put("/update-total-area", async (req, res) => {
+
+   let db;
+   try {
+     db = await mysql.createConnection(db_details);
+     console.log("Database Connected Successfully");
+   } catch (err) {
+     console.log("Failed to Connect Database");
+   }
+
+   try {
+    const { WorkID, TotalArea } = req.body;
+
+    await db.execute(
+      `UPDATE work_details
+     SET TotalArea = ?
+     WHERE WorkID = ?`,
+      [TotalArea, WorkID],
+    );
+
+    res.json({
+      success: true,
+      message: "Area Updated",
+    });
+   } catch (err) {
+     console.log(err);
+   } finally {
+     if (db) await db.end();
+   }
+  
+});
+
+app.post("/add-project-work", async (req, res) => {
+  let db;
+
+  try {
+    db = await mysql.createConnection(db_details);
+
+    const { ProjectID, works } = req.body;
+
+    for (const work of works) {
+      await db.execute(
+        `
+        INSERT INTO work_details
+        (
+          ProjectID,
+          WorkName,
+          TotalArea,
+          Rate
+        )
+        VALUES
+        (?, ?, ?, ?)
+        `,
+        [ProjectID, work.WorkName, work.TotalArea, work.Rate],
+      );
+    }
+
+    res.status(200).json({
+      message: "Work Added Successfully",
+    });
+  } catch (err) {
+    console.log(err);
+
+    res.status(500).json({
+      message: "Server Error",
+    });
+  } finally {
+    if (db) await db.end();
+  }
 });

@@ -39,7 +39,7 @@ export default function ManageProject() {
     },
     {
       name: "Manage Work",
-      path: "project-details",
+      path: "manage-prj-work",
       icon: "ri-tools-line",
     },
     {

@@ -10,7 +10,7 @@ export const getTestimonials = async (req, res) => {
       "SELECT * FROM testimonials  ORDER BY id DESC",
     );
 
-    res.json(rows);
+    res.json(rows); 
   } catch (err) {
     console.log(err);
     res.status(500).json({ message: "Error fetching testimonials" });

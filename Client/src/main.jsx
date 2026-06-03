@@ -75,6 +75,7 @@ import SaveAttendanceSupervisor from "./Components/SaveAttendanceSupervisor.jsx"
 import AttendanceSup from "./Components/AttendanceSup.jsx";
 import SupAllocatedProjects from "./Components/SupAllocatedProjects.jsx";
 import SupProjectCont from "./Components/SupProjectCont.jsx";
+import ManageProjectWork from "./Components/ManageProjectWork.jsx";
 const router = createBrowserRouter(
   createRoutesFromElements(
     <>
@@ -118,7 +119,7 @@ const router = createBrowserRouter(
             <Route path="manage-project/:id" element={<ManageProject />}>
               <Route path="project-details" element={<ProjectDetails />} />
               <Route index element={<ProjectStatus />} />
-
+              <Route path="manage-prj-work" element={<ManageProjectWork/>}/>
               <Route path="generate-bill" element={<GenerateBill />} />
               <Route
                 path="view-past-bills"
