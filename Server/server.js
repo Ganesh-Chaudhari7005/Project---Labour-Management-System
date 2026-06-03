@@ -526,6 +526,84 @@ app.get("/get-project-count", async (req, res) => {
   }
 });
 
+app.get("/get-client-project-count/:ID", async (req, res) => {
+  let db;
+  try {
+    db = await mysql.createConnection(db_details);
+
+    console.log("Database Connected Successfully");
+  } catch (err) {
+    console.log("Failed to Connect Database");
+  }
+
+  const {ID} = req.params;
+  
+  try {
+    let [getTotalounts] = await db.execute(`select * from projects where ClientID=?`,[ID]);
+    let [completedCount] = await db.execute(
+      `select * from projects where ClientID=? and Status='Completed'`,[ID]
+    );
+    let [pendingCount] = await db.execute(
+      `select * from projects where ClientID=? and Status='Pending'`,[ID]
+    );
+    // console.log(getTotalounts);
+    res.json({
+      TotalProjectCount: getTotalounts.length,
+      CompletedCount: completedCount.length,
+      PendingCount: pendingCount.length,
+    });
+  } catch (err) {
+    console.log(err);
+  } finally {
+    if (db) await db.end();
+  }
+});
+
+
+app.get("/client-billing-summary/:ID", async (req, res) => {
+
+   let db;
+   try {
+     db = await mysql.createConnection(db_details);
+
+     console.log("Database Connected Successfully");
+   } catch (err) {
+     console.log("Failed to Connect Database");
+   }
+
+  const { ID } = req.params;
+
+  try {
+    const [rows] = await db.execute(
+      `
+     SELECT 
+  COUNT(*) AS TotalBills,
+  SUM(CASE WHEN b.Status = 'Paid' THEN 1 ELSE 0 END) AS PaidBills,
+  SUM(CASE WHEN b.Status = 'Pending' THEN 1 ELSE 0 END) AS PendingBills
+FROM all_bills b
+JOIN projects p ON b.ProjectID = p.ProjectID
+WHERE p.ClientID = ?;
+    `,
+      [ID],
+    );
+    let countDetails = rows[0];
+    let [gettotalPaymentmonth] = await db.execute(`SELECT 
+  COALESCE(SUM(TotalAmount), 0) AS TotalPaidLast30Days
+FROM all_bills
+WHERE Status = 'Paid'
+AND BillPaymentDate >= NOW() - INTERVAL 30 DAY;`);
+    console.log(rows);
+    
+    let totalPaymentmonth = gettotalPaymentmonth[0];
+    res.json({ countDetails, totalPaymentmonth });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Server Error" });
+  } finally {
+    if (db) await db.end();
+  }
+});
+
 app.get("/get-labours-count", async (req, res) => {
   let db;
   try {
@@ -725,6 +803,8 @@ app.get("/get-monthly-payments", async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Server Error" });
+  }finally{
+    if (db) await db.end();
   }
 });
 app.get("/fetch-projects", async (req, res) => {
@@ -784,6 +864,8 @@ app.get("/get-issue-count", async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Server Error" });
+  }finally{
+    if (db) await db.end();
   }
 });
 
@@ -917,6 +999,76 @@ app.post("/get-project-status", async (req, res) => {
     let resStatus = await GetProjectStatus(id);
 
     res.json(resStatus);
+  }
+});
+
+app.post("/get-client-project-progress", async (req, res) => {
+  let db;
+
+  try {
+    db = await mysql.createConnection(db_details);
+  } catch (err) {
+    return res.status(500).json({ error: "DB connection failed" });
+  }
+
+  const { ID } = req.body;
+
+  try {
+    const [rows] = await db.execute(
+      `
+      SELECT 
+        p.ProjectID,
+        p.ProjectName,
+        COALESCE(SUM(w.TotalArea), 0) AS TotalArea,
+        COALESCE(SUM(w.CompletedArea), 0) AS CompletedArea,
+        CASE 
+          WHEN SUM(w.TotalArea) = 0 THEN 0
+          ELSE ROUND((SUM(w.CompletedArea) / SUM(w.TotalArea)) * 100)
+        END AS OverallPercentage
+      FROM projects p
+      LEFT JOIN work_details w 
+        ON p.ProjectID = w.ProjectID
+      WHERE p.ClientID = ?
+      GROUP BY p.ProjectID, p.ProjectName
+    `,
+      [ID],
+    );
+
+    res.json(rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Server Error" });
+  }
+});
+
+app.get("/get-new-bills", async (req, res) => {
+  let db;
+
+  try {
+    db = await mysql.createConnection(db_details);
+  } catch (err) {
+    return res.status(500).json({ error: "DB connection failed" });
+  }
+
+  try {
+    const [rows] = await db.execute(`
+      SELECT 
+        BillID,
+        BillNo,
+        ProjectID,
+        TotalAmount,
+        billdate,
+        Status
+      FROM all_bills
+      WHERE billdate >= NOW() - INTERVAL 1 DAY
+      AND Status = 'Pending'
+      ORDER BY billdate DESC
+    `);
+
+    res.json(rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Server Error" });
   }
 });
 

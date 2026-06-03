@@ -2,7 +2,12 @@ import { motion } from "framer-motion";
 import { ApiRoute } from "./ApiConfig.js";
 import { useEffect, useState } from "react";
 import CountUp from "./CountUp.jsx";
+import { BASE_URL } from "./BaseUrl";
+
 export default function AdminDashboard() {
+      const [showPDF, setShowPDF] = useState(false);
+    const [pdfUrl, setPdfUrl] = useState("");
+
   const [TotalProjectsCount, setTotalProjectCount] = useState(0);
   const [CompletedProjectCount, SetCompletedProjectCount] = useState(0);
   const [PendingProjectCount, SetPendingProjectCount] = useState(0);
@@ -88,6 +93,7 @@ export default function AdminDashboard() {
     let res = await req.json();
 
     setMonthlyPayments(res);
+    
   };
   useEffect(() => {
     getProjectCounts();
@@ -273,53 +279,53 @@ export default function AdminDashboard() {
         </div>
         <div className="row">
           <div className="col-lg-4">
-              <motion.div
-                whileHover={{ scale: 1.03 }}
-                transition={{ type: "spring", stiffness: 200 }}
-                className="dash-card"
+            <motion.div
+              whileHover={{ scale: 1.03 }}
+              transition={{ type: "spring", stiffness: 200 }}
+              className="dash-card"
+              style={{
+                borderTop: "4px solid #ef4444",
+                background:
+                  "linear-gradient(135deg, rgba(239,68,68,0.12), rgba(255,255,255,1))",
+                position: "relative",
+                overflow: "hidden",
+              }}
+            >
+              {/* flashing alert dot */}
+              <div
                 style={{
-                  borderTop: "4px solid #ef4444",
-                  background:
-                    "linear-gradient(135deg, rgba(239,68,68,0.12), rgba(255,255,255,1))",
-                  position: "relative",
-                  overflow: "hidden",
+                  position: "absolute",
+                  top: 12,
+                  right: 12,
+                  width: 10,
+                  height: 10,
+                  borderRadius: "50%",
+                  background: "#ef4444",
+                  boxShadow: "0 0 10px #ef4444",
+                  animation: "pulse 1.5s infinite",
                 }}
+              />
+              <div className="d-flex align-items-center">
+                <div style={{ fontSize: "1.8rem", opacity: 0.25 }}>⚠️</div>
+                <div className="dash-title" style={{ color: "#dc2626" }}>
+                  Reported Issues
+                </div>
+              </div>
+
+              <div
+                className="dash-count"
+                style={{ color: "#b91c1c", fontWeight: "800" }}
               >
-                {/* flashing alert dot */}
-                <div
-                  style={{
-                    position: "absolute",
-                    top: 12,
-                    right: 12,
-                    width: 10,
-                    height: 10,
-                    borderRadius: "50%",
-                    background: "#ef4444",
-                    boxShadow: "0 0 10px #ef4444",
-                    animation: "pulse 1.5s infinite",
-                  }}
-                />
-                <div className="d-flex align-items-center">
-                  <div style={{ fontSize: "1.8rem", opacity: 0.25 }}>⚠️</div>
-                  <div className="dash-title" style={{ color: "#dc2626" }}>
-                    Reported Issues
-                  </div>
-                </div>
+                <CountUp end={TotalIssues} />
+              </div>
 
-                <div
-                  className="dash-count"
-                  style={{ color: "#b91c1c", fontWeight: "800" }}
-                >
-                  <CountUp end={TotalIssues} />
-                </div>
-
-                <div className="dash-sub">Needs attention from admin</div>
-              </motion.div>
+              <div className="dash-sub">Needs attention from admin</div>
+            </motion.div>
           </div>
           <div className="col-lg-8">
             <div className="col-12">
               <motion.div
-                className="dash-card"
+                className="dash-card p-3"
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
               >
@@ -331,7 +337,7 @@ export default function AdminDashboard() {
                   <table className="table table-hover align-middle">
                     <thead className="table-light">
                       <tr>
-                        <th>Bill No</th>
+                        <th>Sr. No.</th>
                         <th>Project</th>
                         <th>Amount</th>
                         <th>Payment Date</th>
@@ -347,9 +353,9 @@ export default function AdminDashboard() {
                           </td>
                         </tr>
                       ) : (
-                        monthlyPayments.map((bill) => (
+                        monthlyPayments.map((bill, index) => (
                           <tr key={bill.BillID}>
-                            <td>#{bill.BillNo}</td>
+                            <td>{index + 1}</td>
 
                             <td>
                               <span className="badge bg-primary">
@@ -370,18 +376,16 @@ export default function AdminDashboard() {
                             </td>
 
                             <td>
-                              {bill.PaidBillReceipt ? (
-                                <a
-                                  href={bill.PaidBillReceipt}
-                                  target="_blank"
-                                  rel="noreferrer"
-                                  className="btn btn-sm btn-outline-success"
-                                >
-                                  View
-                                </a>
-                              ) : (
-                                <span className="text-muted">N/A</span>
-                              )}
+                              <button 
+                              className="btn btn-sm btn-outline-success"
+                              onClick={()=>{
+
+                                 setShowPDF(true);
+                                 setPdfUrl(
+                                   `${BASE_URL}${bill.PaidBillReceipt}#toolbar=0`,
+                                 );
+                              }}
+                              >View</button>
                             </td>
                           </tr>
                         ))
@@ -394,6 +398,32 @@ export default function AdminDashboard() {
           </div>
         </div>
       </div>
+
+      {showPDF && (
+        <div className="pdf-popup-overlay">
+          <div className="pdf-popup-container">
+            <div className="pdf-popup-header">
+              <h4>Invoice Preview</h4>
+
+              <button
+                className="pdf-close-btn"
+                onClick={() => {
+                  setShowPDF(false);
+                  setPdfUrl("");
+                }}
+              >
+                ✕
+              </button>
+            </div>
+
+            <iframe
+              src={pdfUrl}
+              title="Invoice PDF"
+              className="pdf-frame"
+            ></iframe>
+          </div>
+        </div>
+      )}
     </motion.div>
   );
 }

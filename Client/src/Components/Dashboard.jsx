@@ -133,7 +133,7 @@ export default function Dashboard() {
 
                 <div className="loginuser-opt d-flex">
                   <p className="loginusername">
-                    Welcome {loggedInUser?.UserName || "Loading"}
+                   {loggedInUser?.UserName || "Loading"}
                   </p>
                   <button 
                   className="logoutbtn"
