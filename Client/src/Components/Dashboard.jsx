@@ -65,7 +65,7 @@ export default function Dashboard() {
       "Manage Equipments",
       "CMS",
     ],
-    labour: ["Profile", "View Attendance"],
+    labour: ["Profile", "Attendance Report","Report Issue"],
     Client: ["Profile", "Your Projects", "Billing", "Report Issues","Feedback"],
   };
 
@@ -97,23 +97,30 @@ export default function Dashboard() {
           <div className="row h-100">
             <div className="col-lg-2 h-100">
               <div className="navfeature">
-                <NavLink
-                  to="/dashboard"
-                  end
-                  className={({ isActive }) =>
-                    `${isActive ? "text-black nav-item-active" : "text-white"} adminnavbtn dashboardbtn
+                <div className="linewhite">
+                  <NavLink
+                    to="/dashboard"
+                    end
+                    className={({ isActive }) =>
+                      `${isActive ? "text-black nav-item-active" : "text-white"} adminnavbtn dashboardbtn
                     ${isActive ? setActivecomp("Dashboard") : ""}
                   `
-                  }
-                >
-                  {<MdDashboard className="me-2" />}
-                  Dashboard
-                </NavLink>
+                    }
+                  >
+                    {<MdDashboard className="me-2" />}
+                    Dashboard
+                  </NavLink>
+                </div>
                 {allowedFeatures.map((feature, index) => {
                   const Icon = featureIcons[feature];
                   return (
                     <NavLink
-                      to={feature.toLowerCase().replaceAll(" ", "-")}
+                      // to={feature.toLowerCase().replaceAll(" ", "-")}
+                      to={
+                        feature.toLowerCase() === "attendance report"
+                          ? "lab-attendance-report"
+                          : feature.toLowerCase().replaceAll(" ", "-")
+                      }
                       className={({ isActive }) =>
                         `${isActive ? "text-black nav-item-active" : "text-white "} adminnavbtn 
                          ${isActive ? setActivecomp(feature) : ""}
@@ -133,18 +140,20 @@ export default function Dashboard() {
 
                 <div className="loginuser-opt d-flex">
                   <p className="loginusername">
-                   {loggedInUser?.UserName || "Loading"}
+                    {loggedInUser?.UserName || "Loading"}
                   </p>
-                  <button 
-                  className="logoutbtn"
-                  onClick={()=>{
-                    HandleLogOut();
-                    }}>LogOut</button>
+                  <button
+                    className="logoutbtn"
+                    onClick={() => {
+                      HandleLogOut();
+                    }}
+                  >
+                    LogOut
+                  </button>
                 </div>
               </div>
               <div className="outlet-cont overflow-y-scroll">
                 <Outlet />
-                
               </div>
             </div>
           </div>

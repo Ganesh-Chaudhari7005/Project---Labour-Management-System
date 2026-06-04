@@ -57,6 +57,11 @@ export default function ManageProject() {
       path: "project-details",
       icon: "ri-folder-info-line",
     },
+    {
+      name: "Project Issues",
+      path: "project-issues-cp",
+      icon: "ri-folder-info-line",
+    },
   ];
 
   return (

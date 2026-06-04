@@ -57,8 +57,8 @@ export const getReportData = async (data) => {
       ${where}
       ORDER BY date DESC
       `;
-    }else if(LabourType.toLowerCase() === "misteri"){
-        Query = `
+    } else if (LabourType.toLowerCase() === "misteri") {
+      Query = `
   SELECT
     DATE_FORMAT(attendance.date, '%Y-%m-%d') AS date,
     attendance.labour_id,
@@ -79,21 +79,63 @@ export const getReportData = async (data) => {
     ON work_details.WorkID = attendance.WorkTypeID
   ${where}
   ORDER BY attendance.date DESC
-`;;
+`;
     }
 
-    
 
-    const [rows] = await db.execute(Query, params);
+  const [rows] = await db.execute(Query, params);
+
+  let total = 0;
+  let advanceTotal = 0;
+
+  rows.forEach((r) => {
+    total += Number(r.Day_Total || 0);
+    advanceTotal += Number(r.advance || 0);
+  });
+    let previousBalance = 0;
+
+    if (type === "current") {
+      if (type === "current" && labour) {
+        const [prevRows] = await db.execute(
+          `
+    SELECT
+      COALESCE(SUM(Day_Total),0) AS totalWages,
+      COALESCE(SUM(advance),0) AS totalAdvance
+    FROM attendance
+    WHERE labour_id = ?
+      AND date < DATE_FORMAT(CURDATE(), '%Y-%m-01')
+    `,
+          [labour],
+        );
+
+        const totalWages = Number(prevRows[0].totalWages || 0);
+        const totalAdvance = Number(prevRows[0].totalAdvance || 0);
+
+        // Positive => labour has money to receive
+        // Negative => labour has taken excess advance
+        previousBalance = totalWages - totalAdvance;
+      }
+
+      let pastFlag = previousBalance > 0 ? "Add" : "Minus";
+
+       const summary = {
+         days: rows.length,
+         total,
+         previousBalance,
+         pastFlag,
+         advance: advanceTotal,
+         balance: total - advanceTotal,
+       };
+
+       return {
+         success: true,
+         records: rows,
+         summary,
+       };
+    }
 
     // 🔹 Summary
-    let total = 0;
-    let advanceTotal = 0;
 
-    rows.forEach((r) => {
-      total += Number(r.Day_Total || 0);
-      advanceTotal += Number(r.advance || 0);
-    });
 
     const summary = {
       days: rows.length,

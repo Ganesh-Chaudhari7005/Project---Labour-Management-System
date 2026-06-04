@@ -753,8 +753,8 @@ background-color: #e7eaff;
 }
 
 a.text-white.adminnavbtn.dashboardbtn {
-    border-bottom: 2px solid;
-    padding-bottom: 30px;
+    /* border-bottom: 2px solid; */
+    /* padding-bottom: 30px; */
 }
 
 a.text-white.adminnavbtn {
@@ -6061,4 +6061,14 @@ box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);}
 
 .sup-detail-row strong {
   color: #111827;
+}
+
+.linewhite{
+      border-bottom: 2px solid #fff;
+        padding-bottom: 20px;
+}
+
+.nav-syslogin{
+  position: relative;
+  right: -38%;
 }

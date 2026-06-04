@@ -74,6 +74,10 @@ export default function Login() {
                         sessionStorage.setItem("SupId", data.supervisorID);
 
            } 
+            if (data.urole.toLowerCase() === "labour") {
+              sessionStorage.setItem("LabourID", data.LabourID);
+            } 
+            
         sessionStorage.setItem("user", JSON.stringify(user));
         sessionStorage.setItem("token", data.token);
 

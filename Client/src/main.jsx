@@ -76,6 +76,9 @@ import AttendanceSup from "./Components/AttendanceSup.jsx";
 import SupAllocatedProjects from "./Components/SupAllocatedProjects.jsx";
 import SupProjectCont from "./Components/SupProjectCont.jsx";
 import ManageProjectWork from "./Components/ManageProjectWork.jsx";
+import AttendanceReportLabour from "./Components/AttendanceReportLabour.jsx";
+import ReportIssues from "./Components/ReportIssues.jsx";
+import SiteIssueCont from "./Components/SiteIssueCont.jsx";
 const router = createBrowserRouter(
   createRoutesFromElements(
     <>
@@ -119,12 +122,13 @@ const router = createBrowserRouter(
             <Route path="manage-project/:id" element={<ManageProject />}>
               <Route path="project-details" element={<ProjectDetails />} />
               <Route index element={<ProjectStatus />} />
-              <Route path="manage-prj-work" element={<ManageProjectWork/>}/>
+              <Route path="manage-prj-work" element={<ManageProjectWork />} />
               <Route path="generate-bill" element={<GenerateBill />} />
               <Route
                 path="view-past-bills"
                 element={<ViewPastProjectBills />}
               />
+              <Route path="project-issues-cp" element={<SiteIssueCont />} />
             </Route>
           </Route>
           <Route path="test-payment" element={<RazorpayTest />} />
@@ -190,6 +194,11 @@ const router = createBrowserRouter(
             <Route index element={<ProjectStatus />} />
             <Route path="project-details-sup" element={<ProjectDetails />} />
           </Route>
+          <Route
+            path="lab-attendance-report"
+            element={<AttendanceReportLabour />}
+          />
+          <Route path="report-issue" element={<ReportIssues />} />
         </Route>
       </Route>
     </>,

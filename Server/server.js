@@ -77,6 +77,14 @@ import crypto from "crypto";
 import { RAZORPAY_SECRET } from "./RazorPay/razorpay.js";
 import generateReceipt from "./generatereceipt.js";
 import AddSupervisorHandler from "./AddSupervisorHandler.js";
+
+export const pool = mysql.createPool({
+  ...db_details,
+  waitForConnections: true,
+  connectionLimit: 10,
+  queueLimit: 0,
+});
+
 import { url } from "inspector";
 const app = express();
 
@@ -536,15 +544,20 @@ app.get("/get-client-project-count/:ID", async (req, res) => {
     console.log("Failed to Connect Database");
   }
 
-  const {ID} = req.params;
-  
+  const { ID } = req.params;
+
   try {
-    let [getTotalounts] = await db.execute(`select * from projects where ClientID=?`,[ID]);
+    let [getTotalounts] = await db.execute(
+      `select * from projects where ClientID=?`,
+      [ID],
+    );
     let [completedCount] = await db.execute(
-      `select * from projects where ClientID=? and Status='Completed'`,[ID]
+      `select * from projects where ClientID=? and Status='Completed'`,
+      [ID],
     );
     let [pendingCount] = await db.execute(
-      `select * from projects where ClientID=? and Status='Pending'`,[ID]
+      `select * from projects where ClientID=? and Status='Pending'`,
+      [ID],
     );
     // console.log(getTotalounts);
     res.json({
@@ -559,17 +572,15 @@ app.get("/get-client-project-count/:ID", async (req, res) => {
   }
 });
 
-
 app.get("/client-billing-summary/:ID", async (req, res) => {
+  let db;
+  try {
+    db = await mysql.createConnection(db_details);
 
-   let db;
-   try {
-     db = await mysql.createConnection(db_details);
-
-     console.log("Database Connected Successfully");
-   } catch (err) {
-     console.log("Failed to Connect Database");
-   }
+    console.log("Database Connected Successfully");
+  } catch (err) {
+    console.log("Failed to Connect Database");
+  }
 
   const { ID } = req.params;
 
@@ -593,7 +604,7 @@ FROM all_bills
 WHERE Status = 'Paid'
 AND BillPaymentDate >= NOW() - INTERVAL 30 DAY;`);
     console.log(rows);
-    
+
     let totalPaymentmonth = gettotalPaymentmonth[0];
     res.json({ countDetails, totalPaymentmonth });
   } catch (err) {
@@ -721,8 +732,8 @@ app.get("/get-last-30-days-payment", async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Server Error" });
-  }finally{
-    if(db) await db.end();
+  } finally {
+    if (db) await db.end();
   }
 });
 
@@ -803,7 +814,7 @@ app.get("/get-monthly-payments", async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Server Error" });
-  }finally{
+  } finally {
     if (db) await db.end();
   }
 });
@@ -864,7 +875,7 @@ app.get("/get-issue-count", async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Server Error" });
-  }finally{
+  } finally {
     if (db) await db.end();
   }
 });
@@ -1071,7 +1082,6 @@ app.get("/get-new-bills", async (req, res) => {
     res.status(500).json({ error: "Server Error" });
   }
 });
-
 
 app.get("/get-recent-paid-bills", async (req, res) => {
   let db;
@@ -1541,45 +1551,42 @@ app.get("/getALcPrjDetSup/:SupId", async (req, res) => {
 
 app.get("/get-work-details/:projectId", async (req, res) => {
   let db;
-    try {
-      db = await mysql.createConnection(db_details);
-      console.log("Database Connected Successfully");
-    } catch (err) {
-      console.log("Failed to Connect Database");
-    }
+  try {
+    db = await mysql.createConnection(db_details);
+    console.log("Database Connected Successfully");
+  } catch (err) {
+    console.log("Failed to Connect Database");
+  }
 
-    try{
-const { projectId } = req.params;
+  try {
+    const { projectId } = req.params;
 
-  const [rows] = await db.execute(
-    `SELECT * 
+    const [rows] = await db.execute(
+      `SELECT * 
      FROM work_details
      WHERE ProjectID = ?
      ORDER BY WorkID`,
-    [projectId],
-  );
+      [projectId],
+    );
 
-  res.json(rows);
-    }catch(err){
-      console.log(err);
-      
-    }finally{
-      if(db) await db.end();
-    }
-  
+    res.json(rows);
+  } catch (err) {
+    console.log(err);
+  } finally {
+    if (db) await db.end();
+  }
 });
 
 app.put("/update-total-area", async (req, res) => {
+  let db;
+  try {
+    db = await mysql.createConnection(db_details);
+    console.log("Database Connected Successfully");
+  } catch (err) {
+    console.log("Failed to Connect Database");
+  }
 
-   let db;
-   try {
-     db = await mysql.createConnection(db_details);
-     console.log("Database Connected Successfully");
-   } catch (err) {
-     console.log("Failed to Connect Database");
-   }
-
-   try {
+  try {
     const { WorkID, TotalArea } = req.body;
 
     await db.execute(
@@ -1593,12 +1600,11 @@ app.put("/update-total-area", async (req, res) => {
       success: true,
       message: "Area Updated",
     });
-   } catch (err) {
-     console.log(err);
-   } finally {
-     if (db) await db.end();
-   }
-  
+  } catch (err) {
+    console.log(err);
+  } finally {
+    if (db) await db.end();
+  }
 });
 
 app.post("/add-project-work", async (req, res) => {
@@ -1637,5 +1643,68 @@ app.post("/add-project-work", async (req, res) => {
     });
   } finally {
     if (db) await db.end();
+  }
+});
+
+app.get("/get-working-site/:LabourID", async (req, res) => {
+  const { LabourID } = req.params;
+
+  const [rows] = await pool.execute(
+    `select 
+    projects.ProjectID,
+    projects.ProjectName
+    from projects
+    join labour_assignments on projects.ProjectID = labour_assignments.ProjectID where labour_assignments.LabourID = ?;`,
+    [LabourID],
+  );
+
+  console.log(rows);
+  res.json(rows);
+});
+
+app.post("/insert-Lab-Issue", async (req, res) => {
+  const { ProjectID, LabourID, IssueDescription } = req.body;
+
+  let [insertStatus] = await pool.execute(
+    `INSERT INTO LabourIssues (ProjectID,LabourID,IssueDescription) values(?,?,?)`,[ProjectID,LabourID,IssueDescription]
+  );
+
+  if(insertStatus.affectedRows === 1){
+    res.json({success : true});
+  }else{
+     res.json({ success: false });
+  }
+  
+});
+
+app.get("/get-labour-issues/:ProjectID", async (req, res) => {
+  try {
+    const { ProjectID } = req.params;
+
+    const [rows] = await pool.execute(
+      `
+      SELECT
+        li.IssueID,
+        li.ProjectID,
+        li.LabourID,
+        l.Name AS LabourName,
+        li.IssueDescription,
+        li.CreatedAt
+      FROM labourissues li
+      INNER JOIN labours l
+        ON li.LabourID = l.ID
+      WHERE li.ProjectID = ?
+      ORDER BY li.CreatedAt DESC
+      `,
+      [ProjectID],
+    );
+
+    res.json(rows);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch issues",
+    });
   }
 });

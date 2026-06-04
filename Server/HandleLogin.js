@@ -137,7 +137,27 @@ export async function HandleLogin(UserEmail, Pass) {
       };
     }
 
-   
+    if (user.User_Role.toLowerCase() === "labour") {
+
+        const [labRows] = await db.execute(
+          "SELECT ID FROM labours WHERE Email = ?",
+          [UserEmail],
+        );
+
+        let LabourID = labRows[0]?.ID || null;
+      return {
+        token,
+        success: true,
+        LabourID,
+        funame: user.User_Name,
+        urole: user.User_Role,
+        uemail: user.User_Email,
+        uaddr: rows2[0]?.Address || "Not Set",
+        uphone: rows2[0]?.Phone || "Not Set",
+        profileimgpath: rows2[0]?.profileImgPath || null,
+        message: "Login Successful",
+      };
+    }
   } catch (err) {
     console.error("Login Error:", err);
 
