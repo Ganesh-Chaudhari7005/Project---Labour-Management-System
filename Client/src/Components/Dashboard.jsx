@@ -43,6 +43,7 @@ export default function Dashboard() {
     Feedback: FaCommentDots,
     "Labour Attendance": FaCalendarCheck,
     "Sites Allocated": FaClipboardList,
+    "Report Site Issues": FaQuestionCircle,
   };
   const location = useLocation(); 
   const permissions = {
@@ -64,6 +65,7 @@ export default function Dashboard() {
       "Labour Attendance",
       "Manage Equipments",
       "CMS",
+      "Report Site Issues"
     ],
     labour: ["Profile", "Attendance Report","Report Issue"],
     Client: ["Profile", "Your Projects", "Billing", "Report Issues","Feedback"],

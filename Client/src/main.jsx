@@ -79,6 +79,7 @@ import ManageProjectWork from "./Components/ManageProjectWork.jsx";
 import AttendanceReportLabour from "./Components/AttendanceReportLabour.jsx";
 import ReportIssues from "./Components/ReportIssues.jsx";
 import SiteIssueCont from "./Components/SiteIssueCont.jsx";
+import SupReportIssues from "./Components/SupReportIssues.jsx";
 const router = createBrowserRouter(
   createRoutesFromElements(
     <>
@@ -182,6 +183,7 @@ const router = createBrowserRouter(
           <Route path="view-project-client/:id" element={<ProjectContClient />}>
             <Route index element={<ProjectStatusClient />} />
           </Route>
+          <Route path="Report-Site-Issues" element={<SupReportIssues />} />
           <Route path="labour-attendance" element={<AttendanceContSup />}>
             <Route index element={<SaveAttendanceSupervisor />} />
             <Route

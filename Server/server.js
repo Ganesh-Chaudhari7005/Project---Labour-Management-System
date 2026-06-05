@@ -1532,9 +1532,31 @@ app.post("/getProjectsList", async (req, res) => {
   let { clientID } = req.body;
   console.log(clientID);
   let ProjectList = await GetProjectNames(clientID);
-  console.log(ProjectList);
-
   res.json(ProjectList);
+});
+
+app.post("/get-sup-ProjectsList", async (req, res) => {
+  let { supID } = req.body;
+  console.log(supID);
+
+  try {
+    let [GetList] = await pool.execute(
+      `select 
+      projects.ProjectName,
+      projects.ProjectID
+      from projects
+      join supervisor_assignments on projects.ProjectID = supervisor_assignments.ProjectID where supervisor_assignments.SupervisorID=?;`,
+      [supID],
+    );
+    console.log(GetList);
+
+    res.json({
+      success: true,
+      ProjectDetails: GetList,
+    });
+  } catch (err) {
+    console.log(err);
+  }
 });
 
 app.post("/insertFeedback", insertFeedback);
@@ -1666,20 +1688,20 @@ app.post("/insert-Lab-Issue", async (req, res) => {
   const { ProjectID, LabourID, IssueDescription } = req.body;
 
   let [insertStatus] = await pool.execute(
-    `INSERT INTO LabourIssues (ProjectID,LabourID,IssueDescription) values(?,?,?)`,[ProjectID,LabourID,IssueDescription]
+    `INSERT INTO LabourIssues (ProjectID,LabourID,IssueDescription) values(?,?,?)`,
+    [ProjectID, LabourID, IssueDescription],
   );
 
-  if(insertStatus.affectedRows === 1){
-    res.json({success : true});
-  }else{
-     res.json({ success: false });
+  if (insertStatus.affectedRows === 1) {
+    res.json({ success: true });
+  } else {
+    res.json({ success: false });
   }
-  
 });
 
-app.get("/get-labour-issues/:ProjectID", async (req, res) => {
+app.get("/get-labour-issues/:id", async (req, res) => {
   try {
-    const { ProjectID } = req.params;
+    const { id } = req.params;
 
     const [rows] = await pool.execute(
       `
@@ -1696,7 +1718,7 @@ app.get("/get-labour-issues/:ProjectID", async (req, res) => {
       WHERE li.ProjectID = ?
       ORDER BY li.CreatedAt DESC
       `,
-      [ProjectID],
+      [id],
     );
 
     res.json(rows);
@@ -1705,6 +1727,138 @@ app.get("/get-labour-issues/:ProjectID", async (req, res) => {
     res.status(500).json({
       success: false,
       message: "Failed to fetch issues",
+    });
+  }
+});
+
+app.get("/get-client-issues/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const [rows] = await pool.execute(
+      `
+      SELECT
+        ri.IssueID,
+        ri.ProjectID,
+        ri.ClientID,
+        c.Name AS ClientName,
+        ri.IssueDescription,
+        ri.CreatedAt
+      FROM reportissues ri
+      JOIN clients c
+        ON ri.ClientID = c.ID
+      WHERE ri.ProjectID = ?
+      ORDER BY ri.CreatedAt DESC
+      `,
+      [id],
+    );
+
+    res.json(rows);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch client issues",
+    });
+  }
+});
+
+app.put("/update-labour-issue-status/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { status } = req.body;
+
+    const db = await mysql.createConnection(db_details);
+
+    await db.execute(
+      `
+      UPDATE LabourIssues
+      SET Status = ?
+      WHERE IssueID = ?
+      `,
+      [status, id],
+    );
+
+    await db.end();
+
+    res.status(200).json({
+      success: true,
+      message: "Status updated successfully",
+    });
+  } catch (error) {
+    console.error(error);
+
+    res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+    });
+  }
+});
+
+app.post("/insert-sup-Issue", async (req, res) => {
+  try {
+    const { project, description, SupId } = req.body;
+    console.log(project, description, SupId);
+
+    // Validation
+    if (!project || !description || !SupId) {
+      return res.status(400).json({
+        success: false,
+        message: "All fields are required",
+      });
+    }
+
+    // Insert Query
+    await pool.execute(
+      `
+      INSERT INTO SupervisorIssues (
+        ProjectID,
+        SupervisorID,
+        IssueDescription
+      )
+      VALUES (?, ?, ?)
+      `,
+      [project, SupId, description],
+    );
+
+    return res.json({
+      success: true,
+      message: "Issue submitted successfully",
+    });
+  } catch (error) {
+    console.log(error);
+
+    return res.status(500).json({
+      success: false,
+      message: "Server Error",
+    });
+  }
+});
+
+app.get("/get-sup-issues/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const [rows] = await pool.execute(
+      `
+      SELECT
+    ri.*,
+    s.Name AS SupervisorName
+FROM supervisorissues ri
+JOIN supervisors s
+    ON ri.SupervisorID = s.ID
+WHERE ri.ProjectID =?
+ORDER BY ri.CreatedAt DESC;
+      `,
+      [id],
+    );
+
+    res.json(rows);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch client issues",
     });
   }
 });
