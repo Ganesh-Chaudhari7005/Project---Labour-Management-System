@@ -1711,6 +1711,7 @@ app.get("/get-labour-issues/:id", async (req, res) => {
         li.LabourID,
         l.Name AS LabourName,
         li.IssueDescription,
+        li.Status,
         li.CreatedAt
       FROM labourissues li
       INNER JOIN labours l
@@ -1743,6 +1744,7 @@ app.get("/get-client-issues/:id", async (req, res) => {
         ri.ClientID,
         c.Name AS ClientName,
         ri.IssueDescription,
+        ri.Status,
         ri.CreatedAt
       FROM reportissues ri
       JOIN clients c
@@ -1862,3 +1864,67 @@ ORDER BY ri.CreatedAt DESC;
     });
   }
 });
+
+
+app.put("/update-client-issue-status/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { status } = req.body;
+
+    const db = await mysql.createConnection(db_details);
+
+    await db.execute(
+      `
+      UPDATE reportissues
+      SET Status = ?
+      WHERE IssueID = ?
+      `,
+      [status, id],
+    );
+
+    await db.end();
+
+    res.status(200).json({
+      success: true,
+      message: "Status updated successfully",
+    });
+  } catch (error) {
+    console.error(error);
+
+    res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+    });
+  }})
+
+  app.put("/update-supervisor-issue-status/:id", async (req, res) => {
+    try {
+      const { id } = req.params;
+      const { status } = req.body;
+
+      const db = await mysql.createConnection(db_details);
+
+      await db.execute(
+        `
+      UPDATE supervisorissues
+      SET Status = ?
+      WHERE IssueID = ?
+      `,
+        [status, id],
+      );
+
+      await db.end();
+
+      res.status(200).json({
+        success: true,
+        message: "Status updated successfully",
+      });
+    } catch (error) {
+      console.error(error);
+
+      res.status(500).json({
+        success: false,
+        message: "Internal Server Error",
+      });
+    }
+  });

@@ -6072,3 +6072,22 @@ box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);}
   position: relative;
   right: -38%;
 }
+
+.bg-yellow {
+  background-color: #ffff9d;
+  padding: 5px 10px;
+  font-weight: 500;
+  border-radius: 5px;
+  text-align: center;
+  color: #565600;
+}
+.bg-green {
+  background-color: #b9f7b9;
+  padding: 5px 10px;
+  color: #078907;
+  border-radius: 5px;
+  text-align: center;
+}
+.custom-modal~.modal-backdrop.show {
+  opacity: 0.2 !important;
+}
