@@ -949,7 +949,8 @@ app.get("/get-assigned-prj-WorkDetails/:ID", async (req, res) => {
 app.post("/add-attendance", async (req, res) => {
   try {
     const data = req.body;
-
+    console.log(data);
+    
     // optional validation
     if (!data.labour || !data.status || !data.date) {
       return res.status(400).json({
@@ -1895,7 +1896,7 @@ app.put("/update-client-issue-status/:id", async (req, res) => {
       success: false,
       message: "Internal Server Error",
     });
-  }})
+  }}) 
 
   app.put("/update-supervisor-issue-status/:id", async (req, res) => {
     try {
@@ -1925,6 +1926,188 @@ app.put("/update-client-issue-status/:id", async (req, res) => {
       res.status(500).json({
         success: false,
         message: "Internal Server Error",
+      });
+    }
+  });
+
+  app.get("/labour/dashboard/:id", async (req, res) => {
+    try {
+      const { id } = req.params;
+
+      // Labour Info
+      const [labour] = await pool.execute(
+        `
+      SELECT
+        ID,
+        Name,
+        LabType,
+        profileImgPath
+      FROM labours
+      WHERE ID = ?
+      `,
+        [id],
+      );
+
+      // Current Project
+      const [project] = await pool.execute(
+        `
+      SELECT
+        p.ProjectID,
+        p.ProjectName,
+        p.Address,
+        p.Status,
+        la.AssignDate
+      FROM labour_assignments la
+      JOIN projects p
+      ON la.ProjectID = p.ProjectID
+      WHERE la.LabourID = ?
+      LIMIT 1
+      `,
+        [id],
+      );
+
+      // Current Month Summary
+      const [summary] = await pool.execute(
+        `
+  SELECT
+    COUNT(*) AS TotalDays,
+    SUM(CASE WHEN status='P' THEN 1 ELSE 0 END) AS PresentDays,
+    SUM(CASE WHEN status='A' THEN 1 ELSE 0 END) AS AbsentDays,
+    COALESCE(SUM(Day_Total),0) AS TotalWages,
+    COALESCE(SUM(advance),0) AS TotalAdvance
+  FROM attendance
+  WHERE labour_id = ?
+  AND MONTH(date) = MONTH(CURDATE())
+  AND YEAR(date) = YEAR(CURDATE())
+  `,
+        [id],
+      );
+
+
+      // Recent Work
+      const [recentWork] = await pool.execute(
+        `
+      SELECT
+        date,
+        Work_Done,
+        Day_Total
+      FROM attendance
+      WHERE labour_id=?
+      AND Work_Done IS NOT NULL
+      ORDER BY date DESC
+      LIMIT 5
+      `,
+        [id],
+      );
+
+   const percentage =
+     summary[0]?.TotalDays > 0
+       ? ((summary[0].PresentDays / summary[0].TotalDays) * 100).toFixed(0)
+       : 0;
+
+      res.json({
+        labour: labour[0] || null,
+        project: project[0] || null,
+        summary: summary[0],
+        attendancePercentage: percentage,
+        recentWork,
+      });
+    } catch (err) {
+      console.log(err);
+      res.status(500).json({
+        message: "Server Error",
+      });
+    }
+  });
+
+  app.post("/supervisor/attendance", async (req, res) => {
+    try {
+      const { SupervisorID, AttendanceDate, Status, Site } = req.body;
+
+      await pool.execute(
+        `
+      INSERT INTO supervisor_attendance
+      (
+        SupervisorID,
+        AttendanceDate,
+        Status,
+        Site
+      )
+      VALUES (?, ?, ?, ?)
+      `,
+        [SupervisorID, AttendanceDate, Status, Site],
+      );
+
+      res.json({
+        success: true,
+        message: "Attendance recorded",
+      });
+    } catch (err) {
+      console.log(err);
+
+      if (err.code === "ER_DUP_ENTRY") {
+        return res.status(400).json({
+          success: false,
+          message: "Attendance already recorded",
+        });
+      }
+
+      res.status(500).json({
+        success: false,
+        message: "Server Error",
+      });
+    }
+  });
+
+
+  app.get("/supervisors", async (req, res) => {
+    try {
+      const [rows] = await pool.execute(`
+      SELECT
+        ID,
+        Name
+      FROM supervisors
+      ORDER BY Name
+    `);
+
+      res.json(rows);
+    } catch (err) {
+      console.log(err);
+
+      res.status(500).json({
+        message: "Server Error",
+      });
+    }
+  });
+
+  app.get("/supervisor/assigned-projects/:id", async (req, res) => {
+    try {
+      const { id } = req.params;
+
+      console.log(id);
+      
+      const [rows] = await pool.execute(
+        `
+      SELECT
+        p.ProjectID,
+        p.ProjectName
+      FROM supervisor_assignments sa
+      JOIN projects p
+        ON sa.ProjectID = p.ProjectID
+      WHERE sa.SupervisorID = ?
+      ORDER BY p.ProjectName
+      `,
+        [id],
+      );
+
+      console.log("heeee",rows);
+      
+      res.json(rows);
+    } catch (err) {
+      console.log(err);
+
+      res.status(500).json({
+        message: "Server Error",
       });
     }
   });

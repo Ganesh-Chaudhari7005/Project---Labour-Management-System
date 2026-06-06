@@ -26,6 +26,8 @@ export default function Attendance() {
         )}
       </NavLink>
 
+  
+
       <Outlet />
     </div>
   );
