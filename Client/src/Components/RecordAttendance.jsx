@@ -14,69 +14,78 @@ export default function RecordAttendance() {
   const [date, setDate] = useState(todayDate);
   const [workDone, setworkdone] = useState("");
   const [AlllabourList, setLabourList] = useState([]);
-  const [selectedProjectID, setSelectedProjectID] = useState('');
-    const [supervisors, setSupervisors] = useState([]);
+  const [selectedProjectID, setSelectedProjectID] = useState("");
+  const [supervisors, setSupervisors] = useState([]);
 
-    const [formData, setFormData] = useState({
-      SupervisorID: "",
-      AttendanceDate: new Date().toISOString().split("T")[0],
-      Status: "P",
-      Site: "",
-    });
+  const [formData, setFormData] = useState({
+    SupervisorID: "",
+    AttendanceDate: new Date().toISOString().split("T")[0],
+    Status: "P",
+    Site: "",
+  });
 
-    useEffect(() => {
-      fetchSupervisors();
-    }, []);
+  useEffect(() => {
+    fetchSupervisors();
+  }, []);
 
-   const fetchSupervisors = async () => {
-     try {
-       const res = await fetch(`${ApiRoute}supervisors`);
+  const fetchSupervisors = async () => {
+    try {
+      const res = await fetch(`${ApiRoute}supervisors`);
 
-       const data = await res.json();
+      const data = await res.json();
 
       console.log(data);
-      
-       setSupervisors(data);
-     } catch (err) {
-       console.log(err);
-     }
-   };
 
-   const handleChange = (e) => {
-     setFormData({
-       ...formData,
-       [e.target.name]: e.target.value,
-     });
-   };
+      setSupervisors(data);
+    } catch (err) {
+      console.log(err);
+    }
+  };
 
-   const saveAttendance = async (e) => {
-     e.preventDefault();
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+    });
+  };
 
-     try {
-       const res = await fetch(`${ApiRoute}supervisor/attendance`, {
-         method: "POST",
-         headers: {
-           "Content-Type": "application/json",
-         },
-         body: JSON.stringify(formData),
-       });
+  const saveAttendance = async (e) => {
 
-       const data = await res.json();
+    e.preventDefault();
 
-       alert(data.message);
+    if(!formData.SupervisorID){
+      toast.error("Supervisor not Selected");
+      return;
+    }
+    console.log(formData);
+    
 
-       if (data.success) {
-         setFormData({
-           SupervisorID: "",
-           AttendanceDate: new Date().toISOString().split("T")[0],
-           Status: "P",
-           Site: "",
-         });
-       }
-     } catch (err) {
-       console.log(err);
-     }
-   };
+    try {
+      const res = await fetch(`${ApiRoute}supervisor/attendance`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await res.json();
+
+      if (data.success) {
+        toast.success(data.message);
+        setFormData({
+          SupervisorID: "",
+          AttendanceDate: new Date().toISOString().split("T")[0],
+          Status: "P",
+          Site: "",
+        });
+      }
+    } catch (err) {
+      toast.eror(data.message);
+
+      console.log(err);
+    }
+  };
 
   const getLaboursList = async () => {
     const reqLabourList = await fetch(`${ApiRoute}fetch-labours`);
@@ -87,7 +96,6 @@ export default function RecordAttendance() {
   };
 
   const getWorkDetails = async () => {
-
     const Fetchdetails = await fetch(
       `${ApiRoute}get-assigned-prj-WorkDetails/${selectedProjectID}`,
     );
@@ -97,11 +105,9 @@ export default function RecordAttendance() {
     setWorkList(fetchedWorkList);
   };
 
-
   const handleSupervisorChange = async (e) => {
-    
     const supervisorID = e.target.value;
-    
+
     setFormData({
       ...formData,
       SupervisorID: supervisorID,
@@ -114,8 +120,13 @@ export default function RecordAttendance() {
 
       const data = await res.json();
       console.log("datai ii", data);
-      
+
       setAssignedProjects(data);
+      setFormData((prev) => ({
+        ...prev,
+        SupervisorID: supervisorID,
+        Site: data.map((p) => p.ProjectName).join(", "),
+      }));
     } catch (err) {
       console.log(err);
     }
@@ -125,12 +136,11 @@ export default function RecordAttendance() {
     getLaboursList();
   }, []);
 
-useEffect(() => {
-  if (selectedProjectID) {
-    getWorkDetails();
-  }
-}, [selectedProjectID]);
-
+  useEffect(() => {
+    if (selectedProjectID) {
+      getWorkDetails();
+    }
+  }, [selectedProjectID]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -379,127 +389,86 @@ useEffect(() => {
             </div>
 
             <div className="tab-pane fade" id="supervisor" role="tabpanel">
-              <div className="card shadow-sm">
-                <div className="card-header">
-                  <h4 className="mb-0">Supervisor Attendance</h4>
-                </div>
+              <div className="card-body">
+                <form onSubmit={saveAttendance}>
+                  <div className="row g-3">
+                    <div className="col-md-6">
+                      <label className="form-label">Supervisor</label>
 
-                <div className="card-body">
-                  <form onSubmit={saveAttendance}>
-                    <div className="row g-3">
-                      <div className="col-md-6">
-                        <label className="form-label">Supervisor</label>
+                      <select
+                        className="form-select"
+                        value={formData.SupervisorID}
+                        onChange={handleSupervisorChange}
+                      >
+                        <option value="">Select Supervisor</option>
 
-                        <select
-                          className="form-select"
-                          value={formData.SupervisorID}
-                          onChange={handleSupervisorChange}
+                        {supervisors.map((sup) => (
+                          <option key={sup.ID} value={sup.ID}>
+                            {sup.Name}
+                          </option>
+                        ))}
+                      </select>
+
+                      {assignedProjects.length > 0 && (
+                        <div
+                          style={{
+                            marginTop: "10px",
+                            padding: "12px",
+                            background: "#f8f9fa",
+                            borderRadius: "8px",
+                            border: "1px solid #dee2e6",
+                          }}
                         >
-                          <option value="">Select Supervisor</option>
+                          <strong>Assigned Sites:</strong>
 
-                          {supervisors.map((sup) => (
-                            <option key={sup.ID} value={sup.ID}>
-                              {sup.Name}
-                            </option>
-                          ))}
-                        </select>
-
-                        {assignedProjects.length > 0 && (
-                          <div
-                            style={{
-                              marginTop: "10px",
-                              padding: "12px",
-                              background: "#f8f9fa",
-                              borderRadius: "8px",
-                              border: "1px solid #dee2e6",
-                            }}
-                          >
-                            <strong>Assigned Sites:</strong>
-
-                            <div className="mt-2">
-                              {assignedProjects.map((p) => (
-                                <span
-                                  key={p.ProjectID}
-                                  className="badge bg-secondary me-2 mb-2"
-                                >
-                                  {p.ProjectName}
-                                </span>
-                              ))}
-                            </div>
-
-                            <button
-                              type="button"
-                              className="btn btn-sm btn-outline-primary mt-2"
-                              onClick={() => {
-                                const sites = assignedProjects
-                                  .map((p) => p.ProjectName)
-                                  .join(", ");
-
-                                setFormData((prev) => ({
-                                  ...prev,
-                                  Site: sites,
-                                }));
-                              }}
-                            >
-                              Copy Site Names
-                            </button>
+                          <div className="mt-2">
+                            {assignedProjects.map((p) => (
+                              <span
+                                key={p.ProjectID}
+                                className="badge bg-secondary me-2 mb-2"
+                              >
+                                {p.ProjectName}
+                              </span>
+                            ))}
                           </div>
-                        )}
-                      </div>
-
-                      <div className="col-md-6">
-                        <label className="form-label">Date</label>
-
-                        <input
-                          type="date"
-                          className="form-control"
-                          name="AttendanceDate"
-                          value={formData.AttendanceDate}
-                          onChange={handleChange}
-                        />
-                      </div>
-
-                      <div className="col-md-6">
-                        <label className="form-label">Status</label>
-
-                        <select
-                          className="form-select"
-                          name="Status"
-                          value={formData.Status}
-                          onChange={handleChange}
-                        >
-                          <option value="P">Present</option>
-
-                          <option value="A">Absent</option>
-                        </select>
-                      </div>
-
-                      <div className="col-md-6">
-                        <label className="form-label">Site</label>
-
-                        <input
-                          type="text"
-                          className="form-control"
-                          name="Site"
-                          value={formData.Site}
-                          onChange={(e) =>
-                            setFormData({
-                              ...formData,
-                              Site: e.target.value,
-                            })
-                          }
-                          placeholder="Site Name"
-                        />
-                      </div>
-
-                      <div className="col-12">
-                        <button className="btn btn-primary" type="submit">
-                          Save Attendance
-                        </button>
-                      </div>
+                        </div>
+                      )}
                     </div>
-                  </form>
-                </div>
+
+                    <div className="col-md-6">
+                      <label className="form-label">Date</label>
+
+                      <input
+                        type="date"
+                        className="form-control"
+                        name="AttendanceDate"
+                        value={formData.AttendanceDate}
+                        onChange={handleChange}
+                      />
+                    </div>
+
+                    <div className="col-md-6">
+                      <label className="form-label">Status</label>
+
+                      <select
+                        className="form-select"
+                        name="Status"
+                        value={formData.Status}
+                        onChange={handleChange}
+                      >
+                        <option value="P">Present</option>
+
+                        <option value="A">Absent</option>
+                      </select>
+                    </div>
+
+                    <div className="col-12">
+                      <button className="btn btn-primary" type="submit">
+                        Save Attendance
+                      </button>
+                    </div>
+                  </div>
+                </form>
               </div>
             </div>
           </div>

@@ -2024,6 +2024,8 @@ app.put("/update-client-issue-status/:id", async (req, res) => {
     try {
       const { SupervisorID, AttendanceDate, Status, Site } = req.body;
 
+      console.log(req.body);
+      
       await pool.execute(
         `
       INSERT INTO supervisor_attendance
@@ -2040,7 +2042,7 @@ app.put("/update-client-issue-status/:id", async (req, res) => {
 
       res.json({
         success: true,
-        message: "Attendance recorded",
+        message: "Attendance Saved Successfully",
       });
     } catch (err) {
       console.log(err);
