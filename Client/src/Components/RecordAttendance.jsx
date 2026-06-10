@@ -182,9 +182,18 @@ export default function RecordAttendance() {
     <div className="container mt-4">
       <ToastContainer />
       <div>
-        <div className="container-fluid py-3">
-          <ul className="nav nav-tabs mb-3" id="attendanceTabs" role="tablist">
-            <li className="nav-item" role="presentation">
+        <div className="container-fluid py-3 px-2">
+          <ul
+            className="nav nav-tabs mb-5"
+            style={{ border: "none" }}
+            id="attendanceTabs"
+            role="tablist"
+          >
+            <li
+              className="nav-item att-nav mb-0 py-0"
+              style={{ padding: "10px 0px", alignItems: "normal" }}
+              role="presentation"
+            >
               <button
                 className="nav-link active"
                 id="labour-tab"
@@ -192,12 +201,18 @@ export default function RecordAttendance() {
                 data-bs-target="#labour"
                 type="button"
                 role="tab"
+                style={{
+                  border: "none",
+                  padding: "0 0 8px 0",
+                  fontSize: "18px",
+                  fontWeight: "500",
+                }}
               >
                 Labour Attendance
               </button>
             </li>
 
-            <li className="nav-item" role="presentation">
+            <li className="nav-item att-nav mb-0 py-0 mx-4" role="presentation">
               <button
                 className="nav-link"
                 id="supervisor-tab"
@@ -205,6 +220,12 @@ export default function RecordAttendance() {
                 data-bs-target="#supervisor"
                 type="button"
                 role="tab"
+                style={{
+                  border: "none",
+                  padding: "0 0 8px 0",
+                  fontSize: "18px",
+                  fontWeight: "500",
+                }}
               >
                 Supervisor Attendance
               </button>
@@ -217,6 +238,7 @@ export default function RecordAttendance() {
               id="labour"
               role="tabpanel"
             >
+              <h4 className="mb-3">Labour Attendance</h4>
               <form onSubmit={handleSubmit}>
                 <div className="mb-3">
                   <label className="form-label">Select Date</label>
@@ -381,7 +403,7 @@ export default function RecordAttendance() {
                 </div>
 
                 <div className="text-end">
-                  <button className="btn btn-primary px-4" type="submit">
+                  <button className="btn btn-primary  px-4" type="submit">
                     Save Attendance
                   </button>
                 </div>
@@ -392,6 +414,7 @@ export default function RecordAttendance() {
               <div className="card-body">
                 <form onSubmit={saveAttendance}>
                   <div className="row g-3">
+                    <h4 className="mb-3">Supervisor Attendance</h4>
                     <div className="col-md-6">
                       <label className="form-label">Supervisor</label>
 
@@ -463,9 +486,11 @@ export default function RecordAttendance() {
                     </div>
 
                     <div className="col-12">
-                      <button className="btn btn-primary" type="submit">
-                        Save Attendance
-                      </button>
+                      <div className="d-flex justify-content-end mt-4">
+                        <button className="btn btn-primary" type="submit">
+                          Save Attendance
+                        </button>
+                      </div>
                     </div>
                   </div>
                 </form>

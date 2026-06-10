@@ -1,6 +1,13 @@
 import { NavLink, Outlet } from "react-router-dom"
+import { useContext } from "react";
+import LoginContext from "../Context/LoginContext";
 
 export default function CMS() {
+  
+    let { loggedInUser } = useContext(LoginContext);
+
+    
+  
   return (
     <>
       <div className="d-flex gap-3 photo-nav-cont">
@@ -14,16 +21,18 @@ export default function CMS() {
             </button>
           )}
         </NavLink>
-        <NavLink to="service-req-admin">
-          {({ isActive }) => (
-            <button
-              className={`equip-btn
+        {loggedInUser?.UserRole === "Admin" && (
+          <NavLink to="service-req-admin">
+            {({ isActive }) => (
+              <button
+                className={`equip-btn
                       ${isActive ? "admin-nav-btn" : "text-white"}`}
-            >
-              Service Requests
-            </button>
-          )}
-        </NavLink>
+              >
+                Service Requests
+              </button>
+            )}
+          </NavLink>
+        )}
         <NavLink to="admin-photo-gallery">
           {({ isActive }) => (
             <button
@@ -34,7 +43,7 @@ export default function CMS() {
             </button>
           )}
         </NavLink>
-
+ {loggedInUser?.UserRole === "Admin" && (
         <NavLink to="manage-testimonials">
           {({ isActive }) => (
             <button
@@ -45,6 +54,7 @@ export default function CMS() {
             </button>
           )}
         </NavLink>
+ )}
       </div>
       <Outlet />
     </>

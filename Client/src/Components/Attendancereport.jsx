@@ -6,7 +6,8 @@ export default function AttendanceReport() {
   const currentMonth = today.toISOString().slice(0, 7);
 
   const [labours, setLabours] = useState([]);
-const [selectedLabour, setSelectedLabour] = useState("");
+  const [selectedLabour, setSelectedLabour] = useState("");
+  const [activeTab, setActiveTab] = useState("labour");
   const [month, setMonth] = useState(currentMonth);
   const [fromDate, setFromDate] = useState("");
   const [toDate, setToDate] = useState("");
@@ -15,6 +16,16 @@ const [selectedLabour, setSelectedLabour] = useState("");
   const [loading, setLoading] = useState(false);
   const [selectedLabourType, setSelectedLabType] = useState("");
   const [selectedType, setSelectedType] = useState("");
+
+  const [supervisorList, setSupervisorList] = useState([]);
+  const [selectedSupervisorId, setSelectedSupervisorId] = useState("");
+
+  const [supervisorMonth, setSupervisorMonth] = useState("");
+  const [supervisorFromDate, setSupervisorFromDate] = useState("");
+  const [supervisorToDate, setSupervisorToDate] = useState("");
+
+  const [supervisorReportData, setSupervisorReportData] = useState([]);
+  const [supervisorReportType, setSupervisorReportType] = useState("");
 
   // 🔹 Fetch labours
   useEffect(() => {
@@ -40,6 +51,54 @@ const [selectedLabour, setSelectedLabour] = useState("");
     console.log("labours are", labours);
   }, [labours]);
   // 🔹 Fetch report
+
+  const getSupervisorReport = async (type) => {
+    setLoading(true);
+
+    try {
+      const response = await fetch(`${ApiRoute}supervisor-attendance-report`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          type,
+          supervisorId: selectedSupervisorId,
+          month: supervisorMonth,
+          fromDate: supervisorFromDate,
+          toDate: supervisorToDate,
+        }),
+      });
+
+      const data = await response.json();
+      console.log(data);
+
+      setSupervisorReportData(data);
+    } catch (error) {
+      console.error(error);
+    }finally{
+      setLoading(false);
+    }
+  };
+
+  const getSupervisors = async () => {
+    console.log("called");
+
+    try {
+      const response = await fetch(`${ApiRoute}supervisors-list`);
+
+      const data = await response.json();
+
+      setSupervisorList(data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  useEffect(() => {
+    getSupervisors();
+  }, []);
+
   const getReport = async (type) => {
     setLoading(true);
 
@@ -89,185 +148,359 @@ const [selectedLabour, setSelectedLabour] = useState("");
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
     >
-      <div className="container mt-4">
-        <div className="card p-4 shadow">
-          <h4 className="mb-3">Attendance Report</h4>
+      <div className="btn-group mb-3 p-3">
+        <button
+          style={{
+            border: "none",
+            padding: "0 0 8px 0",
+            fontSize: "18px",
+            fontWeight: "500",
+            backgroundColor: "#fff",
+            color: "#000",
+            marginRight: "30px",
+          }}
+          className={`btn ${
+            activeTab === "labour" ? "rp-acttab" : "btn-outline-primary"
+          }`}
+          onClick={() => setActiveTab("labour")}
+        >
+          Labour Attendance Report
+        </button>
 
-          {/* Filters */}
-          <div className="row mb-3">
-            <div className="col-md-3">
-              <label>Select Labour</label>
-              <select
-                className="form-select"
-                value={selectedLabour}
-                onChange={(e) => {
-                  const labour = labours.find(
-                    (l) => l.ID.toString() === e.target.value,
-                  );
-
-                  setSelectedLabour(e.target.value);
-                  setSelectedLabType(labour?.LabType || "");
-                }}
-              >
-                <option value="">All</option>
-                {labours.map((l) => (
-                  <option key={l.ID} value={l.ID} Labtype={l.LabType}>
-                    {l.Name}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div className="col-md-3">
-              <label>Select Month</label>
-              <input
-                type="month"
-                className="form-control"
-                value={month}
-                onChange={(e) => setMonth(e.target.value)}
-              />
-            </div>
-
-            <div className="col-md-3">
-              <label>From Date</label>
-              <input
-                type="date"
-                className="form-control"
-                value={fromDate}
-                onChange={(e) => setFromDate(e.target.value)}
-              />
-            </div>
-
-            <div className="col-md-3">
-              <label>To Date</label>
-              <input
-                type="date"
-                className="form-control"
-                value={toDate}
-                onChange={(e) => setToDate(e.target.value)}
-              />
-            </div>
-          </div>
-
-          {/* Buttons */}
-          <div className="mb-3 py-3 d-flex gap-2">
-            <button
-              className="btn btn-primary"
-              onClick={() => {
-                getReport("current");
-                setSelectedType("current");
-              }}
-            >
-              Current Month
-            </button>
-
-            <button
-              className="btn btn-secondary"
-              onClick={() => getReport("month")}
-            >
-              Selected Month
-            </button>
-
-            <button
-              className="btn btn-success"
-              onClick={() => getReport("range")}
-            >
-              Date Range
-            </button>
-          </div>
-
-          {loading ? (
-            <div className="text-center py-4">
-              <div className="spinner-border"></div>
-            </div>
-          ) : report.length > 0 ? (
-            <div className="table-responsive">
-              <table className="table table-bordered">
-                <thead>
-                  <tr>
-                    <th className="tbl-head">Sr No</th>
-                    <th className="tbl-head">Date</th>
-                    <th className="tbl-head">Labour</th>
-                    <th className="tbl-head">Site</th>
-                    <th className="tbl-head">Status</th>
-                    {selectedLabourType.toLowerCase() !== "helper" && (
-                      <th className="tbl-head">WorkType</th>
-                    )}
-                    <th className="tbl-head">Work Done</th>
-                    <th className="tbl-head">Advance</th>
-                    <th className="tbl-head">Day Total</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {report
-                    .sort((a, b) => new Date(a.date) - new Date(b.date)) // <-- sort ascending
-                    .map((r, i) => (
-                      <tr key={i}>
-                        <td>{i + 1}</td> {/* Sr No */}
-                        <td>{formatDate(r.date)}</td>
-                        <td>{r.Name}</td>
-                        <td>{r.ProjectName || "—"}</td>
-                        <td>{r.status}</td>
-                        {selectedLabourType.toLowerCase() !== "helper" && (
-                          <td>{r.WorkName || "—"}</td>
-                        )}
-                        <td>
-                          {r.Work_Done || r.WorkDoneHelper}{" "}
-                          {selectedLabourType.toLowerCase() !== "helper"
-                            ? "Sq. Ft."
-                            : ""}
-                        </td>
-                        <td>{r.advance}</td>
-                        <td>{r.Day_Total}</td>
-                      </tr>
-                    ))}
-                </tbody>
-              </table>
-            </div>
-          ) : (
-            <div className="text-center py-5">
-              <i className="bi bi-calendar-x fs-1 text-muted"></i>
-              <h5 className="mt-3">No Attendance Records Found</h5>
-              <p className="text-muted mb-0">
-                No attendance data is available for the selected period.
-              </p>
-            </div>
-          )}
-
-          {/* Table */}
-
-          {report.length > 0
-            ? summary && (
-                <div className="mt-4 p-3 bg-light rounded">
-                  <h5>Summary</h5>
-                  <p>Total Days: {summary.days}</p>
-                  <p>Total Wages: ₹{summary.total}</p>
-                  <p>Total Money taken : ₹{summary.advance}</p>
-
-                  <p>
-                    <strong>This Month Balance: ₹{summary.balance}</strong>
-                  </p>
-
-                  {selectedType === "current" && (
-                    <p>
-                      Past Month : {summary.pastFlag === "Add" ? "+" : "-"}
-                      {summary.previousBalance}
-                    </p>
-                  )}
-                  {selectedType === "current" && (
-                    <p>
-                      <strong>
-                        Total Balance :{" "}
-                        {summary.pastFlag === "Add"
-                          ? summary.balance + summary.previousBalance
-                          : ""}
-                      </strong>
-                    </p>
-                  )}
-                </div>
-              )
-            : null}
-        </div>
+        <button
+          style={{
+            border: "none",
+            padding: "0 0 8px 0",
+            fontSize: "18px",
+            fontWeight: "500",
+            backgroundColor: "#fff",
+            color: "#000",
+          }}
+          className={`btn ${
+            activeTab === "supervisor" ? "rp-acttab" : "btn-outline-primary"
+          }`}
+          onClick={() => setActiveTab("supervisor")}
+        >
+          Supervisor Attendance Report
+        </button>
       </div>
+
+      {activeTab === "labour" && (
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3 }}
+        >
+          {
+            <div className="card p-4 shadow">
+              <h4 className="mb-3">Labour Attendance Report</h4>
+
+              {/* Filters */}
+              <div className="row mb-3">
+                <div className="col-md-3">
+                  <label>Select Labour</label>
+                  <select
+                    className="form-select"
+                    value={selectedLabour}
+                    onChange={(e) => {
+                      const labour = labours.find(
+                        (l) => l.ID.toString() === e.target.value,
+                      );
+
+                      setSelectedLabour(e.target.value);
+                      setSelectedLabType(labour?.LabType || "");
+                    }}
+                  >
+                    <option value="">All</option>
+                    {labours.map((l) => (
+                      <option key={l.ID} value={l.ID} Labtype={l.LabType}>
+                        {l.Name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div className="col-md-3">
+                  <label>Select Month</label>
+                  <input
+                    type="month"
+                    className="form-control"
+                    value={month}
+                    onChange={(e) => setMonth(e.target.value)}
+                  />
+                </div>
+
+                <div className="col-md-3">
+                  <label>From Date</label>
+                  <input
+                    type="date"
+                    className="form-control"
+                    value={fromDate}
+                    onChange={(e) => setFromDate(e.target.value)}
+                  />
+                </div>
+
+                <div className="col-md-3">
+                  <label>To Date</label>
+                  <input
+                    type="date"
+                    className="form-control"
+                    value={toDate}
+                    onChange={(e) => setToDate(e.target.value)}
+                  />
+                </div>
+              </div>
+
+              {/* Buttons */}
+              <div className="mb-3 py-3 d-flex gap-2">
+                <button
+                  className="btn btn-primary"
+                  onClick={() => {
+                    getReport("current");
+                    setSelectedType("current");
+                  }}
+                >
+                  Current Month
+                </button>
+
+                <button
+                  className="btn btn-secondary"
+                  onClick={() => getReport("month")}
+                >
+                  Selected Month
+                </button>
+
+                <button
+                  className="btn btn-success"
+                  onClick={() => getReport("range")}
+                >
+                  Date Range
+                </button>
+              </div>
+
+              {loading ? (
+                <div className="text-center py-4">
+                  <div className="spinner-border"></div>
+                </div>
+              ) : report.length > 0 ? (
+                <div className="table-responsive">
+                  <table className="table table-bordered">
+                    <thead>
+                      <tr>
+                        <th className="tbl-head">Sr No</th>
+                        <th className="tbl-head">Date</th>
+                        <th className="tbl-head">Labour</th>
+                        <th className="tbl-head">Site</th>
+                        <th className="tbl-head">Status</th>
+                        {selectedLabourType.toLowerCase() !== "helper" && (
+                          <th className="tbl-head">WorkType</th>
+                        )}
+                        <th className="tbl-head">Work Done</th>
+                        <th className="tbl-head">Advance</th>
+                        <th className="tbl-head">Day Total</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {report
+                        .sort((a, b) => new Date(a.date) - new Date(b.date)) // <-- sort ascending
+                        .map((r, i) => (
+                          <tr key={i}>
+                            <td>{i + 1}</td> {/* Sr No */}
+                            <td>{formatDate(r.date)}</td>
+                            <td>{r.Name}</td>
+                            <td>{r.ProjectName || "—"}</td>
+                            <td>{r.status}</td>
+                            {selectedLabourType.toLowerCase() !== "helper" && (
+                              <td>{r.WorkName || "—"}</td>
+                            )}
+                            <td>
+                              {r.Work_Done || r.WorkDoneHelper}{" "}
+                              {selectedLabourType.toLowerCase() !== "helper"
+                                ? "Sq. Ft."
+                                : ""}
+                            </td>
+                            <td>{r.advance}</td>
+                            <td>{r.Day_Total}</td>
+                          </tr>
+                        ))}
+                    </tbody>
+                  </table>
+                </div>
+              ) : (
+                <div className="text-center py-5">
+                  <i className="bi bi-calendar-x fs-1 text-muted"></i>
+                  <h5 className="mt-3">No Attendance Records Found</h5>
+                  <p className="text-muted mb-0">
+                    No attendance data is available for the selected period.
+                  </p>
+                </div>
+              )}
+
+              {/* Table */}
+
+              {report.length > 0
+                ? summary && (
+                    <div className="mt-4 p-3 bg-light rounded">
+                      <h5>Summary</h5>
+                      <p>Total Days: {summary.days}</p>
+                      <p>Total Wages: ₹{summary.total}</p>
+                      <p>Total Money taken : ₹{summary.advance}</p>
+
+                      <p>
+                        <strong>This Month Balance: ₹{summary.balance}</strong>
+                      </p>
+
+                      {selectedType === "current" && (
+                        <p>
+                          Past Month : {summary.pastFlag === "Add" ? "+" : "-"}
+                          {summary.previousBalance}
+                        </p>
+                      )}
+                      {selectedType === "current" && (
+                        <p>
+                          <strong>
+                            Total Balance :{" "}
+                            {summary.pastFlag === "Add"
+                              ? summary.balance + summary.previousBalance
+                              : ""}
+                          </strong>
+                        </p>
+                      )}
+                    </div>
+                  )
+                : null}
+            </div>
+          }
+        </motion.div>
+      )}
+
+      {activeTab === "supervisor" && (
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3 }}
+        >
+          {
+            <>
+              <div className="card p-4 shadow">
+                <h4 className="mb-3">Supervisor Attendance Report</h4>
+
+                <div className="row mb-3">
+                  <div className="col-md-3">
+                    <label>Select Supervisor</label>
+
+                    <select
+                      className="form-select"
+                      value={selectedSupervisorId}
+                      onChange={(e) => setSelectedSupervisorId(e.target.value)}
+                    >
+                      <option value="">All Supervisors</option>
+
+                      {supervisorList.map((supervisor) => (
+                        <option key={supervisor.ID} value={supervisor.ID}>
+                          {supervisor.Name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div className="col-md-3">
+                    <label>Select Month</label>
+                    <input
+                      type="month"
+                      className="form-control"
+                      value={supervisorMonth}
+                      onChange={(e) => setSupervisorMonth(e.target.value)}
+                    />
+                  </div>
+
+                  <div className="col-md-3">
+                    <label>From Date</label>
+                    <input
+                      type="date"
+                      className="form-control"
+                      value={supervisorFromDate}
+                      onChange={(e) => setSupervisorFromDate(e.target.value)}
+                    />
+                  </div>
+
+                  <div className="col-md-3">
+                    <label>To Date</label>
+                    <input
+                      type="date"
+                      className="form-control"
+                      value={supervisorToDate}
+                      onChange={(e) => setSupervisorToDate(e.target.value)}
+                    />
+                  </div>
+                </div>
+
+                <div className="mb-3 py-3 d-flex gap-2">
+                  <button
+                    className="btn btn-primary"
+                    onClick={() => getSupervisorReport("current")}
+                  >
+                    Current Month
+                  </button>
+
+                  <button
+                    className="btn btn-secondary"
+                    onClick={() => getSupervisorReport("month")}
+                  >
+                    Selected Month
+                  </button>
+
+                  <button
+                    className="btn btn-success"
+                    onClick={() => getSupervisorReport("range")}
+                  >
+                    Date Range
+                  </button>
+                </div>
+                {loading ? (
+                  <div className="text-center py-4">
+                    <div className="spinner-border"></div>
+                  </div>
+                ) : supervisorReportData.length > 0 ? (
+                  <div className="table-responsive">
+                    <table className="table table-bordered">
+                      <thead>
+                        <tr>
+                          <th className="tbl-head">Sr No</th>
+                          <th className="tbl-head">Date</th>
+                          <th className="tbl-head">Supervisor</th>
+                          <th className="tbl-head">Status</th>
+                          <th className="tbl-head">Working Site</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {supervisorReportData
+                          .sort((a, b) => new Date(a.date) - new Date(b.date)) // <-- sort ascending
+                          .map((r, i) => (
+                            <tr key={i}>
+                              <td>{i + 1}</td> {/* Sr No */}
+                              <td>{formatDate(r.AttendanceDate)}</td>
+                              <td>{r.Name}</td>
+                              <td>{r.Status}</td>
+                              <td>{r.Site || "—"}</td>
+                            </tr>
+                          ))}
+                      </tbody>
+                    </table>
+                  </div>
+                ) : (
+                  <div className="text-center py-5">
+                    <i className="bi bi-calendar-x fs-1 text-muted"></i>
+                    <h5 className="mt-3">No Attendance Records Found</h5>
+                    <p className="text-muted mb-0">
+                      No attendance data is available for the selected period.
+                    </p>
+                  </div>
+                )}
+              </div>
+            </>
+          }
+        </motion.div>
+      )}
     </motion.div>
   );
 }
