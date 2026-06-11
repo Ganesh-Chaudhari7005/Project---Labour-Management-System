@@ -1,0 +1,74 @@
+@media(max-width : 575px) {
+    /*Homepage*/
+    .carousel,
+    .carousel-inner,
+    .carousel-item {
+        height: 400px;
+    }
+
+    .aboutimg3 {
+        width: 100%;
+    }
+
+    .aboutimg1 {
+        width: 100%;
+    }
+
+    .aboutimg2 {
+        width: 85%;
+    }    
+}
+
+@media (max-width: 768px) {
+    /*Homepage*/
+    .name-cont {
+        display: flex;
+        width: 90%;
+    }
+
+    .menu-btn {
+        display: block;
+    }
+
+    .navcont {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        margin-top: 15px;
+        gap: 10px;
+
+        overflow: hidden;
+        max-height: 0;
+        opacity: 0;
+        transform: translateY(-15px);
+
+        transition:
+            max-height 0.5s ease,
+            opacity 0.4s ease,
+            transform 0.4s ease;
+    }
+
+    .navcont.show-menu {
+        max-height: 500px;
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    .nav-cont {
+        flex-wrap: wrap;
+        justify-content: space-between;
+        gap: 0;
+    }
+
+    /*login page*/
+
+        .login-container{
+            flex-direction: column;
+        }
+
+        .login-left{
+            height: 30%;
+        }
+
+        
+}

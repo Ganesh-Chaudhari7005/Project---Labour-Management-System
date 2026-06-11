@@ -137,7 +137,7 @@ export default function Home() {
         <section className="re-hero-section">
           <div className="container-fluid">
             <div className="container p-0">
-              <div className="row">
+              <div className="row g-3">
                 <div className="col-lg-8">
                   <div
                     id="carouselExampleControls"
@@ -345,7 +345,7 @@ export default function Home() {
                   </Link>
                 </div>
                 <div className="col-lg-6">
-                  <div className="row">
+                  <div className="row g-3">
                     <div className="col-lg-6">
                       <div className="aboutimg-cont">
                         <img

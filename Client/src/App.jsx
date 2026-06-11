@@ -1,21 +1,32 @@
 import { NavLink, Outlet, Link } from "react-router-dom";
+import { useState } from "react";
 import "./App.css";
-
+import "./Responsive.css";
 function App() {
+    const [menuOpen, setMenuOpen] = useState(false);
+
   return (
     <>
       <div className="app-wrapper">
         <section className="py-4">
           <div className="container-fluid nav-cont">
+            <button
+              className={`menu-btn ${menuOpen ? "open" : ""}`}
+              onClick={() => setMenuOpen(!menuOpen)}
+            >
+              {menuOpen ? "☰" : "☰"}
+            </button>
             <div className="name-cont">
               <div className="re-logo-box">
                 <img src="/logo.png" alt="RE Logo" className="re-logo-img" />
               </div>
               <h3 className="firmname">Royal Enterprises</h3>
             </div>
-            <nav className="navcont">
+
+            <nav className={`navcont ${menuOpen ? "show-menu" : ""}`}>
               <NavLink
                 to="."
+                onClick={() => setMenuOpen(!menuOpen)}
                 end
                 className={({ isActive }) =>
                   `${isActive ? "nav-text-active" : " "}
@@ -26,6 +37,7 @@ function App() {
               </NavLink>
               <NavLink
                 to="about-us"
+                onClick={() => setMenuOpen(!menuOpen)}
                 end
                 className={({ isActive }) =>
                   `${isActive ? "nav-text-active" : ""}
@@ -36,6 +48,7 @@ function App() {
               </NavLink>
               <NavLink
                 to="services"
+                onClick={() => setMenuOpen(!menuOpen)}
                 end
                 className={({ isActive }) =>
                   `${isActive ? "nav-text-active" : ""}
@@ -46,6 +59,7 @@ function App() {
               </NavLink>
               <NavLink
                 to="photo-gallery"
+                onClick={() => setMenuOpen(!menuOpen)}
                 end
                 className={({ isActive }) =>
                   `${isActive ? "nav-text-active" : ""}
@@ -56,6 +70,7 @@ function App() {
               </NavLink>
               <NavLink
                 to="contact-us"
+                onClick={() => setMenuOpen(!menuOpen)}
                 end
                 className={({ isActive }) =>
                   `${isActive ? "nav-text-active" : ""}
@@ -64,7 +79,12 @@ function App() {
               >
                 Contact Us
               </NavLink>
-              <NavLink to="admin" end className="nav-syslogin login-btn">
+              <NavLink
+                to="admin"
+                onClick={() => setMenuOpen(!menuOpen)}
+                end
+                className="nav-syslogin login-btn"
+              >
                 System Login
               </NavLink>
             </nav>
@@ -78,7 +98,7 @@ function App() {
             <div className="container">
               <div className="row">
                 <div className="col-lg-4">
-                  <div className="footer-name-cont">
+                  <div className="footer-name-cont mb-3">
                     <div className="re-logo-box">
                       <img
                         src="/logo.png"
@@ -107,22 +127,22 @@ function App() {
                   </p>
                 </div>
 
-                <div className="col-lg-4 px-5">
-                  <h4 className="footer-head px-5">Important Links</h4>
+                <div className="col-lg-4 px-md-5">
+                  <h4 className="footer-head px-md-5">Important Links</h4>
 
-                  <Link to="about-us" className="footer-links px-5">
+                  <Link to="about-us" className="footer-links px-md-5">
                     About US
                   </Link>
                   <br />
-                  <Link to="photo-gallery" className="footer-links px-5">
+                  <Link to="photo-gallery" className="footer-links px-md-5">
                     Photo GalleryS
                   </Link>
                   <br />
-                  <Link to="services" className="footer-links px-5">
+                  <Link to="services" className="footer-links px-md-5">
                     Services
                   </Link>
                   <br />
-                  <Link to="about-us" className="footer-links px-5">
+                  <Link to="about-us" className="footer-links px-md-5">
                     System Login
                   </Link>
                 </div>

@@ -620,9 +620,23 @@ input[type="checkbox"] {
   overflow-y: auto;
 }
 
+
+.menu-btn {
+  display: none;
+  border: none;
+  background: none;
+  padding: 0;
+  font-size: 28px;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+}
 /*homepage*/
-
-
+.menu-btn:hover {
+  transform: scale(1.1);
+}
+.menu-btn.open {
+  transform: rotate(90deg);
+}
 @keyframes slide {
   0% {
     transform: translateX(0);

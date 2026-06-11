@@ -3,8 +3,9 @@ import { db_details } from "./dbconfig.js";
 
 // GET
 export const getTestimonials = async (req, res) => {
+  let db;
   try {
-    const db = await mysql.createConnection(db_details);
+    db = await mysql.createConnection(db_details);
 
     const [rows] = await db.execute(
       "SELECT * FROM testimonials  ORDER BY id DESC",
