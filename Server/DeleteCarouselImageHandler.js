@@ -10,7 +10,7 @@ async function RemoveCarouselImage(photoID) {
     db = await mysql.createConnection(db_details);
 
     const [rows] = await db.execute(
-      `delete from HomeCarousel where photoid=?`,
+      `delete from homecarousel where photoid=?`,
       [photoID],
     );
 

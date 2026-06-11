@@ -25,7 +25,7 @@ export const insertServiceRequest = async (req, res) => {
     db = await mysql.createConnection(db_details);
 
     const sql = `
-      INSERT INTO ServiceRequestRecords
+      INSERT INTO servicerequestrecords
       (PersonName, PersonEmail, PersonMobile, PersonAddress, PersonCity, Pincode, Requirement)
       VALUES (?, ?, ?, ?, ?, ?, ?)
     `;

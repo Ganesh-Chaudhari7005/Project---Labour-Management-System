@@ -45,21 +45,21 @@ export async function AssignEquipments(
 
     const [existing] = await db.execute(
       `SELECT Quantity_Assigned 
-       FROM Equipment_Assignments 
+       FROM equipment_assignments 
        WHERE labourID = ? AND EquipmentID = ?`,
       [selectedLabour, selectedEquip],
     );
 
     if (existing.length > 0) {
       await db.execute(
-        `UPDATE Equipment_Assignments 
+        `UPDATE equipment_assignments 
          SET Quantity_Assigned = Quantity_Assigned + ? 
          WHERE labourID = ? AND EquipmentID = ?`,
         [quantity, selectedLabour, selectedEquip],
       );
     } else {
       await db.execute(
-        `INSERT INTO Equipment_Assignments 
+        `INSERT INTO equipment_assignments 
          (labourID, EquipmentID, Quantity_Assigned) 
          VALUES (?, ?, ?)`,
         [selectedLabour, selectedEquip, quantity],

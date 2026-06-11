@@ -18,7 +18,7 @@ async function LabourEquipAssignDetails(selectedLabour) {
 
   try {
     [rows] = await db.execute(
-      "SELECT * FROM Equipment_Assignments where labourID =?",[selectedLabour]
+      "SELECT * FROM equipment_assignments where labourID =?",[selectedLabour]
     );
 
     if(rows.length ===0){

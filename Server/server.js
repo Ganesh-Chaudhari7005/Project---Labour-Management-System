@@ -1276,7 +1276,7 @@ app.get("/carousel", async (req, res) => {
         message: "Something went wrong. Please try again later.",
       };
     }
-    const [rows] = await db.execute("SELECT * FROM HomeCarousel");
+    const [rows] = await db.execute("SELECT * FROM homecarousel");
 
     res.json({
       success: true,
@@ -2268,3 +2268,10 @@ GROUP BY p.ProjectID, p.ProjectName;;
     res.status(500).json({ error: "Server Error" });
   }
 });
+
+
+// app.use(express.static(path.join(__dirname, "../Client/dist")));
+
+// app.get(/.*/, (req, res) => {
+//   res.sendFile(path.join(__dirname, "../Client/dist/index.html"));
+// });

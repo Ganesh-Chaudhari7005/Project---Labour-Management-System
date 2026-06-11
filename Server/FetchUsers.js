@@ -17,7 +17,7 @@ async function FetchUsers(){
     let rows;
 
     try{
-        [rows] = await db.execute('SELECT * FROM Users');
+        [rows] = await db.execute('SELECT * FROM users');
 
          return rows;
     }catch(err){

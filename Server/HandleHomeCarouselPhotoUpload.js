@@ -9,7 +9,7 @@ export const handleCarouselPhotoUpload = async (filePath) => {
   try {
     connection = await mysql.createConnection(db_details);
 
-    const sql = "INSERT INTO HomeCarousel (uploadpath) VALUES (?)";
+    const sql = "INSERT INTO homecarousel (uploadpath) VALUES (?)";
 
     const [result] = await connection.execute(sql, [filePath]);
 

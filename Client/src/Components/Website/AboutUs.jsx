@@ -91,7 +91,7 @@ export default function AboutUs() {
                 </div>
 
                 <div className="re-img-box">
-                  <img src="public/marble.jfif" />
+                  <img src="./marble.jfif" />
                 </div>
               </div>
             </div>

@@ -400,7 +400,7 @@ export default function Home() {
                 <div className="col-lg-3 col-md-6">
                   <div className="service-card">
                     <img
-                      src="/public/tileinstall.png"
+                      src="/tileinstall.png"
                       alt="Tile Installation"
                     />
                     <div className="service-content">
@@ -416,7 +416,7 @@ export default function Home() {
                 {/* Marble Installation */}
                 <div className="col-lg-3 col-md-6">
                   <div className="service-card">
-                    <img src="public/marble.jfif" alt="Marble Installation" />
+                    <img src="/marble.jfif" alt="Marble Installation" />
                     <div className="service-content">
                       <h5>Marble Installation</h5>
                       <p>Elegant marble fitting for premium interiors.</p>
@@ -429,7 +429,7 @@ export default function Home() {
                 <div className="col-lg-3 col-md-6">
                   <div className="service-card">
                     <img
-                      src="public/paverblock2.jpg"
+                      src="/paverblock2.jpg"
                       alt="Paver Block Installation"
                     />
                     <div className="service-content">
@@ -444,7 +444,7 @@ export default function Home() {
                 <div className="col-lg-3 col-md-6">
                   <div className="service-card">
                     <img
-                      src="public/marblepolish.jfif"
+                      src="/marblepolish.jfif"
                       alt="Marble Polishing"
                     />
                     <div className="service-content">
@@ -514,11 +514,11 @@ export default function Home() {
             <div className="tmx9-track">
               {[...data, ...data].map((item, index) => (
                 <div className="tmx9-card" key={index}>
-                  <div className="tmx9-avatar">{item.name.charAt(0)}</div>
+                  <div className="tmx9-avatar">{item?.name.charAt(0)}</div>
 
-                  <p>"{item.message}"</p>
+                  <p>"{item?.message}"</p>
 
-                  <div>{"⭐".repeat(item.rating)}</div>
+                  <div>{"⭐".repeat(item?.rating)}</div>
 
                   <h6>- {item.name}</h6>
                 </div>

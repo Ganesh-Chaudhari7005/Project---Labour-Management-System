@@ -13,7 +13,7 @@ export async function UnAssignEquipments(
     await db.beginTransaction();
 
     const [rows] = await db.execute(
-      `SELECT * FROM Equipment_Assignments WHERE labourID = ? AND EquipmentID = ?`,
+      `SELECT * FROM equipment_assignments WHERE labourID = ? AND EquipmentID = ?`,
       [selectedLabour, selectedEquip],
     );
 
@@ -36,7 +36,7 @@ export async function UnAssignEquipments(
     }
 
     await db.execute(
-      `UPDATE Equipment_Assignments 
+      `UPDATE equipment_assignments 
        SET Quantity_Assigned = Quantity_Assigned - ? 
        WHERE labourID = ? AND EquipmentID = ?`,
       [quantity, selectedLabour, selectedEquip],
@@ -53,7 +53,7 @@ export async function UnAssignEquipments(
 
     if (remaining === 0) {
       await db.execute(
-        `DELETE FROM Equipment_Assignments 
+        `DELETE FROM equipment_assignments 
          WHERE labourID = ? AND EquipmentID = ?`,
         [selectedLabour, selectedEquip],
       );

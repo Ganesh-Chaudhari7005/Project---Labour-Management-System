@@ -60,13 +60,13 @@ export async function AddUserHandler(
 
       let currenttable;
       if (addURole === "Admin" || addURole === "admin") {
-        currenttable = "System_Admin";
+        currenttable = "system_admin";
       } else if (addURole === "Supervisor") {
-        currenttable = "Supervisors";
+        currenttable = "supervisors";
       } else if (addURole === "Client") {
-        currenttable = "Clients";
+        currenttable = "clients";
       } else if (addURole === "Labour") {
-        currenttable = "Labours";
+        currenttable = "labours";
       }
 
       let AdmId = CreateAdminId();

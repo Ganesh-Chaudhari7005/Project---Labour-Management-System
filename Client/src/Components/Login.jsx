@@ -5,7 +5,7 @@ import LoginContext from "../Context/LoginContext";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
-
+import { ApiRoute } from "./ApiConfig.js";
 export default function Login() {
   const navigate = useNavigate();
   const [userId, setuserId]= useState("");
@@ -37,7 +37,7 @@ export default function Login() {
     setLoading(true);
 
     try {
-      const request = await fetch("http://localhost:3000/login", {
+      const request = await fetch(`${ApiRoute}login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ loginUserEmail, loginUserPassword }),
@@ -106,7 +106,7 @@ export default function Login() {
         <div className="login-container">
           {/* LEFT SIDE */}
           <div className="login-left">
-            <img src="public/login (2).jpg" alt="" />
+            <img src="./login (2).jpg" alt="" />
            
           </div>
 

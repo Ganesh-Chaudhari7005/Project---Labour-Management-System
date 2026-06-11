@@ -15,14 +15,14 @@ async function RemoveUser(removeuseremail, role) {
  console.log("Role : ", role);
  
     let currenttable;
-    if (role === "Admin" || role ==="admin") {
-      currenttable = "System_Admin";
-    } else if (role === "Supervisor") {
-      currenttable = "Supervisors";
-    } else if (role === "Client") { 
-      currenttable = "Clients";
-    } else if (role === "Labour" || role === "labour") {
-      currenttable = "Labours";
+    if (role.toLowerCase() === "admin") {
+      currenttable = "system_admin";
+    } else if (role.toLowerCase() === "supervisor") {
+      currenttable = "supervisors";
+    } else if (role.toLowerCase() === "clients") {
+      currenttable = "clients";
+    } else if (role.toLowerCase() === "labour") {
+      currenttable = "labours";
     }
   try {
     if(!currenttable){

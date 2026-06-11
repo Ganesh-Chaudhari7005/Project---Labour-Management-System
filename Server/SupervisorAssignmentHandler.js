@@ -50,7 +50,7 @@ export const assignSupervisor = async (req, res) => {
     db = await mysql.createConnection(db_details);
 
     await db.query(
-      `INSERT INTO Supervisor_Assignments
+      `INSERT INTO supervisor_assignments
       (SupervisorID, ProjectID)
       VALUES (?, ?)`,
       [supervisorId, projectId],
@@ -89,7 +89,7 @@ export const getSupervisorAssignments = async (req, res) => {
         s.Name,
         p.ProjectName,
         sa.Assign_Date
-      FROM Supervisor_Assignments sa
+      FROM supervisor_assignments sa
       JOIN supervisors s
         ON s.ID = sa.SupervisorID
       JOIN projects p
@@ -114,7 +114,7 @@ export const removeSupervisorAssignment = async (req, res) => {
     db = await mysql.createConnection(db_details);
 
     await db.query(
-      `DELETE FROM Supervisor_Assignments
+      `DELETE FROM supervisor_assignments
        WHERE AssignID = ?`,
       [assignId],
     );

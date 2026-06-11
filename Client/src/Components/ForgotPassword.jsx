@@ -78,7 +78,7 @@ export default function ForgotPassword() {
       <div className="forgot-container">
         {/* LEFT SIDE */}
         <div className="forgot-left">
-          <img src="public/forgot-password.jpg" alt="forgot" />
+          <img src="./forgot-password.jpg" alt="forgot" />
         </div>
 
         {/* RIGHT SIDE */}

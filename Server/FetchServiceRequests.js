@@ -7,7 +7,7 @@ export const getServiceRequests = async (req, res) => {
     db = await mysql.createConnection(db_details);
 
     const sql = `
-      SELECT * FROM ServiceRequestRecords
+      SELECT * FROM servicerequestrecords
       ORDER BY RequestID DESC
     `;
 

@@ -11,7 +11,7 @@ export async function HandleLogin(UserEmail, Pass) {
 
     // Find user
     const [rows] = await db.execute(
-      "SELECT * FROM Users WHERE User_Email = ?",
+      "SELECT * FROM users WHERE User_Email = ?",
       [UserEmail],
     );
 
@@ -44,19 +44,19 @@ export async function HandleLogin(UserEmail, Pass) {
     let tableName = "";
     switch (user.User_Role.toLowerCase()) {
       case "admin":
-        tableName = "System_Admin";
+        tableName = "system_admin";
         break;
 
       case "labour":
-        tableName = "Labours";
+        tableName = "labours";
         break;
 
       case "client":
-        tableName = "Clients";
+        tableName = "clients";
         break;
 
       case "supervisor":
-        tableName = "Supervisors";
+        tableName = "supervisors";
         break;
 
       default:
@@ -80,7 +80,7 @@ export async function HandleLogin(UserEmail, Pass) {
     // Client ID
     if (user.User_Role.toLowerCase() === "client") {
       const [clientRows] = await db.execute(
-        "SELECT ID FROM Clients WHERE Email = ?",
+        "SELECT ID FROM clients WHERE Email = ?",
         [UserEmail],
       );
 
@@ -102,7 +102,7 @@ export async function HandleLogin(UserEmail, Pass) {
     // Supervisor ID
     if (user.User_Role.toLowerCase() === "supervisor") {
       const [supRows] = await db.execute(
-        "SELECT ID FROM Supervisors WHERE Email = ?",
+        "SELECT ID FROM supervisors WHERE Email = ?",
         [UserEmail],
       );
 

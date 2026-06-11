@@ -86,7 +86,7 @@ export default function ResetPassword() {
       <div className="row g-0 h-100">
         <div className="col-lg-6">
           <div className="reset-img-cont">
-            <img src="/public/resetimg.jpg" alt="" />
+            <img src="./resetimg.jpg" alt="" />
           </div>
         </div>
         <div className="col-lg-6">

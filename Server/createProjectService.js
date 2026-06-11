@@ -81,7 +81,7 @@ export const HandleCreateProject = async (prjdata) => {
      const work = works[key];
 
      await db.query(
-       `INSERT INTO Work_Details 
+       `INSERT INTO work_details 
         (ProjectID, WorkName, TotalArea, Rate, CompletedArea)
         VALUES (?, ?, ?, ?, ?)`,
        [

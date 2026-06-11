@@ -18,7 +18,7 @@ async function FetchEquipments(){
     let rows;
 
     try{
-        [rows] = await db.execute('SELECT * FROM Equipments');
+        [rows] = await db.execute('SELECT * FROM equipments');
 
          return rows;
     }catch(err){
