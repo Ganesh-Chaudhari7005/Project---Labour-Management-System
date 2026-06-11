@@ -24,6 +24,7 @@ import { MdDashboard } from "react-icons/md";
 import { warning } from "framer-motion";
 export default function Dashboard() {
   let { loggedInUser } = useContext(LoginContext);
+  const [menuOpen, setMenuOpen] = useState(false);
   const navigate = useNavigate();
 
   const [activeComp , setActivecomp] = useState('Dashboard');
@@ -97,11 +98,14 @@ export default function Dashboard() {
       <div className="container-fluid h-100">
         <div className="h-100">
           <div className="row h-100">
-            <div className="col-lg-2 h-100">
+            <div
+              className={`col-lg-2 h-100 sidebar-sys-nav ${menuOpen ? "open" : ""}`}
+            >
               <div className="navfeature">
                 <div className="linewhite">
                   <NavLink
                     to="/dashboard"
+                    onClick={() => setMenuOpen(false)}
                     end
                     className={({ isActive }) =>
                       `${isActive ? "text-black nav-item-active" : "text-white"} adminnavbtn dashboardbtn
@@ -117,6 +121,7 @@ export default function Dashboard() {
                   const Icon = featureIcons[feature];
                   return (
                     <NavLink
+                      onClick={() => setMenuOpen(false)}
                       // to={feature.toLowerCase().replaceAll(" ", "-")}
                       to={
                         feature.toLowerCase() === "attendance report"
@@ -134,13 +139,32 @@ export default function Dashboard() {
                     </NavLink>
                   );
                 })}
+                <div className="d-lg-none">
+                  <p className="loginusername">
+                    {loggedInUser?.UserName || "Loading"}
+                  </p>
+                  <button
+                    className="logoutbtn"
+                    onClick={() => {
+                      HandleLogOut();
+                    }}
+                  >
+                    LogOut
+                  </button>
+                </div>
               </div>
             </div>
             <div className="col-lg-10 h-100">
               <div className="dash-login-info p-3 mb-3">
-                <p className="m-0 active-comp-admin">{activeComp}</p>
+                <button
+                  className="d-lg-none nav-toggle-sys"
+                  onClick={() => setMenuOpen(!menuOpen)}
+                >
+                  ☰
+                </button>
+                <p className="m-0  active-comp-admin">{activeComp}</p>
 
-                <div className="loginuser-opt d-flex">
+                <div className="loginuser-opt d-flex d-none d-md-flex">
                   <p className="loginusername">
                     {loggedInUser?.UserName || "Loading"}
                   </p>

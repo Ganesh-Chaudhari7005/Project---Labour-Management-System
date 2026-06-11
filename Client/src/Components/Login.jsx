@@ -130,7 +130,7 @@ export default function Login() {
                 </div>
 
                 {/* PASSWORD */}
-                <div className="field">
+                <div className="field mb-5 mb-md-3">
                   <label>Password</label>
 
                   <div className="password-box">
@@ -234,7 +234,6 @@ export default function Login() {
           display: flex;
           align-items: center;
           justify-content: center;
-          background: #f9fafb;
           flex-direction : column;
         }
 

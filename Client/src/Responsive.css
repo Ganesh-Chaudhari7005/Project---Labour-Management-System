@@ -72,11 +72,55 @@
 
     .login-container {
         flex-direction: column;
+        height: 100%;
+        background-color: #fff !important;
     }
 
     .login-left {
-        height: 30%;
+        height: 250px;
+        overflow: hidden;
+        flex: none !important;
+        background-color: #fff;
     }
 
+   .login-card{
+        padding-top: 50px !important;
+}
 
+}
+
+/* Mobile sidebar hidden by default */
+@media (max-width: 991px) {
+    .sidebar-sys-nav {
+        position: fixed;
+        top: 0;
+        left: -400px;
+        width: 260px;
+        height: 100%;
+        z-index: 999;
+        transition: 0.3s ease;
+    }
+
+    .sidebar-sys-nav.open {
+        left: 0;
+    }
+
+        .dash-login-info{
+            justify-content: start;
+        }
+
+    .menu-toggle {
+        font-size: 24px;
+        background: none;
+        border: none;
+        color: white;
+    }
+
+    .active-comp-admin{
+        padding-left: 10px;
+    }
+
+    .nav-toggle-sys{
+        border-radius: 5px;
+    }
 }
