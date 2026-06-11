@@ -1,4 +1,5 @@
 @media(max-width : 575px) {
+
     /*Homepage*/
     .carousel,
     .carousel-inner,
@@ -16,10 +17,11 @@
 
     .aboutimg2 {
         width: 85%;
-    }    
+    }
 }
 
 @media (max-width: 768px) {
+
     /*Homepage*/
     .name-cont {
         display: flex;
@@ -34,18 +36,15 @@
         display: flex;
         flex-direction: column;
         width: 100%;
-        margin-top: 15px;
         gap: 10px;
-
         overflow: hidden;
         max-height: 0;
         opacity: 0;
         transform: translateY(-15px);
-
         transition:
-            max-height 0.5s ease,
-            opacity 0.4s ease,
-            transform 0.4s ease;
+        max-height 0.5s ease,
+        opacity 0.4s ease,
+        transform 0.4s ease;
     }
 
     .navcont.show-menu {
@@ -60,23 +59,24 @@
         gap: 0;
     }
 
-        .nav-syslogin{
-            right: 0;
-            background: none;
-            color: #fff;
-            font-family: var(--font-def);
-            padding: 0;
-            margin-bottom: 10px;
-        }
+    .nav-syslogin {
+        right: 0;
+        background: none;
+        color: #fff;
+        font-family: var(--font-def);
+        padding: 0;
+        margin-bottom: 10px;
+    }
+
     /*login page*/
 
-        .login-container{
-            flex-direction: column;
-        }
+    .login-container {
+        flex-direction: column;
+    }
 
-        .login-left{
-            height: 30%;
-        }
+    .login-left {
+        height: 30%;
+    }
 
-        
+
 }
