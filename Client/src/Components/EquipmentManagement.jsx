@@ -15,55 +15,69 @@ export default function EquipmentManagement() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3 }}
         >
-          <div className="d-flex gap-3">
-            <NavLink to="." end>
-              {({ isActive }) => (
-                <button
-                  className={`equip-btn
-                      ${isActive ? "admin-nav-btn" : "text-white"}`}
-                >
-                  All Equipments
-                </button>
-              )}
-            </NavLink>
-            {loggedInUser?.UserRole === "Admin" && (
-              <NavLink to="add-equipment">
+          <div className="manage-project-tabs-wrapper">
+            <div className="manage-project-tabs equip-tabs-st flex-column flex-md-row">
+              <NavLink to="." end>
                 {({ isActive }) => (
                   <button
-                    className={`equip-btn
-                      ${isActive ? "admin-nav-btn" : "text-white"}`}
+                    className={
+                      isActive
+                        ? "project-tab-btn active-tab"
+                        : "project-tab-btn"
+                    }
                   >
-                    Add Equipments
+                    All Equipments
                   </button>
                 )}
               </NavLink>
-            )}
-            {loggedInUser?.UserRole === "Admin" && (
-              <NavLink to="remove-equipment">
+              {loggedInUser?.UserRole === "Admin" && (
+                <NavLink to="add-equipment">
+                  {({ isActive }) => (
+                    <button
+                      className={
+                        isActive
+                          ? "project-tab-btn active-tab"
+                          : "project-tab-btn"
+                      }
+                    >
+                      Add Equipments
+                    </button>
+                  )}
+                </NavLink>
+              )}
+              {loggedInUser?.UserRole === "Admin" && (
+                <NavLink to="remove-equipment">
+                  {({ isActive }) => (
+                    <button
+                      className={
+                        isActive
+                          ? "project-tab-btn active-tab"
+                          : "project-tab-btn"
+                      }
+                    >
+                      Remove Equipments
+                    </button>
+                  )}
+                </NavLink>
+              )}
+              <NavLink to="assign-equipments">
                 {({ isActive }) => (
                   <button
-                    className={`equip-btn
-                      ${isActive ? "admin-nav-btn" : "text-white"}`}
+                    className={
+                      isActive
+                        ? "project-tab-btn active-tab"
+                        : "project-tab-btn"
+                    }
                   >
-                    Remove Equipments
+                    Assign/UnAssign Equipments
                   </button>
                 )}
               </NavLink>
-            )}
-            <NavLink to="assign-equipments">
-              {({ isActive }) => (
-                <button
-                  className={`equip-btn
-                      ${isActive ? "admin-nav-btn" : "text-white"}`}
-                >
-                  Assign/UnAssign Equipments
-                </button>
-              )}
-            </NavLink>
-          </div>
+            </div>
 
-          <div className="container px-0">
-            <Outlet />
+            <div className="container px-0">
+              <Outlet />
+            </div>
           </div>
           <br />
         </motion.div>

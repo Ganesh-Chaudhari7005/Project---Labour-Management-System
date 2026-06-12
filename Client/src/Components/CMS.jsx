@@ -10,51 +10,57 @@ export default function CMS() {
   
   return (
     <>
-      <div className="d-flex gap-3 photo-nav-cont">
-        <NavLink to="." end>
-          {({ isActive }) => (
-            <button
-              className={`equip-btn
-                      ${isActive ? "admin-nav-btn" : "text-white"}`}
-            >
-              Home Carousel
-            </button>
-          )}
-        </NavLink>
-        {loggedInUser?.UserRole === "Admin" && (
-          <NavLink to="service-req-admin">
+      <div className="manage-project-tabs-wrapper">
+        <div className="manage-project-tabs equip-tabs-st flex-column flex-md-row">
+          <NavLink to="." end>
             {({ isActive }) => (
               <button
-                className={`equip-btn
-                      ${isActive ? "admin-nav-btn" : "text-white"}`}
+                className={
+                  isActive ? "project-tab-btn active-tab" : "project-tab-btn"
+                }
               >
-                Service Requests
+                Home Carousel
               </button>
             )}
           </NavLink>
-        )}
-        <NavLink to="admin-photo-gallery">
-          {({ isActive }) => (
-            <button
-              className={`equip-btn
-                      ${isActive ? "admin-nav-btn" : "text-white"}`}
-            >
-              Photo Gallery
-            </button>
+          {loggedInUser?.UserRole === "Admin" && (
+            <NavLink to="service-req-admin">
+              {({ isActive }) => (
+                <button
+                  className={
+                    isActive ? "project-tab-btn active-tab" : "project-tab-btn"
+                  }
+                >
+                  Service Requests
+                </button>
+              )}
+            </NavLink>
           )}
-        </NavLink>
- {loggedInUser?.UserRole === "Admin" && (
-        <NavLink to="manage-testimonials">
-          {({ isActive }) => (
-            <button
-              className={`equip-btn
-                      ${isActive ? "admin-nav-btn" : "text-white"}`}
-            >
-              Testimonials
-            </button>
+          <NavLink to="admin-photo-gallery">
+            {({ isActive }) => (
+              <button
+                className={
+                  isActive ? "project-tab-btn active-tab" : "project-tab-btn"
+                }
+              >
+                Photo Gallery
+              </button>
+            )}
+          </NavLink>
+          {loggedInUser?.UserRole === "Admin" && (
+            <NavLink to="manage-testimonials">
+              {({ isActive }) => (
+                <button
+                  className={
+                    isActive ? "project-tab-btn active-tab" : "project-tab-btn"
+                  }
+                >
+                  Testimonials
+                </button>
+              )}
+            </NavLink>
           )}
-        </NavLink>
- )}
+        </div>
       </div>
       <Outlet />
     </>

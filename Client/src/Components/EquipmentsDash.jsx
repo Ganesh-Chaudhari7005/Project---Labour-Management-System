@@ -36,7 +36,7 @@ export default function EquipmentsDash() {
           <div className="equip-header-left">
             <div className="equip-badge">
               <i className="ri-tools-line"></i>
-              Inventory Overview
+              Equipment Overview
             </div>
 
             <h1>Equipment Dashboard</h1>
@@ -62,13 +62,13 @@ export default function EquipmentsDash() {
         <div className="equip-table-card">
           <div className="equip-table-top">
             <div>
-              <h3>Available Equipments</h3>
+              <h3>All Equipments</h3>
               <p>Current in-stock equipment inventory</p>
             </div>
 
             <div className="table-status">
               <span className="status-dot"></span>
-              Live Inventory
+              Quantity
             </div>
           </div>
 

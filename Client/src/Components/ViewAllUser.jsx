@@ -74,11 +74,11 @@ const filteredUsers = AllUsers.filter(
         bodyClassName="custom-toast-body"
       />
       <div className="container remuser-cont p-3">
-        <h4 className="mb-5 d-inline-block">All Users</h4>
+        <h4 className="mb-5 d-inline-block py-2">All Users</h4>
         <NavLink to="add-user">
-          <button className="defbtn px-2">+ Add User</button>
+          <button className="defbtn add-u-btn-res-st px-2">+ Add User</button>
         </NavLink>
-        <div className="mb-3 d-flex justify-content-between align-items-center">
+        <div className="mt-3 mt-md-0 mb-3 d-flex justify-content-between align-items-center">
           <input
             type="text"
             placeholder="Search Users by name, email, or role..."

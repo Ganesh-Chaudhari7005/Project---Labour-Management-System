@@ -136,7 +136,7 @@ export default function AssignEquipment() {
               className="eq-assign-form"
             >
               <div className="row">
-                <div className="col-lg-4">
+                <div className="col-12 col-md-6 col-lg-4">
                   <div className="eq-assign-group">
                     <label>Select Labour</label>
                     <select
@@ -153,7 +153,7 @@ export default function AssignEquipment() {
                     </select>
                   </div>
                 </div>
-                <div className="col-lg-4">
+                <div className="col-12 col-md-6 col-lg-4">
                   <div className="eq-assign-group">
                     <label>Select Equipment</label>
                     <select
@@ -170,7 +170,7 @@ export default function AssignEquipment() {
                     </select>
                   </div>
                 </div>
-                <div className="col-lg-4">
+                <div className="col-12 col-md-6 col-lg-4">
                   <div className="eq-assign-group">
                     <label>Quantity </label>
                     <input
@@ -187,7 +187,11 @@ export default function AssignEquipment() {
                 <button type="submit" className="eq-assign-btn">
                   Assign Equipment
                 </button>
-                <button type="button" onClick={()=>UNAssignEquipmentHandler()} className="eq-assign-btn">
+                <button
+                  type="button"
+                  onClick={() => UNAssignEquipmentHandler()}
+                  className="eq-assign-btn"
+                >
                   UnAssign Equipment
                 </button>
                 <div className="eq-assign-summary">
@@ -219,8 +223,6 @@ export default function AssignEquipment() {
                     <span className="equip-span">Available :</span>
                     <strong>{AvailableQuantity}</strong>
                   </div>
-
-                 
                 </div>
               </div>
             </form>

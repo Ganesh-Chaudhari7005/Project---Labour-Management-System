@@ -139,18 +139,26 @@ export default function Dashboard() {
                     </NavLink>
                   );
                 })}
-                <div className="d-lg-none">
-                  <p className="loginusername">
-                    {loggedInUser?.UserName || "Loading"}
-                  </p>
-                  <button
-                    className="logoutbtn"
-                    onClick={() => {
-                      HandleLogOut();
-                    }}
-                  >
-                    LogOut
-                  </button>
+                <div className="log-sec-res-wrapper">
+                  <div className="log-sec-res-card">
+                    <div className="log-sec-res-avatar">
+                      {loggedInUser?.UserName?.charAt(0)?.toUpperCase() || "U"}
+                    </div>
+
+                    <div className="log-sec-res-info">
+                      <p className="log-sec-res-name">
+                        {loggedInUser?.UserName || "Loading..."}
+                      </p>
+                      <span className="log-sec-res-role">Administrator</span>
+                    </div>
+
+                    <button
+                      className="log-sec-res-logout-btn"
+                      onClick={HandleLogOut}
+                    >
+                      Logout
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>

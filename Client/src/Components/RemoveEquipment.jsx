@@ -106,7 +106,7 @@ setfetchedEquip(res.allEquipments);
                 />
               </div>
 
-              <div className="eq-add-button-row">
+              <div className="eq-add-button-row d-none d-md-flex">
                 <button type="submit" className="eq-add-btn eq-add-primary">
                   Remove Equipment
                 </button>
@@ -127,11 +127,9 @@ setfetchedEquip(res.allEquipments);
               <div className="eq-add-summary-box">
                 <span>Current Stock</span>
                 <strong>
-                  {
-                    fetchedEquip.find(
-                      (item) => item.Equipment_ID === selectedEquip,
-                    )?.Total_Quantity || "-"
-                  }
+                  {fetchedEquip.find(
+                    (item) => item.Equipment_ID === selectedEquip,
+                  )?.Total_Quantity || "-"}
                 </strong>
               </div>
               <div className="eq-add-summary-box">
@@ -141,13 +139,16 @@ setfetchedEquip(res.allEquipments);
               <div className="eq-add-summary-box">
                 <span>Qty. After Removal</span>
                 <strong>
-                  {
-                    fetchedEquip.find(
-                      (item) => item.Equipment_ID === selectedEquip,
-                    )?.Total_Quantity - selectedQuantity || "-"
-                  }
+                  {fetchedEquip.find(
+                    (item) => item.Equipment_ID === selectedEquip,
+                  )?.Total_Quantity - selectedQuantity || "-"}
                 </strong>
               </div>
+            </div>
+            <div className="eq-add-button-row d-md-none">
+              <button type="submit" className="eq-add-btn eq-add-primary">
+                Remove Equipment
+              </button>
             </div>
           </div>
         </div>

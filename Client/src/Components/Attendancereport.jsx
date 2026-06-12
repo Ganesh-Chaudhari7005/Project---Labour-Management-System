@@ -198,9 +198,9 @@ export default function AttendanceReport() {
               {/* Filters */}
               <div className="row mb-3">
                 <div className="col-md-3">
-                  <label>Select Labour</label>
+                  <label className="mb-2 mb-md-0">Select Labour</label>
                   <select
-                    className="form-select"
+                    className="form-select mb-2 mb-md-0"
                     value={selectedLabour}
                     onChange={(e) => {
                       const labour = labours.find(
@@ -220,10 +220,10 @@ export default function AttendanceReport() {
                   </select>
                 </div>
                 <div className="col-md-3">
-                  <label>Select Month</label>
+                  <label className="mb-2 mb-md-0">Select Month</label>
                   <input
                     type="month"
-                    className="form-control"
+                    className="form-control mb-2 mb-md-0"
                     value={month}
                     onChange={(e) => setMonth(e.target.value)}
                   />
@@ -233,7 +233,7 @@ export default function AttendanceReport() {
                   <label>From Date</label>
                   <input
                     type="date"
-                    className="form-control"
+                    className="form-control mb-2 mb-md-0"
                     value={fromDate}
                     onChange={(e) => setFromDate(e.target.value)}
                   />
@@ -386,10 +386,10 @@ export default function AttendanceReport() {
 
                 <div className="row mb-3">
                   <div className="col-md-3">
-                    <label>Select Supervisor</label>
+                    <label className="mb-2 mb-md-0">Select Supervisor</label>
 
                     <select
-                      className="form-select"
+                      className="form-select mb-2 mb-md-0"
                       value={selectedSupervisorId}
                       onChange={(e) => setSelectedSupervisorId(e.target.value)}
                     >
@@ -404,20 +404,20 @@ export default function AttendanceReport() {
                   </div>
 
                   <div className="col-md-3">
-                    <label>Select Month</label>
+                    <label className="mb-2 mb-md-0">Select Month</label>
                     <input
                       type="month"
-                      className="form-control"
+                      className="form-control mb-2 mb-md-0"
                       value={supervisorMonth}
                       onChange={(e) => setSupervisorMonth(e.target.value)}
                     />
                   </div>
 
                   <div className="col-md-3">
-                    <label>From Date</label>
+                    <label className="mb-2 mb-md-0">From Date</label>
                     <input
                       type="date"
-                      className="form-control"
+                      className="form-control mb-2 mb-md-0"
                       value={supervisorFromDate}
                       onChange={(e) => setSupervisorFromDate(e.target.value)}
                     />

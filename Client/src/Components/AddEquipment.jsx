@@ -122,10 +122,10 @@ export default function AddEquipment() {
                   onChange={(e) => setSelectedQuantity(e.target.value)}
                 />
               </div>
-              <div className="eq-add-tip">
+              <div className="eq-add-tip mb-3">
                 Tip: Quantity should match the actual purchased quantity.
               </div>
-              <div className="eq-add-button-row">
+              <div className="eq-add-button-row d-none d-md-flex">
                 <button type="submit" className="eq-add-btn eq-add-primary">
                   Add Equipment
                 </button>
@@ -151,9 +151,14 @@ export default function AddEquipment() {
                 <strong>{selectedQuantity ? selectedQuantity : 0}</strong>
               </div>
 
-              <div className="eq-add-tip">
+              <div className="eq-add-tip mb-3 d-lg-none">
                 Tip: You can select or type new equipment.
               </div>
+            </div>
+            <div className="eq-add-button-row d-md-none">
+              <button type="submit" className="eq-add-btn eq-add-primary">
+                Add Equipment
+              </button>
             </div>
           </div>
         </div>
