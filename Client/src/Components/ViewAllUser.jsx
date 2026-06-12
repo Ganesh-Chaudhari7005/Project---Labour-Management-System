@@ -82,13 +82,13 @@ const filteredUsers = AllUsers.filter(
           <input
             type="text"
             placeholder="Search Users by name, email, or role..."
-            className="form-control w-50"
+            className="form-control users-searchtab"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
         </div>
         <div className="table-responsive table-wrapper">
-          <table className="table cust-table">
+          <table className="table cust-table table-bordered users-tbl-style">
             <thead>
               <tr>
                 <th className="tbl-head">Sr. No.</th>

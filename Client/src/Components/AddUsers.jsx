@@ -133,7 +133,7 @@ export default function AddUsers() {
                 className="mb-2 p-2 custom-text profile-fields"
               />
             </div>
-            <div className="formdivs cust-add-user-formdiv d-flex align-items-center">
+            <div className="formdivs mb-4 cust-add-user-formdiv d-flex align-items-center">
               <div className="chechinner d-flex align-items-center position-relative">
                 <input type="checkbox" onChange={() => TogglePassword()} />
                 <label className="loginlabel">Show password</label>
@@ -154,7 +154,7 @@ export default function AddUsers() {
             </select>
           </div>
 
-          <button type="submit" className="save-prof-btn mt-5 px-4">
+          <button type="submit" className="save-prof-btn add-user-btn-res mt-5 px-4">
             Add User
           </button>
         </form>

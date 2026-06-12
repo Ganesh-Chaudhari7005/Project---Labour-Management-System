@@ -205,8 +205,8 @@ export default function AdminDashboard() {
             </div>
           </motion.div>
         </div>
-        <div className="row pt-4">
-          <div className="col-lg-6">
+        <div className="row pt-0  g-2 ps-3 ps-md-0">
+          <div className="col-lg-6 pt-1 pt-md-0">
             <div className="col-12">
               <motion.div
                 whileHover={{ scale: 1.01 }}
@@ -248,7 +248,7 @@ export default function AdminDashboard() {
               </motion.div>
             </div>
           </div>
-          <div className="col-lg-6">
+          <div className="col-lg-6 pt-3 pt-md-0">
             <motion.div
               whileHover={{ scale: 1.03 }}
               transition={{ type: "spring", stiffness: 200 }}
@@ -277,8 +277,8 @@ export default function AdminDashboard() {
             </motion.div>
           </div>
         </div>
-        <div className="row">
-          <div className="col-lg-4">
+        <div className="row mt-2 px-0 g-2">
+          <div className="col-lg-4 pe-0 ps-3">
             <motion.div
               whileHover={{ scale: 1.03 }}
               transition={{ type: "spring", stiffness: 200 }}
@@ -322,7 +322,7 @@ export default function AdminDashboard() {
               <div className="dash-sub">Needs attention from admin</div>
             </motion.div>
           </div>
-          <div className="col-lg-8">
+          <div className="col-lg-8 pe-0 ps-3">
             <div className="col-12">
               <motion.div
                 className="dash-card p-3"

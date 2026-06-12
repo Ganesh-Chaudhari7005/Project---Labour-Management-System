@@ -105,7 +105,7 @@ export default function ViewAllLabour() {
         bodyClassName="custom-toast-body"
       />
       <div className="container remuser-cont p-3">
-        <div className="labour-title-bar">
+        <div className="labour-title-bar mt-4 mt-lg-0">
           <div>
             <h3>All Labours</h3>
             <p>

@@ -195,7 +195,7 @@ export default function RecordAttendance() {
               role="presentation"
             >
               <button
-                className="nav-link active"
+                className="nav-link active att-inner-tab-res"
                 id="labour-tab"
                 data-bs-toggle="tab"
                 data-bs-target="#labour"
@@ -206,15 +206,19 @@ export default function RecordAttendance() {
                   padding: "0 0 8px 0",
                   fontSize: "18px",
                   fontWeight: "500",
+                  textWrap: "wrap",
                 }}
               >
                 Labour Attendance
               </button>
             </li>
 
-            <li className="nav-item att-nav mb-0 py-0 mx-4" role="presentation">
+            <li
+              className="nav-item att-nav mb-0 px-0 py-0 mx-0 mx-lg-4"
+              role="presentation"
+            >
               <button
-                className="nav-link"
+                className="nav-link att-inner-tab-res2"
                 id="supervisor-tab"
                 data-bs-toggle="tab"
                 data-bs-target="#supervisor"
@@ -225,6 +229,7 @@ export default function RecordAttendance() {
                   padding: "0 0 8px 0",
                   fontSize: "18px",
                   fontWeight: "500",
+                  textWrap: "wrap",
                 }}
               >
                 Supervisor Attendance

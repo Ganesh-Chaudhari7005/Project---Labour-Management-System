@@ -534,7 +534,7 @@ const createBill = async () => {
           <label htmlFor="sendClient">Send to client</label>
         </div>
         <button
-          className="w-100 cust-prj-btn"
+          className="w-100 cust-prj-btn bill-btn-res"
           disabled={loading || !isValid}
           onClick={async () => {
             console.log("Button clicked");
@@ -558,6 +558,7 @@ const createBill = async () => {
         >
           {loading ? "Generating..." : "Generate Bill"}
         </button>
+        
       </div>
       {showPDF && (
         <div className="pdf-popup-overlay">

@@ -183,6 +183,7 @@ const getWorkDetails = async () => {
       >
         <div className="container mt-4">
           <div className="card-body">
+            <h3 className="mb-3 text-center d-lg-none">Manage Works</h3>
             <div className="row mb-3 g-2">
               <div className="col-md-4">
                 <input
@@ -215,9 +216,9 @@ const getWorkDetails = async () => {
               </div>
 
               <div className="col-md-3">
-                <div className="d-flex gap-4 px-3">
+                <div className="d-flex gap-4 px-0 px-lg-3">
                   <button
-                    className="btn btn-outline-secondary"
+                    className="btn btn-outline-secondary mng-work-res"
                     onClick={() => {
                       setSearchTerm("");
                       setAreaFilter("");
@@ -227,7 +228,7 @@ const getWorkDetails = async () => {
                     Clear Filter
                   </button>
                   <button
-                    className="area-update-btn"
+                    className="area-update-btn mng-work-res"
                     onClick={() => {
                       const modal = new bootstrap.Modal(
                         document.getElementById("addWorkModal"),

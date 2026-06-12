@@ -113,7 +113,7 @@ const fetchAll = async () => {
       <div className="assign-header-enhanced">
         <div>
           <h2>Supervisor Assignment</h2>
-          <p>Manage and assign supervisors to projects</p>
+          <p>Manage and assign supervisors to Sites</p>
         </div>
       </div>
 
@@ -135,7 +135,7 @@ const fetchAll = async () => {
       </div>
 
       <form className="assign-form-enhanced" onSubmit={handleSubmit}>
-        <div className="field">
+        <div className="field assign-feild-res">
           <label>Supervisor</label>
 
           <select
@@ -152,7 +152,7 @@ const fetchAll = async () => {
           </select>
         </div>
 
-        <div className="field">
+        <div className="field assign-feild-res">
           <label>Project</label>
 
           <select
@@ -226,3 +226,5 @@ const fetchAll = async () => {
     </motion.div>
   );
 }
+
+

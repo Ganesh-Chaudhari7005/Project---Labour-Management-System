@@ -24,7 +24,7 @@ export default function Attendance() {
               key={index}
               to={tab.path}
               end={tab.end}
-              className="navlink-reset"
+              className="navlink-reset att-tabs-res"
             >
               {({ isActive }) => (
                 <button

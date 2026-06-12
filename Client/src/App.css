@@ -630,13 +630,16 @@ input[type="checkbox"] {
   cursor: pointer;
   transition: transform 0.3s ease;
 }
+
 /*homepage*/
 .menu-btn:hover {
   transform: scale(1.1);
 }
+
 .menu-btn.open {
   transform: rotate(180deg);
 }
+
 @keyframes slide {
   0% {
     transform: translateX(0);
@@ -862,6 +865,22 @@ a.text-white.adminnavbtn {
   color: #fff;
   border-radius: 5px;
   padding: 5px;
+}
+
+.save-prof-btn:active {
+  background-color: #f5f1f1;
+  color: var(--primary);
+}
+
+.add-user-btn-res:active {
+  background-color: #f5f1f1;
+  color: var(--primary);
+}
+
+
+.edit-prof-btn:active {
+  background-color: #f5f1f1;
+  color: var(--primary);
 }
 
 .edit-prof-btn:hover {
@@ -5097,14 +5116,15 @@ a.text-white.adminnavbtn {
   margin: 0;
 
   font-size: 1.4rem;
-
-  font-weight: 700;
-
   color: #0f172a;
 
   line-height: 1.1;
 }
 
+
+.issue-tbl-cont-res{
+  padding: 20px;
+}
 .project-header-left p {
   margin-top: 14px;
 
@@ -5284,7 +5304,7 @@ a.text-white.adminnavbtn {
 
 @media (max-width: 600px) {
   .project-header-card {
-    padding: 26px;
+    padding: 10px;
     border-radius: 24px;
   }
 
@@ -5294,7 +5314,6 @@ a.text-white.adminnavbtn {
 
   .manage-project-tabs {
     padding: 10px;
-    gap: 10px;
   }
 
   .project-tab-btn {
@@ -6152,8 +6171,8 @@ a.text-white.adminnavbtn {
   color: #000;
 }
 
-.rp-acttab::after{
-content: "";
+.rp-acttab::after {
+  content: "";
   height: 5px;
   width: 100%;
   background-color: var(--primary);

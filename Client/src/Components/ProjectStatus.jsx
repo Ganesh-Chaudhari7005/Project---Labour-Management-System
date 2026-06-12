@@ -102,10 +102,10 @@ export default function ProjectStatus() {
       animate={{ opacity: 1, y: 0 }}
     >
     <div className="prjname-cont">
-      <h3>{ProjectName}</h3>
+      {/* <h3 className="prj-st-res-st">{ProjectName}</h3> */}
     </div>
       <div className={styles.header}>
-        <h2>Project Status</h2>
+        <h2>Site Status</h2>
 
         <div className={styles.rightHeader}>
           <input

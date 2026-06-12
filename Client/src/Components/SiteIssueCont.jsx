@@ -125,10 +125,10 @@ useEffect(() => {
 return (
   <>
     <div className="container-fluid">
-      <ToastContainer/>
+      <ToastContainer />
       {/* Tabs */}
       <ul
-        className="nav mb-4"
+        className="nav mb-4 nav-issue-res"
         style={{
           borderBottom: "1px solid #dee2e6",
           gap: "10px",
@@ -210,10 +210,10 @@ return (
               style={{
                 background: "#fff",
                 borderRadius: "10px",
-                padding: "20px",
                 border: "1px solid #e9ecef",
                 boxShadow: "0 1px 3px rgba(0,0,0,0.08)",
               }}
+              className="issue-tbl-cont-res"
             >
               <h5>Labour Issues</h5>
 
@@ -252,9 +252,9 @@ return (
                         </td>
                         <td>
                           <button
-                            onClick={() =>{
+                            onClick={() => {
                               openStatusModal(data);
-                              setIssueSender('labour');
+                              setIssueSender("labour");
                             }}
                             className="rounded p-1"
                           >
@@ -320,10 +320,9 @@ return (
                         </td>
                         <td>
                           <button
-                            onClick={() =>{ 
-                              openStatusModal(data)
+                            onClick={() => {
+                              openStatusModal(data);
                               setIssueSender("client");
-
                             }}
                             className="rounded p-1"
                           >
@@ -391,8 +390,8 @@ return (
                         </td>
                         <td>
                           <button
-                            onClick={() =>{ 
-                              openStatusModal(data)
+                            onClick={() => {
+                              openStatusModal(data);
                               setIssueSender("supervisor");
                             }}
                             className="rounded p-1"

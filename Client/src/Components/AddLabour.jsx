@@ -94,7 +94,8 @@ export default function AddLabour() {
           <h4 className="mb-5 d-inline-block">Add Labour</h4>
           <form>
             <div className="row">
-              <div className="col-lg-4">
+              <div className="col-12 col-md-6 col-lg-4">
+                {" "}
                 <div className="form-divs">
                   <label htmlFor="labourName" className="custom-feild">
                     Labour Name : <sup style={{ color: "red" }}>*</sup>
@@ -112,7 +113,8 @@ export default function AddLabour() {
                   />
                 </div>
               </div>
-              <div className="col-lg-4">
+              <div className="col-12 col-md-6 col-lg-4">
+                {" "}
                 <div className="form-divs mb-3">
                   <label htmlFor="labourEmail" className="custom-feild">
                     Labour Email : <sup style={{ color: "red" }}>*</sup>
@@ -130,7 +132,8 @@ export default function AddLabour() {
                   />
                 </div>
               </div>
-              <div className="col-lg-4">
+              <div className="col-12 col-md-6 col-lg-4">
+                {" "}
                 <div className="form-divs">
                   <label htmlFor="labourContact" className="custom-feild">
                     Labour Contact : <sup style={{ color: "red" }}>*</sup>
@@ -150,7 +153,8 @@ export default function AddLabour() {
               </div>
             </div>
             <div className="row mb-3">
-              <div className="col-lg-4">
+              <div className="col-12 col-md-6 col-lg-4">
+                {" "}
                 <div className="form-divs">
                   <label htmlFor="labourContact" className="custom-feild">
                     Photo :
@@ -171,7 +175,8 @@ export default function AddLabour() {
                   />
                 </div>
               </div>
-              <div className="col-lg-4">
+              <div className="col-12 col-md-6 col-lg-4">
+                {" "}
                 <div className="form-divs">
                   <label htmlFor="labourWages" className="custom-feild">
                     Daily Wage : <sup style={{ color: "red" }}>*</sup>
@@ -189,9 +194,10 @@ export default function AddLabour() {
                   />
                 </div>
               </div>
-              <div className="col-lg-4 d-flex align-items-center">
+              <div className="col-12 col-lg-4 d-flex align-items-center">
                 <div className="row w-100">
-                  <div className="col-lg-6">
+                  <div className="col-12 col-sm-6">
+                    {" "}
                     <div className="form-divs">
                       <label htmlFor="labBOB" className="custom-feild">
                         Date of birth : <sup style={{ color: "red" }}>*</sup>
@@ -209,7 +215,8 @@ export default function AddLabour() {
                       />
                     </div>
                   </div>
-                  <div className="col-lg-6">
+                  <div className="col-12 col-sm-6">
+                    {" "}
                     <div className="form-divs">
                       <label htmlFor="labtype" className="custom-feild">
                         Labour Type : <sup style={{ color: "red" }}>*</sup>
@@ -243,7 +250,7 @@ export default function AddLabour() {
                   }}
                 ></textarea>
               </div>
-              <div className="col-lg-4 d-flex align-items-center">
+              <div className="col-lg-4 d-flex align-items-center mt-5 mt-lg-0">
                 <div className="form-divs">
                   <label className="custom-feild">
                     Gender : <sup style={{ color: "red" }}>*</sup>

@@ -4,12 +4,12 @@ import { motion } from "framer-motion";
 import { toast, ToastContainer } from "react-toastify";
 import { ApiRoute } from "./ApiConfig";
 import { useApi } from "./ApiCaller";
-import { uploadUrl } from "../uploadConfig";
+import {BASE_URL} from "./BaseUrl.js"
 export default function Profile() {
   const callApi = useApi();
   const { loggedInUser, setLoggedInUser } = useContext(LoginContext);
 
- 
+
   const [isdisabled, setDisabled] = useState(true);
   const [isavebtnVisible, setSavebtn] = useState(false);
   const [profilename, setProfileName] = useState("");
@@ -125,6 +125,9 @@ export default function Profile() {
   const setSaveBtnState = () => {
     setSavebtn((prev) => prev =true);
   };
+
+  console.log(`${BASE_URL}${loggedInUser.UserImgPath}`);
+  
   return (
     <motion.div
       initial={{ opacity: 0, y: 10 }}
@@ -157,28 +160,31 @@ export default function Profile() {
             <div className="col-lg-2 d-flex justify-content-center">
               <div className="profile-pic-cont">
                 <img
-                  src={`${uploadUrl}${loggedInUser.UserImgPath}`}
+                  src={`${BASE_URL}${loggedInUser.UserImgPath}`}
                   onError={(e) => {
                     e.target.src = `/defaultprofile.png`;
                   }}
                 />
               </div>
             </div>
+
             <div className="col-lg-10">
-              <br />
-              <br />
-              <h3>{loggedInUser.UserName}</h3>
-              <p className="profile-role-text">{loggedInUser.UserRole}</p>
-              <button
-                className="edit-prof-btn"
-                onClick={() => HandleFormStatus()}
-              >
-                Edit Profile
-              </button>
+              <div className="profile-name-role-cont">
+                <br />
+                <br />
+                <h3 className="profilepage-name">{loggedInUser.UserName}</h3>
+                <p className="profile-role-text">{loggedInUser.UserRole}</p>
+                <button
+                  className="edit-prof-btn"
+                  onClick={() => HandleFormStatus()}
+                >
+                  Edit Profile
+                </button>
+              </div>
             </div>
           </div>
-          <div className="profile-det-from px-5">
-            <form onSubmit={ValProfileUpdate}>
+          <div className="profile-det-from px-0 px-md-5">
+            <form className="profile-form" onSubmit={ValProfileUpdate}>
               <div className="profile-info-cont">
                 <div className="formdivs">
                   <label className="loginlabel pb-2">Full Name:</label>

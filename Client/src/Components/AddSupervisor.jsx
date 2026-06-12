@@ -98,7 +98,8 @@ export default function AddSupervisor() {
 
           <form>
             <div className="row">
-              <div className="col-lg-4">
+              <div className="col-12 col-md-6 col-lg-4">
+                {" "}
                 <div className="form-divs">
                   <label htmlFor="supervisorName" className="custom-feild">
                     Supervisor Name :<sup style={{ color: "red" }}>*</sup>
@@ -114,7 +115,8 @@ export default function AddSupervisor() {
                 </div>
               </div>
 
-              <div className="col-lg-4">
+              <div className="col-12 col-md-6 col-lg-4">
+                {" "}
                 <div className="form-divs mb-3">
                   <label htmlFor="supEmail" className="custom-feild">
                     Supervisor Email :<sup style={{ color: "red" }}>*</sup>
@@ -130,7 +132,8 @@ export default function AddSupervisor() {
                 </div>
               </div>
 
-              <div className="col-lg-4">
+              <div className="col-12 col-md-6 col-lg-4">
+                {" "}
                 <div className="form-divs">
                   <label htmlFor="supContact" className="custom-feild">
                     Supervisor Contact :<sup style={{ color: "red" }}>*</sup>
@@ -148,7 +151,8 @@ export default function AddSupervisor() {
             </div>
 
             <div className="row mb-3">
-              <div className="col-lg-4">
+              <div className="col-12 col-md-6 col-lg-4">
+                {" "}
                 <div className="form-divs">
                   <label className="custom-feild">Photo :</label>
 
@@ -165,7 +169,8 @@ export default function AddSupervisor() {
                 </div>
               </div>
 
-              <div className="col-lg-4">
+              <div className="col-12 col-md-6 col-lg-4">
+                {" "}
                 <div className="form-divs">
                   <label htmlFor="supSalary" className="custom-feild">
                     Monthly Salary :<sup style={{ color: "red" }}>*</sup>
@@ -209,7 +214,7 @@ export default function AddSupervisor() {
               </label>
             </div>
 
-            <div className="w-100 p-3">
+            <div className="w-100 py-5 p-3">
               <button
                 type="submit"
                 className="defbtn"
@@ -218,6 +223,7 @@ export default function AddSupervisor() {
                 Add Supervisor
               </button>
             </div>
+          <div className="dummy-res-ft"></div>
           </form>
         </div>
       </motion.div>

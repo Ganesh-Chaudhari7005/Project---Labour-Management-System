@@ -116,7 +116,7 @@ const handleSubmit = async (e) => {
 
       {/* Form */}
       <form className="assign-form-enhanced" onSubmit={handleSubmit}>
-        <div className="field">
+        <div className="field labour-ass-fld">
           <label>Labour</label>
           <select
             value={labourId}
@@ -131,7 +131,7 @@ const handleSubmit = async (e) => {
           </select>
         </div>
 
-        <div className="field">
+        <div className="field labour-ass-fld">
           <label>Project</label>
           <select
             value={projectId}

@@ -108,7 +108,7 @@ const filteredSupervisors = allSupervisors.filter((s) => {
         bodyClassName="custom-toast-body"
       />
 
-      <div className="container sup-container p-3">
+      <div className="container sup-container p-3 py-4">
         {/* Header */}
         <div className="sup-header">
           <div>

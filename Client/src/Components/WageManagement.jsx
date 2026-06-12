@@ -136,7 +136,7 @@
             <div className="equip-bg-circle one"></div>
             <div className="equip-bg-circle two"></div>
           </div>
-          <div className="row mb-3">
+          <div className="row mb-3 g-3">
             <div className="col-md-6">
               <input
                 type="text"

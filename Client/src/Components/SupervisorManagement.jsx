@@ -2,7 +2,7 @@ import { Outlet, NavLink } from 'react-router-dom';
 export default function SupervisorManagement() {
   return (
     <div className="h-100 w-100 admin-comp-def global-page-anim">
-      <div className="d-flex gap-2">
+      <div className="d-flex gap-1">
         <NavLink to="." end>
           {({ isActive }) => (
             <button className={isActive ? "admin-nav-btn" : "rounded"}>
