@@ -139,7 +139,7 @@ export default function Dashboard() {
                     </NavLink>
                   );
                 })}
-                <div className="log-sec-res-wrapper">
+                <div className="log-sec-res-wrapper d-lg-none">
                   <div className="log-sec-res-card">
                     <div className="log-sec-res-avatar">
                       {loggedInUser?.UserName?.charAt(0)?.toUpperCase() || "U"}
