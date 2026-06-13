@@ -14,11 +14,11 @@ export async function HandleProfileUpdate(
   if(roleInfo ==="Admin" || roleInfo === "admin"){
     currenttable = "system_admin";
   }else if(roleInfo ==="Supervisor"){
-    currenttable = "Supervisors";
+    currenttable = "supervisors";
   }else if(roleInfo === "Client"){
-    currenttable = "Clients";
+    currenttable = "clients";
   }else if(roleInfo ==="Labour" || roleInfo === "labour"){
-    currenttable = "Labours"
+    currenttable = "labours"
   }
 
   console.log("-------------");
@@ -60,12 +60,12 @@ console.log("Updating user with email:", profileEmail);
         ],
       );
 
-      let [checkImgExists] = await db.execute(`Select profileImgPath from Users where User_Email = ?`,
+      let [checkImgExists] = await db.execute(`Select profileImgPath from users where User_Email = ?`,
         [profileEmail]
       )
 
       if (!checkImgExists[0].profileImgPath){
-        db.execute('UPDATE Users set profileImgPath = ? where User_Email = ?',
+        db.execute('UPDATE users set profileImgPath = ? where User_Email = ?',
           [filepath, profileEmail]
         )
       }
