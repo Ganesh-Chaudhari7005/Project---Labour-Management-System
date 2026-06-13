@@ -181,11 +181,11 @@ const [paidBills, setPaidBills] = useState([]);
             </div>
           </motion.div>
         </div>
-        <div className="row pt-4 mb-0">
-          <div className="col-lg-7">
+        <div className="row pt-4 mb-0 px-0 ps-4">
+          <div className="col-lg-7 pe-lg-4 px-1 mb-3 mb-lg-0">
             <div className="row g-3">
               {projects.map((p) => (
-                <div className="col-md-12" key={p.ProjectID}>
+                <div className="col-md-12 px-0" key={p.ProjectID}>
                   <motion.div
                     className="dash-card"
                     whileHover={{ scale: 1.02 }}
@@ -218,7 +218,7 @@ const [paidBills, setPaidBills] = useState([]);
               ))}
             </div>
           </div>
-          <div className="col-lg-5">
+          <div className="col-lg-5 px-0">
             <motion.div
               className="dash-card"
               style={{
@@ -262,8 +262,8 @@ const [paidBills, setPaidBills] = useState([]);
             </motion.div>
           </div>
         </div>
-        <div className="row">
-          <div className="col-lg-6">
+        <div className="row px-0 ps-4 mt-3">
+          <div className="col-lg-6 px-0 pe-lg-3">
             <div className="col-12 mt-2">
               <motion.div
                 className="dash-card"
@@ -303,9 +303,7 @@ const [paidBills, setPaidBills] = useState([]);
                             className="btn btn-sm btn-outline-success"
                             onClick={() => {
                               setShowPDF(true);
-                              setPdfUrl(
-                                `${BASE_URL}${bill.PDFPath}#toolbar=0`,
-                              );
+                              setPdfUrl(`${BASE_URL}${bill.PDFPath}#toolbar=0`);
                             }}
                           >
                             View
@@ -318,7 +316,7 @@ const [paidBills, setPaidBills] = useState([]);
               </motion.div>
             </div>
           </div>
-          <div className="col-lg-6">
+          <div className="col-lg-6 px-0 mt-3 mt-lg-0">
             <div className="col-12 mt-2">
               <motion.div
                 whileHover={{ scale: 1.03 }}
@@ -365,7 +363,7 @@ const [paidBills, setPaidBills] = useState([]);
               </motion.div>
             </div>
             <div
-              className="mt-5 d-flex align-items-center px-3 py-2 rounded shadow-sm"
+              className="mt-4 d-flex align-items-center px-3 py-2 rounded shadow-sm"
               style={{
                 background: "#fff8e1",
                 borderLeft: "4px solid #f59e0b",

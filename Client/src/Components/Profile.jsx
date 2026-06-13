@@ -134,10 +134,7 @@ export default function Profile() {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
     >
-      <ToastContainer
-        toastClassName="custom-toast"
-        bodyClassName="custom-toast-body"
-      />
+      
       <div className="project-top-section">
         <div className="project-header-card">
           <div className="project-header-left">

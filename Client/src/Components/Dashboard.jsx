@@ -3,6 +3,7 @@ import LoginContext from "../Context/LoginContext";
 import { Link, Navigate, NavLink , useLocation} from "react-router-dom";
 import { Outlet } from "react-router-dom";
 import UserAllDetails from "./DemoUser";
+import {toast, ToastContainer} from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import Swal from 'sweetalert2';
 import {
@@ -95,6 +96,10 @@ export default function Dashboard() {
   const allowedFeatures = permissions[loggedInUser?.UserRole] || [];
   return (
     <div className="dash-cont-outer pb-3">
+      <ToastContainer
+        toastClassName="custom-toast"
+        bodyClassName="custom-toast-body"
+      />
       <div className="container-fluid h-100">
         <div className="h-100">
           <div className="row h-100">

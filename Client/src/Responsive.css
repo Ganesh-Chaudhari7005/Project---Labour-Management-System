@@ -388,6 +388,18 @@
         align-items: flex-start;
         gap: 5px;
     }
+
+         .Toastify__toast-container--top-right {
+             top: 10px !important;
+             right: 18px !important;
+             width: 80% !important;
+             left: auto !important;
+         }
+    
+         .Toastify__toast {
+             width: 100% !important;
+             margin: 0 !important;
+         }
 }
 
 

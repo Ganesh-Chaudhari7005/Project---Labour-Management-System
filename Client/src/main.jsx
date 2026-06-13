@@ -80,6 +80,7 @@ import AttendanceReportLabour from "./Components/AttendanceReportLabour.jsx";
 import ReportIssues from "./Components/ReportIssues.jsx";
 import SiteIssueCont from "./Components/SiteIssueCont.jsx";
 import SupReportIssues from "./Components/SupReportIssues.jsx";
+import { ToastContainer } from "react-toastify";
 const router = createBrowserRouter(
   createRoutesFromElements(
     <>
@@ -209,6 +210,10 @@ const router = createBrowserRouter(
 
 createRoot(document.getElementById("root")).render(
   <>
+    <ToastContainer
+      position={window.innerWidth <= 768 ? "top-center" : "top-right"}
+      autoClose={3000}
+    />
     <RouterProvider router={router} />
   </>,
 );
