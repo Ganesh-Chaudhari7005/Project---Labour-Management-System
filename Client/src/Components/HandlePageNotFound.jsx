@@ -5,52 +5,60 @@ export default function Tiles404Page() {
   const navigate = useNavigate();
 
   return (
-    <div className="tiles404-light-wrapper">
+    <div className="tiles404-wrapper">
       <motion.div
-        className="tiles404-light-card"
-        initial={{ opacity: 0, y: 20 }}
+        className="tiles404-card"
+        initial={{ opacity: 0, y: 25 }}
         animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.35 }}
       >
-        {/* Tile Icon */}
         <motion.div
-          className="tiles404-light-icon"
-          animate={{ scale: [1, 1.08, 1] }}
-          transition={{ repeat: Infinity, duration: 1.6 }}
+          className="tiles404-icon"
+          animate={{
+            rotate: [0, -5, 5, -5, 0],
+          }}
+          transition={{
+            repeat: Infinity,
+            duration: 2,
+          }}
         >
-          <svg
-            width="70"
-            height="70"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="#9aa0a6"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <line x1="18" y1="6" x2="6" y2="18" />
-            <line x1="6" y1="6" x2="18" y2="18" />
-          </svg>
+          <i className="bi bi-cone-striped"></i>
         </motion.div>
 
-        <h1 className="tiles404-light-code">404</h1>
-        <h4 className="tiles404-light-title">Page Not Found</h4>
-        <p className="tiles404-light-text">
-          This page doesn’t exist or may have been moved.
+        <div className="tiles404-badge">ERROR 404</div>
+
+        <h1 className="tiles404-title">Page Not Found</h1>
+
+        <p className="tiles404-text">
+          The page you're looking for doesn't exist, may have been moved, or the
+          URL might be incorrect.
         </p>
 
-        <div className="tiles404-light-actions">
-          <button
-            className="tiles404-light-btn-main"
-            onClick={() => navigate(-1)}
-          >
+        <div className="tiles404-info">
+          <div>
+            <span>Status</span>
+            <strong>Not Found</strong>
+          </div>
+
+          <div>
+            <span>Requested URL</span>
+            <strong>{window.location.pathname}</strong>
+          </div>
+        </div>
+
+        <div className="tiles404-actions">
+          <button className="tiles404-btn-primary" onClick={() => navigate(-1)}>
+            <i className="bi bi-arrow-left"></i>
             Go Back
           </button>
 
+
           <button
-            className="rounded"
-            onClick={() => navigate("/")}
+            className="tiles404-btn-secondary"
+            onClick={() => navigate("/dashboard")}
           >
-            Home
+            <i className="bi bi-speedometer2"></i>
+            Dashboard
           </button>
         </div>
       </motion.div>

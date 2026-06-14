@@ -2012,7 +2012,285 @@ a.text-white.adminnavbtn {
   font-weight: 500;
 }
 
+.admin-error-page {
+  min-height: 100vh;
+  background: #f4f6f9;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 24px;
+}
 
+.admin-error-card {
+  width: 100%;
+  max-width: 750px;
+  background: white;
+  border-radius: 12px;
+  overflow: hidden;
+
+  box-shadow:
+    0 4px 12px rgba(0, 0, 0, .08),
+    0 1px 3px rgba(0, 0, 0, .05);
+}
+
+.admin-error-header {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+
+  padding: 24px;
+
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.admin-error-icon {
+  width: 60px;
+  height: 60px;
+
+  background: #fff3cd;
+
+  border-radius: 12px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  color: #f59e0b;
+  font-size: 28px;
+}
+
+.admin-error-header h2 {
+  margin: 0;
+  font-weight: 600;
+}
+
+.admin-error-header p {
+  margin: 4px 0 0;
+  color: #6b7280;
+}
+
+.admin-error-body {
+  padding: 24px;
+}
+
+.error-row {
+  display: flex;
+  justify-content: space-between;
+
+  padding: 14px 0;
+
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.error-row span {
+  color: #64748b;
+}
+
+.error-row strong {
+  text-align: right;
+}
+
+.admin-stack {
+  margin: 0 24px 24px;
+}
+
+.admin-stack pre {
+  background: #1e293b;
+  color: white;
+
+  border-radius: 8px;
+
+  padding: 15px;
+
+  max-height: 250px;
+  overflow: auto;
+  font-size: 12px;
+}
+
+.admin-error-actions {
+  padding: 24px;
+  border-top: 1px solid #e5e7eb;
+
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+}
+
+.tiles404-wrapper {
+  min-height: 100vh;
+  background: #f8fafc;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  padding: 24px;
+}
+
+.tiles404-card {
+  width: 100%;
+  max-width: 720px;
+
+  background: #fff;
+
+  border-radius: 16px;
+
+  padding: 40px;
+
+  text-align: center;
+
+  border: 1px solid #e5e7eb;
+
+  box-shadow:
+    0 10px 25px rgba(0, 0, 0, 0.06),
+    0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.tiles404-icon {
+  width: 90px;
+  height: 90px;
+
+  margin: 0 auto 20px;
+
+  background: #fff8e1;
+
+  border-radius: 50%;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 42px;
+  color: #f59e0b;
+}
+
+.tiles404-badge {
+  display: inline-block;
+
+  padding: 6px 14px;
+
+  border-radius: 50px;
+
+  background: #fee2e2;
+
+  color: #dc2626;
+
+  font-size: 13px;
+  font-weight: 600;
+
+  margin-bottom: 18px;
+}
+
+.tiles404-title {
+  font-size: 2rem;
+  font-weight: 700;
+
+  color: #111827;
+
+  margin-bottom: 12px;
+}
+
+.tiles404-text {
+  color: #6b7280;
+
+  max-width: 520px;
+
+  margin: auto;
+
+  margin-bottom: 30px;
+
+  line-height: 1.7;
+}
+
+.tiles404-info {
+  background: #f8fafc;
+
+  border: 1px solid #e5e7eb;
+
+  border-radius: 12px;
+
+  padding: 18px;
+
+  margin-bottom: 30px;
+}
+
+.tiles404-info div {
+  display: flex;
+  justify-content: space-between;
+
+  padding: 10px 0;
+}
+
+.tiles404-info div:not(:last-child) {
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.tiles404-info span {
+  color: #64748b;
+}
+
+.tiles404-info strong {
+  color: #111827;
+  word-break: break-all;
+}
+
+.tiles404-actions {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.tiles404-btn-primary,
+.tiles404-btn-secondary {
+  border: none;
+
+  padding: 12px 18px;
+
+  border-radius: 10px;
+
+  font-weight: 600;
+
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  transition: 0.25s;
+}
+
+.tiles404-btn-primary {
+  background: #2563eb;
+  color: white;
+}
+
+.tiles404-btn-primary:hover {
+  transform: translateY(-2px);
+}
+
+.tiles404-btn-secondary {
+  background: #f1f5f9;
+  color: #334155;
+}
+
+.tiles404-btn-secondary:hover {
+  background: #e2e8f0;
+}
+
+@media (max-width: 768px) {
+  .tiles404-card {
+    padding: 25px;
+  }
+
+  .tiles404-actions {
+    flex-direction: column;
+  }
+
+  .tiles404-btn-primary,
+  .tiles404-btn-secondary {
+    width: 100%;
+    justify-content: center;
+  }
+}
 /* CONTAINER */
 .re-logo-img {
   width: 80px;

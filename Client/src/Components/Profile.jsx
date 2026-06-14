@@ -9,7 +9,6 @@ export default function Profile() {
   const callApi = useApi();
   const { loggedInUser, setLoggedInUser } = useContext(LoginContext);
 
-
   const [isdisabled, setDisabled] = useState(true);
   const [isavebtnVisible, setSavebtn] = useState(false);
   const [profilename, setProfileName] = useState("");
@@ -160,7 +159,7 @@ export default function Profile() {
             <div className="col-lg-2 d-flex justify-content-center">
               <div className="profile-pic-cont">
                 <img
-                  src={`${BASE_URL}${loggedInUser.UserImgPath}`}
+                  src={`${BASE_URL}${loggedInUser?.UserImgPath}`}
                   onError={(e) => {
                     e.target.src = `/defaultprofile.png`;
                   }}
@@ -172,8 +171,8 @@ export default function Profile() {
               <div className="profile-name-role-cont">
                 <br />
                 <br />
-                <h3 className="profilepage-name">{loggedInUser.UserName}</h3>
-                <p className="profile-role-text">{loggedInUser.UserRole}</p>
+                <h3 className="profilepage-name">{loggedInUser?.UserName}</h3>
+                <p className="profile-role-text">{loggedInUser?.UserRole}</p>
                 <button
                   className="edit-prof-btn"
                   onClick={() => HandleFormStatus()}

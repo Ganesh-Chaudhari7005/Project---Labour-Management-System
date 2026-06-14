@@ -81,9 +81,7 @@ import ReportIssues from "./Components/ReportIssues.jsx";
 import SiteIssueCont from "./Components/SiteIssueCont.jsx";
 import SupReportIssues from "./Components/SupReportIssues.jsx";
 import AllLabSup from "./Components/AllLabSup.jsx";
-import SupMangLabCont from "./Components/SupMangLabCont.jsx";
-import RemoveLabSup from "./Components/RemoveLabSup.jsx";
-import ErrorBoundary from "./Components/ErrorBoundary";
+import RouteError from "./Components/RouteError.jsx";
 const router = createBrowserRouter(
   createRoutesFromElements(
     <>
@@ -105,6 +103,7 @@ const router = createBrowserRouter(
               <Dashboard />
             </ProtectedRoute>
           }
+          errorElement={<RouteError />}
         ></Route>
         <Route path="forgot-password" element={<ForgotPassword />} />
         <Route path="reset-password/:token" element={<ResetPassword />} />
@@ -115,6 +114,7 @@ const router = createBrowserRouter(
               <Dashboard />
             </ProtectedRoute>
           }
+          errorElement={<RouteError />}
         >
           {" "}
           <Route path="view-pdf" element={<ViewPDF />} />
@@ -195,8 +195,7 @@ const router = createBrowserRouter(
               element={<AttendanceReport />}
             />
           </Route>
-          <Route path="man-lab-sup-site" element={<AllLabSup />}/>
-            
+          <Route path="man-lab-sup-site" element={<AllLabSup />} />
           <Route path="sites-allocated" element={<SupAllocatedProjects />} />
           <Route path="sup-alc-prj/:id" element={<SupProjectCont />}>
             <Route index element={<ProjectStatus />} />
@@ -214,7 +213,5 @@ const router = createBrowserRouter(
 );
 
 createRoot(document.getElementById("root")).render(
-  <ErrorBoundary>
     <RouterProvider router={router} />
-  </ErrorBoundary>
 );
