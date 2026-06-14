@@ -57,7 +57,7 @@ const permissions = {
       icon: FaUserCircle,
     },
     {
-      label: "Project Management",
+      label: "Site Management",
       path: "project-management",
       icon: FaFolderOpen,
     },

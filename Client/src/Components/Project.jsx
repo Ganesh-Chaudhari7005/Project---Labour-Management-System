@@ -71,7 +71,7 @@ export default function Project() {
         <div className="pjx-wrap">
           {/* HEADER */}
           <div className="pjx-header">
-            <h3 className="pjx-title">All Projects</h3>
+            <h3 className="pjx-title">All Sites</h3>
 
             <NavLink to="create-project">
               <button className="pjx-btn-create">+ New Project</button>
@@ -82,7 +82,7 @@ export default function Project() {
           <div className="pjx-filters">
             <input
               className="pjx-search"
-              placeholder="Search projects..."
+              placeholder="Search sites..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
             />
@@ -135,7 +135,7 @@ export default function Project() {
 
                     <NavLink to={`manage-project/${data.ProjectID}`}>
                       <button className="pjx-btn-manage">
-                        Manage Project →
+                        Manage Site →
                       </button>
                     </NavLink>
                   </div>
