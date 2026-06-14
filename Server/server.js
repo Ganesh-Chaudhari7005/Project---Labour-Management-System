@@ -1847,6 +1847,7 @@ app.post("/supervisor-attendance-report", async (req, res) => {
   try {
     const { type, supervisorId, month, fromDate, toDate } = req.body;
 
+    
     let query = `
       SELECT
         sa.*,
@@ -1997,6 +1998,109 @@ GROUP BY p.ProjectID, p.ProjectName;;
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Server Error" });
+  }
+});
+
+app.get("/get-all-sup-site-labs/:ID", async(req, res)=>{
+  let {ID} = req.params;
+  
+  const Query = `
+      SELECT
+    l.ID,
+    l.Name,
+    l.Email,
+    l.Phone,
+    l.LabType,
+    l.profileImgPath,
+    la.ProjectID,
+    p.ProjectName
+FROM supervisors s
+INNER JOIN supervisor_assignments sa
+    ON s.ID = sa.SupervisorID
+INNER JOIN labour_assignments la
+    ON sa.ProjectID = la.ProjectID
+INNER JOIN labours l
+    ON la.LabourID = l.ID
+INNER JOIN projects p
+    ON p.ProjectID = la.ProjectID
+WHERE s.ID = ?;
+`;
+
+let [Lablist] = await pool.execute(Query, [ID]);
+
+if(Lablist.length > 0){
+  res.json({
+    success :true,
+    list : Lablist
+  })
+}else{
+  res.json({
+    success: false,
+    message : "No Labours Found"
+  })
+}
+});
+
+
+app.get("/free-lab-sup-site/:ID", async (req, res) => {
+  const { ID } = req.params;
+
+  let connection;
+
+  try {
+    connection = await pool.getConnection();
+
+    await connection.beginTransaction();
+
+    const [unassign] = await connection.execute(
+      "DELETE FROM labour_assignments WHERE LabourID = ?",
+      [ID],
+    );
+
+    if (unassign.affectedRows === 0) {
+      await connection.rollback();
+
+      return res.json({
+        success: false,
+        message: "Labour assignment not found",
+      });
+    }
+
+    const [updateLabour] = await connection.execute(
+      "UPDATE labours SET isAvailable = 1 WHERE ID = ?",
+      [ID],
+    );
+
+    if (updateLabour.affectedRows === 0) {
+      await connection.rollback();
+
+      return res.json({
+        success: false,
+        message: "Labour record not found",
+      });
+    }
+
+    await connection.commit();
+
+    return res.json({
+      success: true,
+      message: "Labour removed successfully",
+    });
+  } catch (err) {
+    if (connection) {
+      await connection.rollback();
+    }
+
+    console.error(err);
+
+    return res.status(500).json({
+      success: false,
+      message: "Failed to remove labour",
+    });
+  } finally {
+    if (connection) {
+      connection.release();
+    }
   }
 });
 

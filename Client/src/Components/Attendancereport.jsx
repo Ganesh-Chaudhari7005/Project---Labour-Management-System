@@ -1,9 +1,12 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import { ApiRoute } from "./ApiConfig";
 import { motion } from "framer-motion";
+import LoginContext from "../Context/LoginContext";
+
 export default function AttendanceReport() {
   const today = new Date();
   const currentMonth = today.toISOString().slice(0, 7);
+  let { loggedInUser } = useContext(LoginContext);
 
   const [labours, setLabours] = useState([]);
   const [selectedLabour, setSelectedLabour] = useState("");
@@ -27,6 +30,11 @@ export default function AttendanceReport() {
   const [supervisorReportData, setSupervisorReportData] = useState([]);
   const [supervisorReportType, setSupervisorReportType] = useState("");
 
+  useEffect(()=>{
+   if(loggedInUser?.UserRole.toLowerCase() === "supervisor"){
+     setSelectedSupervisorId(sessionStorage.getItem("SupId"));
+   }
+  },[])
   // 🔹 Fetch labours
   useEffect(() => {
     fetch(`${ApiRoute}fetch-labours`)
@@ -52,8 +60,11 @@ export default function AttendanceReport() {
   }, [labours]);
   // 🔹 Fetch report
 
+
+
   const getSupervisorReport = async (type) => {
     setLoading(true);
+    console.log(selectedSupervisorId);
 
     try {
       const response = await fetch(`${ApiRoute}supervisor-attendance-report`, {
@@ -76,7 +87,7 @@ export default function AttendanceReport() {
       setSupervisorReportData(data);
     } catch (error) {
       console.error(error);
-    }finally{
+    } finally {
       setLoading(false);
     }
   };
@@ -98,6 +109,9 @@ export default function AttendanceReport() {
   useEffect(() => {
     getSupervisors();
   }, []);
+
+
+
 
   const getReport = async (type) => {
     setLoading(true);
@@ -181,7 +195,9 @@ export default function AttendanceReport() {
           }`}
           onClick={() => setActiveTab("supervisor")}
         >
-          Supervisor Attendance Report
+          {loggedInUser?.UserRole.toLowerCase() === "supervisor"
+            ? "Your Attendance Report"
+            : "Supervisor Attendance Report"}
         </button>
       </div>
 
@@ -381,122 +397,238 @@ export default function AttendanceReport() {
         >
           {
             <>
-              <div className="card p-4 shadow">
-                <h4 className="mb-3">Supervisor Attendance Report</h4>
+              {loggedInUser?.UserRole?.toLowerCase() === "supervisor" && (
+                <div className="card p-4 shadow">
+                  <h4 className="mb-3">
+                    {loggedInUser?.UserRole.toLowerCase() === "supervisor"
+                      ? "Attendance Report"
+                      : "Supervisor Attendance Report"}
+                  </h4>
 
-                <div className="row mb-3">
-                  <div className="col-md-3">
-                    <label className="mb-2 mb-md-0">Select Supervisor</label>
+                  <div className="row mb-3">
+                  
 
-                    <select
-                      className="form-select mb-2 mb-md-0"
-                      value={selectedSupervisorId}
-                      onChange={(e) => setSelectedSupervisorId(e.target.value)}
+                    <div className="col-md-4">
+                      <label className="mb-2 mb-md-0">Select Month</label>
+                      <input
+                        type="month"
+                        className="form-control mb-2 mb-md-0"
+                        value={supervisorMonth}
+                        onChange={(e) => setSupervisorMonth(e.target.value)}
+                      />
+                    </div>
+
+                    <div className="col-md-4">
+                      <label className="mb-2 mb-md-0">From Date</label>
+                      <input
+                        type="date"
+                        className="form-control mb-2 mb-md-0"
+                        value={supervisorFromDate}
+                        onChange={(e) => setSupervisorFromDate(e.target.value)}
+                      />
+                    </div>
+
+                    <div className="col-md-4">
+                      <label>To Date</label>
+                      <input
+                        type="date"
+                        className="form-control"
+                        value={supervisorToDate}
+                        onChange={(e) => setSupervisorToDate(e.target.value)}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="mb-3 py-3 d-flex gap-2">
+                    <button
+                      className="btn btn-primary"
+                      onClick={() => getSupervisorReport("current")}
                     >
-                      <option value="">All Supervisors</option>
+                      Current Month
+                    </button>
 
-                      {supervisorList.map((supervisor) => (
-                        <option key={supervisor.ID} value={supervisor.ID}>
-                          {supervisor.Name}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
+                    <button
+                      className="btn btn-secondary"
+                      onClick={() => getSupervisorReport("month")}
+                    >
+                      Selected Month
+                    </button>
 
-                  <div className="col-md-3">
-                    <label className="mb-2 mb-md-0">Select Month</label>
-                    <input
-                      type="month"
-                      className="form-control mb-2 mb-md-0"
-                      value={supervisorMonth}
-                      onChange={(e) => setSupervisorMonth(e.target.value)}
-                    />
+                    <button
+                      className="btn btn-success"
+                      onClick={() => getSupervisorReport("range")}
+                    >
+                      Date Range
+                    </button>
                   </div>
-
-                  <div className="col-md-3">
-                    <label className="mb-2 mb-md-0">From Date</label>
-                    <input
-                      type="date"
-                      className="form-control mb-2 mb-md-0"
-                      value={supervisorFromDate}
-                      onChange={(e) => setSupervisorFromDate(e.target.value)}
-                    />
-                  </div>
-
-                  <div className="col-md-3">
-                    <label>To Date</label>
-                    <input
-                      type="date"
-                      className="form-control"
-                      value={supervisorToDate}
-                      onChange={(e) => setSupervisorToDate(e.target.value)}
-                    />
-                  </div>
+                  {loading ? (
+                    <div className="text-center py-4">
+                      <div className="spinner-border"></div>
+                    </div>
+                  ) : supervisorReportData.length > 0 ? (
+                    <div className="table-responsive">
+                      <table className="table table-bordered">
+                        <thead>
+                          <tr>
+                            <th className="tbl-head">Sr No</th>
+                            <th className="tbl-head">Date</th>
+                            <th className="tbl-head">Supervisor</th>
+                            <th className="tbl-head">Status</th>
+                            <th className="tbl-head">Working Site</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {supervisorReportData
+                            .sort((a, b) => new Date(a.date) - new Date(b.date)) // <-- sort ascending
+                            .map((r, i) => (
+                              <tr key={i}>
+                                <td>{i + 1}</td> {/* Sr No */}
+                                <td>{formatDate(r.AttendanceDate)}</td>
+                                <td>{r.Name}</td>
+                                <td>{r.Status}</td>
+                                <td>{r.Site || "—"}</td>
+                              </tr>
+                            ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  ) : (
+                    <div className="text-center py-5">
+                      <i className="bi bi-calendar-x fs-1 text-muted"></i>
+                      <h5 className="mt-3">No Attendance Records Found</h5>
+                      <p className="text-muted mb-0">
+                        No attendance data is available for the selected period.
+                      </p>
+                    </div>
+                  )}
                 </div>
+              )}
 
-                <div className="mb-3 py-3 d-flex gap-2">
-                  <button
-                    className="btn btn-primary"
-                    onClick={() => getSupervisorReport("current")}
-                  >
-                    Current Month
-                  </button>
+              {loggedInUser.UserRole.toLowerCase() === "admin" && (
+                <div className="card p-4 shadow">
+                  <h4 className="mb-3">
+                    {loggedInUser?.UserRole.toLowerCase() === "supervisor"
+                      ? "Attendance Report"
+                      : "Supervisor Attendance Report"}
+                  </h4>
 
-                  <button
-                    className="btn btn-secondary"
-                    onClick={() => getSupervisorReport("month")}
-                  >
-                    Selected Month
-                  </button>
+                  <div className="row mb-3">
+                    <div className="col-md-3">
+                      <label className="mb-2 mb-md-0">Select Supervisor</label>
 
-                  <button
-                    className="btn btn-success"
-                    onClick={() => getSupervisorReport("range")}
-                  >
-                    Date Range
-                  </button>
+                      <select
+                        className="form-select mb-2 mb-md-0"
+                        value={selectedSupervisorId}
+                        onChange={(e) =>
+                          setSelectedSupervisorId(e.target.value)
+                        }
+                      >
+                        <option value="">All Supervisors</option>
+
+                        {supervisorList.map((supervisor) => (
+                          <option key={supervisor.ID} value={supervisor.ID}>
+                            {supervisor.Name}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+
+                    <div className="col-md-3">
+                      <label className="mb-2 mb-md-0">Select Month</label>
+                      <input
+                        type="month"
+                        className="form-control mb-2 mb-md-0"
+                        value={supervisorMonth}
+                        onChange={(e) => setSupervisorMonth(e.target.value)}
+                      />
+                    </div>
+
+                    <div className="col-md-3">
+                      <label className="mb-2 mb-md-0">From Date</label>
+                      <input
+                        type="date"
+                        className="form-control mb-2 mb-md-0"
+                        value={supervisorFromDate}
+                        onChange={(e) => setSupervisorFromDate(e.target.value)}
+                      />
+                    </div>
+
+                    <div className="col-md-3">
+                      <label>To Date</label>
+                      <input
+                        type="date"
+                        className="form-control"
+                        value={supervisorToDate}
+                        onChange={(e) => setSupervisorToDate(e.target.value)}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="mb-3 py-3 d-flex gap-2">
+                    <button
+                      className="btn btn-primary"
+                      onClick={() => getSupervisorReport("current")}
+                    >
+                      Current Month
+                    </button>
+
+                    <button
+                      className="btn btn-secondary"
+                      onClick={() => getSupervisorReport("month")}
+                    >
+                      Selected Month
+                    </button>
+
+                    <button
+                      className="btn btn-success"
+                      onClick={() => getSupervisorReport("range")}
+                    >
+                      Date Range
+                    </button>
+                  </div>
+                  {loading ? (
+                    <div className="text-center py-4">
+                      <div className="spinner-border"></div>
+                    </div>
+                  ) : supervisorReportData.length > 0 ? (
+                    <div className="table-responsive">
+                      <table className="table table-bordered">
+                        <thead>
+                          <tr>
+                            <th className="tbl-head">Sr No</th>
+                            <th className="tbl-head">Date</th>
+                            <th className="tbl-head">Supervisor</th>
+                            <th className="tbl-head">Status</th>
+                            <th className="tbl-head">Working Site</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {supervisorReportData
+                            .sort((a, b) => new Date(a.date) - new Date(b.date)) // <-- sort ascending
+                            .map((r, i) => (
+                              <tr key={i}>
+                                <td>{i + 1}</td> {/* Sr No */}
+                                <td>{formatDate(r.AttendanceDate)}</td>
+                                <td>{r.Name}</td>
+                                <td>{r.Status}</td>
+                                <td>{r.Site || "—"}</td>
+                              </tr>
+                            ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  ) : (
+                    <div className="text-center py-5">
+                      <i className="bi bi-calendar-x fs-1 text-muted"></i>
+                      <h5 className="mt-3">No Attendance Records Found</h5>
+                      <p className="text-muted mb-0">
+                        No attendance data is available for the selected period.
+                      </p>
+                    </div>
+                  )}
                 </div>
-                {loading ? (
-                  <div className="text-center py-4">
-                    <div className="spinner-border"></div>
-                  </div>
-                ) : supervisorReportData.length > 0 ? (
-                  <div className="table-responsive">
-                    <table className="table table-bordered">
-                      <thead>
-                        <tr>
-                          <th className="tbl-head">Sr No</th>
-                          <th className="tbl-head">Date</th>
-                          <th className="tbl-head">Supervisor</th>
-                          <th className="tbl-head">Status</th>
-                          <th className="tbl-head">Working Site</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {supervisorReportData
-                          .sort((a, b) => new Date(a.date) - new Date(b.date)) // <-- sort ascending
-                          .map((r, i) => (
-                            <tr key={i}>
-                              <td>{i + 1}</td> {/* Sr No */}
-                              <td>{formatDate(r.AttendanceDate)}</td>
-                              <td>{r.Name}</td>
-                              <td>{r.Status}</td>
-                              <td>{r.Site || "—"}</td>
-                            </tr>
-                          ))}
-                      </tbody>
-                    </table>
-                  </div>
-                ) : (
-                  <div className="text-center py-5">
-                    <i className="bi bi-calendar-x fs-1 text-muted"></i>
-                    <h5 className="mt-3">No Attendance Records Found</h5>
-                    <p className="text-muted mb-0">
-                      No attendance data is available for the selected period.
-                    </p>
-                  </div>
-                )}
-              </div>
+              )}
+            
             </>
           }
         </motion.div>

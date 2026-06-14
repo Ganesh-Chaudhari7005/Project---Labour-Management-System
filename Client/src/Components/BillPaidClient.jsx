@@ -48,7 +48,7 @@ export default function BillPaidClient() {
       style={{ padding: "10px" }}
     >
       <div className="table-responsive">
-        <table className="table table-bordered">
+        <table className="table table-bordered pendingBillsTable">
           <thead>
             <tr>
               <th className="text-center tbl-head">Sr. No.</th>
@@ -121,60 +121,60 @@ export default function BillPaidClient() {
                   />
                 </td>
                 <td>
-                    {bill.PaidBillReceipt != null ? (
-                      <>
-                        <button
-                          className="pendingBillsViewBtn"
-                          onClick={() => {
-                            setPdfUrl(
-                              `${BASE_URL}${bill.PaidBillReceipt}#toolbar=0`,
+                  {bill.PaidBillReceipt != null ? (
+                    <>
+                      <button
+                        className="pendingBillsViewBtn"
+                        onClick={() => {
+                          setPdfUrl(
+                            `${BASE_URL}${bill.PaidBillReceipt}#toolbar=0`,
+                          );
+
+                          setShowPDF(true);
+                        }}
+                      >
+                        View Receipt
+                      </button>
+                      <FaDownload
+                        style={{
+                          cursor: "pointer",
+                          position: "relative",
+                          right: "-15px",
+                        }}
+                        onClick={async () => {
+                          try {
+                            const response = await fetch(
+                              `${BASE_URL}${bill.PaidBillReceipt}`,
                             );
 
-                            setShowPDF(true);
-                          }}
-                        >
-                          View Receipt
-                        </button>
-                        <FaDownload
-                          style={{
-                            cursor: "pointer",
-                            position: "relative",
-                            right: "-15px",
-                          }}
-                          onClick={async () => {
-                            try {
-                              const response = await fetch(
-                                `${BASE_URL}${bill.PaidBillReceipt}`,
-                              );
+                            const blob = await response.blob();
 
-                              const blob = await response.blob();
+                            const url = window.URL.createObjectURL(blob);
 
-                              const url = window.URL.createObjectURL(blob);
+                            const link = document.createElement("a");
 
-                              const link = document.createElement("a");
+                            link.href = url;
 
-                              link.href = url;
+                            link.download = `PaymentReceipt-${bill.BillNo}.pdf`;
 
-                              link.download = `PaymentReceipt-${bill.BillNo}.pdf`;
+                            document.body.appendChild(link);
 
-                              document.body.appendChild(link);
+                            link.click();
 
-                              link.click();
+                            link.remove();
 
-                              link.remove();
+                            window.URL.revokeObjectURL(url);
+                          } catch (err) {
+                            console.log(err);
 
-                              window.URL.revokeObjectURL(url);
-                            } catch (err) {
-                              console.log(err);
-
-                              toast.error("Failed to download bill");
-                            }
-                          }}
-                        />
-                      </>
-                    ) : (
-                      <span>Receipt Not Found</span>
-                    )}
+                            toast.error("Failed to download bill");
+                          }
+                        }}
+                      />
+                    </>
+                  ) : (
+                    <span>Receipt Not Found</span>
+                  )}
                 </td>
               </tr>
             ))}

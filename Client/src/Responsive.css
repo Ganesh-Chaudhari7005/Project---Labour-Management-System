@@ -1462,6 +1462,10 @@
         max-width: 250px;
     }
 
+    .cl-fd-res-st{
+        flex-direction: column;
+    }
     
 }
+
 

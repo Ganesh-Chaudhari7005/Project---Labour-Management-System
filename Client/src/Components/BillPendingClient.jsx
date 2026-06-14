@@ -50,17 +50,17 @@ export default function BillPendingClient() {
       style={{ padding: "10px" }}
     >
       <div className="table-responsive">
-        <table className="table table-bordered">
+        <table className="table table-bordered pendingBillsTable">
           <thead>
             <tr>
               <th className="text-center tbl-head">Sr. No.</th>
-              <th className='tbl-head'>Project Name</th>
-              <th className='tbl-head'>Bill No</th>
-              <th className='tbl-head'>Bill Date</th>
-              <th className='tbl-head'>Total Amount</th>
-              <th className='tbl-head'>Status</th>
-              <th className='tbl-head'>Bill</th>
-              <th className='tbl-head'>Pay Bill</th>
+              <th className="tbl-head">Project Name</th>
+              <th className="tbl-head">Bill No</th>
+              <th className="tbl-head">Bill Date</th>
+              <th className="tbl-head">Total Amount</th>
+              <th className="tbl-head">Status</th>
+              <th className="tbl-head">Bill</th>
+              <th className="tbl-head">Pay Bill</th>
             </tr>
           </thead>
 
@@ -79,7 +79,7 @@ export default function BillPendingClient() {
                 </td>
                 <td>
                   <button
-                  style={{marginRight : "15px"}}
+                    style={{ marginRight: "15px" }}
                     className="pendingBillsViewBtn"
                     onClick={() => {
                       setPdfUrl(`${BASE_URL}${bill.PDFPath}#toolbar=0`);
@@ -122,7 +122,6 @@ export default function BillPendingClient() {
                     }}
                   />
                 </td>
-             
                 <td>
                   <td>
                     <button

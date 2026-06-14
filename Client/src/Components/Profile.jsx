@@ -17,7 +17,7 @@ export default function Profile() {
   const [profilePhone, setProfilePhone] = useState("");
   const [profileAddr, setProfileAddr] = useState("");
   const[profileImage2 , setProfileImage] = useState('');
- 
+   const[isUpdating, setupdating] = useState(false);
 
     useEffect(() => {
       if (loggedInUser) {
@@ -54,6 +54,7 @@ export default function Profile() {
   };
 
   const HandleProfileUpdate = async () => {
+    setupdating(true);
     const currentUserEmail = loggedInUser.UserEmail;
     let roleInfo = loggedInUser.UserRole;
 
@@ -117,7 +118,9 @@ export default function Profile() {
 
       } 
       toast.success(resjsondata.message);
+      setupdating(false);
     } else {
+      setupdating(false);
       toast.error(resjsondata.message);
     }
   };
@@ -134,7 +137,7 @@ export default function Profile() {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
     >
-      
+      <ToastContainer/>
       <div className="project-top-section">
         <div className="project-header-card">
           <div className="project-header-left">
@@ -270,7 +273,7 @@ export default function Profile() {
                 onClick={(e) => ValProfileUpdate(e)}
                 className="save-prof-btn mt-5"
               >
-                Save Changes
+                {isUpdating ? 'Updating..' : "Save Changes"}
               </button>
             </form>
           </div>

@@ -28,7 +28,7 @@ export default function Dashboard() {
   const [menuOpen, setMenuOpen] = useState(false);
   const navigate = useNavigate();
 
-  const [activeComp , setActivecomp] = useState('Dashboard');
+const [activeComp, setActivecomp] = useState("Dashboard");
   const featureIcons = {
     Profile: FaUserCircle,
     "Manage Users": FaUsers,
@@ -48,31 +48,140 @@ export default function Dashboard() {
     "Report Site Issues": FaQuestionCircle,
   };
   const location = useLocation(); 
-  const permissions = {
-    Admin: [
-      "Profile",
-      "Manage Users",
-      "Project Management",
-      "Manage Supervisors",
-      "Manage Labours",
-      "Manage Wages",
-      "Attendance",
-      "Manage Equipments",
-      "CMS",
-    ],
-    supervisor: [
-      "Profile",
-      "Manage Labours",
-      "Sites Allocated",
-      "Labour Attendance",
-      "Manage Equipments",
-      "CMS",
-      "Report Site Issues"
-    ],
-    labour: ["Profile", "Attendance Report","Report Issue"],
-    Client: ["Profile", "Your Projects", "Billing", "Report Issues","Feedback"],
-  };
 
+const permissions = {
+  Admin: [
+    {
+      label: "Profile",
+      path: "profile",
+      icon: FaUserCircle,
+    },
+    {
+      label: "Project Management",
+      path: "project-management",
+      icon: FaFolderOpen,
+    },
+    {
+      label: "Manage Users",
+      path: "manage-users",
+      icon: FaUsers,
+    },
+    {
+      label: "Manage Supervisors",
+      path: "manage-supervisors",
+      icon: FaUserTie,
+    },
+    {
+      label: "Manage Labours",
+      path: "manage-labours",
+      icon: FaHardHat,
+    },
+    {
+      label: "Manage Wages",
+      path: "manage-wages",
+      icon: FaMoneyBillWave,
+    },
+    {
+      label: "Attendance",
+      path: "Attendance",
+      icon: FaCalendarCheck,
+    },
+    {
+      label: "Manage Equipments",
+      path: "manage-equipments",
+      icon: FaTools,
+    },
+    {
+      label: "CMS",
+      path: "cms",
+      icon: FaNewspaper,
+    },
+  ],
+
+  supervisor: [
+    {
+      label: "Profile",
+      path: "profile",
+      icon: FaUserCircle,
+    },
+    {
+      label: "Allocated Sites",
+      path: "sites-allocated",
+      icon: FaClipboardList,
+    },
+    {
+      label: "Manage Labours",
+      path: "man-lab-sup-site",
+      icon: FaHardHat,
+    },
+    {
+      label: "Attendance",
+      path: "labour-attendance",
+      icon: FaCalendarCheck,
+    },
+    {
+      label: "Report Site Issues",
+      path: "Report-Site-Issues",
+      icon: FaQuestionCircle,
+    },
+    {
+      label: "Manage Equipments",
+      path: "manage-equipments",
+      icon: FaTools,
+    },
+    {
+      label: "CMS",
+      path: "cms",
+      icon: FaNewspaper,
+    },
+  ],
+
+  labour: [
+    {
+      label: "Attendance Report",
+      path: "lab-attendance-report",
+      icon: FaCalendarCheck,
+    },
+    {
+      label: "Raise Issue",
+      path: "report-issue",
+      icon: FaQuestionCircle,
+    },
+    {
+      label: "Profile",
+      path: "profile",
+      icon: FaUserCircle,
+    },
+  ],
+
+  Client: [
+    {
+      label: "Profile",
+      path: "profile",
+      icon: FaUserCircle,
+    },
+    {
+      label: "My Projects",
+      path: "your-projects",
+      icon: FaFolderOpen,
+    },
+    {
+      label: "Billing",
+      path: "billing",
+      icon: FaReceipt,
+    },
+    {
+      label: "Report Issues",
+      path: "report-issues",
+      icon: FaQuestionCircle,
+    },
+    {
+      label: "Feedback",
+      path: "feedback",
+      icon: FaCommentDots,
+    },
+  ],
+};
   const HandleLogOut =()=>{
     Swal.fire({
       title: "Are You Sure",
@@ -93,7 +202,23 @@ export default function Dashboard() {
       }
     });
   }
-  const allowedFeatures = permissions[loggedInUser?.UserRole] || [];
+
+    const allowedFeatures = permissions[loggedInUser?.UserRole] || [];
+
+
+  useEffect(() => {
+    const currentPath = location.pathname.split("/").pop();
+
+    const activeFeature = allowedFeatures.find(
+      (item) => item.path === currentPath,
+    );
+
+    if (location.pathname === "/dashboard") {
+      setActivecomp("Dashboard");
+    } else if (activeFeature) {
+      setActivecomp(activeFeature.label);
+    }
+  }, [location.pathname, allowedFeatures]);
   return (
     <div className="dash-cont-outer pb-3">
       <ToastContainer
@@ -110,37 +235,30 @@ export default function Dashboard() {
                 <div className="linewhite">
                   <NavLink
                     to="/dashboard"
-                    onClick={() => setMenuOpen(false)}
                     end
+                    onClick={() => setMenuOpen(false)}
                     className={({ isActive }) =>
-                      `${isActive ? "text-black nav-item-active" : "text-white"} adminnavbtn dashboardbtn
-                    ${isActive ? setActivecomp("Dashboard") : ""}
-                  `
+                      `${isActive ? "text-black nav-item-active" : "text-white"} adminnavbtn dashboardbtn`
                     }
                   >
-                    {<MdDashboard className="me-2" />}
+                    <MdDashboard className="me-2" />
                     Dashboard
                   </NavLink>
                 </div>
-                {allowedFeatures.map((feature, index) => {
-                  const Icon = featureIcons[feature];
+                {allowedFeatures.map((feature) => {
+                  const Icon = feature.icon;
+
                   return (
                     <NavLink
+                      key={feature.path}
+                      to={feature.path}
                       onClick={() => setMenuOpen(false)}
-                      // to={feature.toLowerCase().replaceAll(" ", "-")}
-                      to={
-                        feature.toLowerCase() === "attendance report"
-                          ? "lab-attendance-report"
-                          : feature.toLowerCase().replaceAll(" ", "-")
-                      }
                       className={({ isActive }) =>
-                        `${isActive ? "text-black nav-item-active" : "text-white "} adminnavbtn 
-                         ${isActive ? setActivecomp(feature) : ""}
-                      `
+                        `${isActive ? "text-black nav-item-active" : "text-white"} adminnavbtn`
                       }
                     >
-                      {Icon && <Icon className="me-2" />}
-                      {feature}
+                      <Icon className="me-2" />
+                      {feature.label}
                     </NavLink>
                   );
                 })}

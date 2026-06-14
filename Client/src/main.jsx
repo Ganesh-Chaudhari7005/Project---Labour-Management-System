@@ -80,7 +80,10 @@ import AttendanceReportLabour from "./Components/AttendanceReportLabour.jsx";
 import ReportIssues from "./Components/ReportIssues.jsx";
 import SiteIssueCont from "./Components/SiteIssueCont.jsx";
 import SupReportIssues from "./Components/SupReportIssues.jsx";
-import { ToastContainer } from "react-toastify";
+import AllLabSup from "./Components/AllLabSup.jsx";
+import SupMangLabCont from "./Components/SupMangLabCont.jsx";
+import RemoveLabSup from "./Components/RemoveLabSup.jsx";
+import ErrorBoundary from "./Components/ErrorBoundary";
 const router = createBrowserRouter(
   createRoutesFromElements(
     <>
@@ -192,6 +195,8 @@ const router = createBrowserRouter(
               element={<AttendanceReport />}
             />
           </Route>
+          <Route path="man-lab-sup-site" element={<AllLabSup />}/>
+            
           <Route path="sites-allocated" element={<SupAllocatedProjects />} />
           <Route path="sup-alc-prj/:id" element={<SupProjectCont />}>
             <Route index element={<ProjectStatus />} />
@@ -209,11 +214,7 @@ const router = createBrowserRouter(
 );
 
 createRoot(document.getElementById("root")).render(
-  <>
-    <ToastContainer
-      position={window.innerWidth <= 768 ? "top-center" : "top-right"}
-      autoClose={3000}
-    />
+  <ErrorBoundary>
     <RouterProvider router={router} />
-  </>,
+  </ErrorBoundary>
 );

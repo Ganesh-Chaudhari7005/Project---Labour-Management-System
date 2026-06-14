@@ -94,7 +94,7 @@ const handleSubmit = async (e) => {
         <ToastContainer/>
       <div className="project-top-section">
         <div className="project-header-card">
-          <div className="project-header-left">
+          <div className="project-header-left cl-fd-res-st">
             <div className="project-badge">
               <i className="ri-customer-service-2-line"></i>
               Client Feedback
