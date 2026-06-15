@@ -95,9 +95,9 @@ const router = createBrowserRouter(
           <Route path="contact-us" element={<ContactUs />} />
         </Route>
 
-        <Route path="/admin" element={<Login />} />
+        <Route path="/system-login" element={<Login />} />
         <Route
-          path="admin/dashboard"
+          path="system-login/dashboard"
           element={
             <ProtectedRoute>
               <Dashboard />

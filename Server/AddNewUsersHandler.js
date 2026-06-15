@@ -75,7 +75,7 @@ export async function AddUserHandler(
         [AdmId, addUName, addUEmail]
       )
       let mailMessage = `<h2 style="font-family : 'Google Sans',Roboto,RobotoDraft,Helvetica,Arial,sans-serif">You have been given access to Royal Enterprises Portal</h2>
-                        <p>Login :<a href="http://192.168.31.208:5173/admin" target="_blank">http://192.168.31.208:5173/</a></p>
+                        <p>Login :<a href="http://192.168.31.208:5173/system-login" target="_blank">http://192.168.31.208:5173/</a></p>
       `;
 
     let mailSubject = "Access Granted";

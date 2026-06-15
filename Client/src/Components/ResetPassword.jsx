@@ -67,7 +67,7 @@ export default function ResetPassword() {
 
       // 🚀 redirect after short delay
       setTimeout(() => {
-        navigate("/admin", { replace: true });
+        navigate("/system-login", { replace: true });
       }, 1500);
     } catch (err) {
       console.error(err);

@@ -3,7 +3,7 @@ import { ApiRoute } from "./ApiConfig.js";
 import { useEffect, useState } from "react";
 import CountUp from "./CountUp.jsx";
 import { BASE_URL } from "./BaseUrl";
-
+import { NavLink } from "react-router-dom";
 export default function AdminDashboard() {
       const [showPDF, setShowPDF] = useState(false);
     const [pdfUrl, setPdfUrl] = useState("");
@@ -84,14 +84,15 @@ export default function AdminDashboard() {
   const getIssueCount = async () => {
     let req = await fetch(`${ApiRoute}get-issue-count`);
     let res = await req.json();
+    console.log(res);
 
-    setTotalIssues(res.TotalIssues);
+    setTotalIssues(res.TotalPendingIssues);
   };
 
   const getMonthlyPayments = async () => {
     let req = await fetch(`${ApiRoute}get-monthly-payments`);
     let res = await req.json();
-
+    
     setMonthlyPayments(res);
     
   };
@@ -249,32 +250,41 @@ export default function AdminDashboard() {
             </div>
           </div>
           <div className="col-lg-6 pt-3 pt-md-0">
-            <motion.div
-              whileHover={{ scale: 1.03 }}
-              transition={{ type: "spring", stiffness: 200 }}
-              className="dash-card"
+            <NavLink
               style={{
-                borderTop: "4px solid #dc2626",
-                background:
-                  "linear-gradient(135deg, rgba(220,38,38,0.08), #fff)",
+                textDecoration: "none",
+                color: "inherit",
               }}
+              to="cms/service-req-admin"
+              end
             >
-              <div className="dash-title">New Service Requests</div>
-
-              <div
-                className="dash-count"
-                style={{ color: "#dc2626", fontWeight: "700" }}
+              <motion.div
+                whileHover={{ scale: 1.03 }}
+                transition={{ type: "spring", stiffness: 200 }}
+                className="dash-card"
+                style={{
+                  borderTop: "4px solid #dc2626",
+                  background:
+                    "linear-gradient(135deg, rgba(220,38,38,0.08), #fff)",
+                }}
               >
-                <CountUp end={TotalServiceRequests} />
-              </div>
+                <div className="dash-title">New Service Requests</div>
 
-              <div className="d-flex align-items-center gap-2">
-                <div style={{ fontSize: "1.5rem", opacity: 0.2 }}>📩</div>
-                <div className="dash-sub">
-                  Incoming customer service requests
+                <div
+                  className="dash-count"
+                  style={{ color: "#dc2626", fontWeight: "700" }}
+                >
+                  <CountUp end={TotalServiceRequests || "-"} />
                 </div>
-              </div>
-            </motion.div>
+
+                <div className="d-flex align-items-center gap-2">
+                  <div style={{ fontSize: "1.5rem", opacity: 0.2 }}>📩</div>
+                  <div className="dash-sub">
+                    Incoming customer service requests
+                  </div>
+                </div>
+              </motion.div>
+            </NavLink>
           </div>
         </div>
         <div className="row mt-2 px-0 g-2">
@@ -316,7 +326,7 @@ export default function AdminDashboard() {
                 className="dash-count"
                 style={{ color: "#b91c1c", fontWeight: "800" }}
               >
-                <CountUp end={TotalIssues} />
+                <CountUp end={TotalIssues || "-"} />
               </div>
 
               <div className="dash-sub">Needs attention from admin</div>
@@ -376,16 +386,17 @@ export default function AdminDashboard() {
                             </td>
 
                             <td>
-                              <button 
-                              className="btn btn-sm btn-outline-success"
-                              onClick={()=>{
-
-                                 setShowPDF(true);
-                                 setPdfUrl(
-                                   `${BASE_URL}${bill.PaidBillReceipt}#toolbar=0`,
-                                 );
-                              }}
-                              >View</button>
+                              <button
+                                className="btn btn-sm btn-outline-success"
+                                onClick={() => {
+                                  setShowPDF(true);
+                                  setPdfUrl(
+                                    `${BASE_URL}${bill.PaidBillReceipt}#toolbar=0`,
+                                  );
+                                }}
+                              >
+                                View
+                              </button>
                             </td>
                           </tr>
                         ))

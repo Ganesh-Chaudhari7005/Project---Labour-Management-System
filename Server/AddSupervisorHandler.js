@@ -152,7 +152,7 @@ const AddSupervisorHandler = async (
 
       <p>
         Login :
-        <a href="http://192.168.31.208:5173/admin" target="_blank">
+        <a href="http://192.168.31.208:5173/system-login" target="_blank">
           http://192.168.31.208:5173/
         </a>
       </p>

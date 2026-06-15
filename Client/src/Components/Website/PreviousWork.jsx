@@ -49,7 +49,7 @@ export default function PreviousWork() {
         {/* Header */}
         <div className="re-about-header mb-5">
           <h2 className="re-about-title page-head-def">
-            Previous<span> Work</span>
+            Photo<span> Gallery</span>
           </h2>
         </div>
 

@@ -118,7 +118,10 @@ export default function ForgotPassword() {
                   </button>
                 </form>
 
-                <p className="back-login" onClick={() => navigate("/admin")}>
+                <p
+                  className="back-login"
+                  onClick={() => navigate("/system-login")}
+                >
                   Back To SIGN IN
                 </p>
               </motion.div>
@@ -145,7 +148,7 @@ export default function ForgotPassword() {
                   {cooldown ? "WAIT..." : "RESEND EMAIL"}
                 </button>
 
-                <p className="back-login" onClick={() => navigate("/admin")}>
+                <p className="back-login" onClick={() => navigate("/system-login")}>
                   Back To SIGN IN
                 </p>
               </motion.div>

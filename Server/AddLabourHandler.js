@@ -110,9 +110,9 @@ import SendMail from "./SendMail.js";
        await db.commit();
             let MailSub = 'Access Granted'
             let mailMessage = `<h2 style="font-family : 'Google Sans',Roboto,RobotoDraft,Helvetica,Arial,sans-serif">You have been given access to Royal Enterprises Portal</h2>
-                        <p>Login :<a href="http://192.168.31.208:5173/admin" target="_blank">http://192.168.31.208:5173/</a></p>
+                        <p>Login :<a href="http://192.168.31.208:5173/system-login" target="_blank">http://192.168.31.208:5173/</a></p>
                         <p>Password : ${password}</p>
-                        `
+                        `;
             SendMail(LabEmail, MailSub, mailMessage )
             return{
                 success : true,

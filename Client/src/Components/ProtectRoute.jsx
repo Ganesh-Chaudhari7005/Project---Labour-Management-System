@@ -8,7 +8,7 @@ function ProtectedRoute({ children }) {
   const token = sessionStorage.getItem("token");
   const navigate = useNavigate();
   if(!token){
-    return <Navigate to="/admin" replace/>
+    return <Navigate to="/system-login" replace />;
   }
 
   return children;

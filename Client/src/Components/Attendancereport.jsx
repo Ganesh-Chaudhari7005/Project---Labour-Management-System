@@ -2,12 +2,12 @@ import { useEffect, useState, useContext } from "react";
 import { ApiRoute } from "./ApiConfig";
 import { motion } from "framer-motion";
 import LoginContext from "../Context/LoginContext";
-
+import {ToastContainer , toast} from "react-toastify";
 export default function AttendanceReport() {
   const today = new Date();
   const currentMonth = today.toISOString().slice(0, 7);
   let { loggedInUser } = useContext(LoginContext);
-
+  let [isdownloading, setdownloading] = useState(false);
   const [labours, setLabours] = useState([]);
   const [selectedLabour, setSelectedLabour] = useState("");
   const [activeTab, setActiveTab] = useState("labour");
@@ -156,12 +156,87 @@ export default function AttendanceReport() {
       setSelectedType("current");
     }
   }, [selectedLabour, selectedLabourType]);
+
+
+  const downloadPdf = async () => {
+    setdownloading(true);
+    try {
+      const response = await fetch(`${ApiRoute}download-report`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          report,
+          summary,
+          labourName:
+            labours.find((l) => l.ID.toString() === selectedLabour)?.Name ||
+            "All Labour",
+        }),
+      });
+
+      const blob = await response.blob();
+
+      const url = window.URL.createObjectURL(blob);
+
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "attendance-report.pdf";
+
+      document.body.appendChild(a);
+      a.click();
+
+      a.remove();
+      window.URL.revokeObjectURL(url);
+      toast.success("Report Downloaded Successfully");
+      setdownloading(false);
+    } catch (err) {
+      console.error(err);
+      toast.error("Failed to Download Report");
+      setdownloading(false);
+    }
+  };
+
+  const downloadSupervisorPdf = async () => {
+    setdownloading(true);
+    try {
+      const response = await fetch(`${ApiRoute}download-supervisor-report`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          report: supervisorReportData,
+          supervisorName:
+            supervisorList.find((s) => s.ID.toString() === selectedSupervisorId)
+              ?.Name || "All Supervisors",
+        }),
+      });
+
+      const blob = await response.blob();
+
+      const url = window.URL.createObjectURL(blob);
+
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "supervisor-attendance-report.pdf";
+      a.click();
+
+      window.URL.revokeObjectURL(url);
+      setdownloading(false);
+      toast.success("Report Downloaded Successfully");
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to Download Report");
+    }
+  };
   return (
     <motion.div
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
     >
+      <ToastContainer />
       <div className="btn-group mb-3 p-3">
         <button
           style={{
@@ -227,7 +302,7 @@ export default function AttendanceReport() {
                       setSelectedLabType(labour?.LabType || "");
                     }}
                   >
-                    <option value="">All</option>
+                    <option value="">Select</option>
                     {labours.map((l) => (
                       <option key={l.ID} value={l.ID} Labtype={l.LabType}>
                         {l.Name}
@@ -362,10 +437,10 @@ export default function AttendanceReport() {
                       <p>Total Money taken : ₹{summary.advance}</p>
 
                       <p>
-                        <strong>This Month Balance: ₹{summary.balance}</strong>
+                        <strong>Total Balance: ₹{summary.balance}</strong>
                       </p>
 
-                      {selectedType === "current" && (
+                      {/* {selectedType === "current" && (
                         <p>
                           Past Month : {summary.pastFlag === "Add" ? "+" : "-"}
                           {summary.previousBalance}
@@ -380,10 +455,16 @@ export default function AttendanceReport() {
                               : ""}
                           </strong>
                         </p>
-                      )}
+                      )} */}
                     </div>
                   )
                 : null}
+
+              {report.length > 0 && (
+                <button className="btn btn-primary" onClick={downloadPdf}>
+                  {isdownloading ? "Dowloading..." : "Download PDF"}
+                </button>
+              )}
             </div>
           }
         </motion.div>
@@ -406,8 +487,6 @@ export default function AttendanceReport() {
                   </h4>
 
                   <div className="row mb-3">
-                  
-
                     <div className="col-md-4">
                       <label className="mb-2 mb-md-0">Select Month</label>
                       <input
@@ -585,6 +664,14 @@ export default function AttendanceReport() {
                     >
                       Date Range
                     </button>
+                    {supervisorReportData.length > 0 && (
+                      <button
+                        className="btn btn-primary"
+                        onClick={downloadSupervisorPdf}
+                      >
+                        {isdownloading ? "Downloading..." : "Download Report"}
+                      </button>
+                    )}
                   </div>
                   {loading ? (
                     <div className="text-center py-4">
@@ -628,7 +715,6 @@ export default function AttendanceReport() {
                   )}
                 </div>
               )}
-            
             </>
           }
         </motion.div>

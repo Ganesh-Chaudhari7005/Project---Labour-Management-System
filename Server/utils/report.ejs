@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    body {
+      font-family: Arial;
+      padding: 20px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    th, td {
+      border: 1px solid #000;
+      padding: 8px;
+      text-align: left;
+    }
+
+    h2 {
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+
+<h2>Attendance Report</h2>
+
+<p><strong>Labour:</strong> <%= labourName %></p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Date</th>
+      <th>Status</th>
+      <th>Work Done</th>
+      <th>Advance</th>
+      <th>Day Total</th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% report.forEach(r => { %>
+      <tr>
+        <td><%= r.date %></td>
+        <td><%= r.status %></td>
+        <td><%= r.Work_Done %></td>
+        <td><%= r.advance %></td>
+        <td><%= r.Day_Total %></td>
+      </tr>
+    <% }) %>
+  </tbody>
+</table>
+
+<br>
+
+<h4>Total Days: <%= summary.days %></h4>
+<h4>Total Wages: ₹<%= summary.total %></h4>
+<h4>Balance: ₹<%= summary.balance %></h4>
+
+</body>
+</html>

@@ -1,12 +1,14 @@
 import express from "express";
 import { HandleLogin } from "./HandleLogin.js";
 import cors from "cors";
+import ejs from "ejs";
 import { HandleProfileUpdate } from "./HandleProfileUpdate.js";
 import FetchUsers from "./FetchUsers.js";
 import RemoveUser from "./RemoveUser.js";
 import { AddUserHandler } from "./AddNewUsersHandler.js";
 import multer from "multer";
 import path, { dirname } from "path";
+import puppeteer from "puppeteer-core";
 import AddLabourHandlerFunction from "./AddLabourHandler.js";
 import FetchLabours from "./FetchLabours.js";
 import { fileURLToPath } from "url";
@@ -640,8 +642,14 @@ app.get("/get-service-request-count", async (req, res) => {
 app.get("/get-issue-count", async (req, res) => {
   try {
     const [rows] = await pool.execute(`
-      SELECT COUNT(*) AS TotalIssues
-      FROM reportissues
+      SELECT
+(
+    (SELECT COUNT(*) FROM reportissues WHERE Status = 'Pending')
+    +
+    (SELECT COUNT(*) FROM supervisorissues WHERE Status = 'Pending')
+    +
+    (SELECT COUNT(*) FROM labourissues WHERE Status = 'Pending')
+) AS TotalPendingIssues;
     `);
 
     res.json(rows[0]);
@@ -2101,6 +2109,97 @@ app.get("/free-lab-sup-site/:ID", async (req, res) => {
     if (connection) {
       connection.release();
     }
+  }
+});
+
+app.post("/download-report", async (req, res) => {
+  try {
+    const { report, summary, labourName } = req.body;
+
+    const html = await ejs.renderFile(
+      path.join(__dirname, "utils", "report.ejs"),
+      {
+        report,
+        summary,
+        labourName,
+      },
+    );
+
+    const browser = await puppeteer.launch({
+      executablePath:
+        "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
+      headless: true,
+    });
+
+    const page = await browser.newPage();
+
+    await page.setContent(html, {
+      waitUntil: "networkidle0",
+    });
+
+    const pdf = await page.pdf({
+      format: "A4",
+      printBackground: true,
+    });
+
+    await browser.close();
+
+    res.set({
+      "Content-Type": "application/pdf",
+      "Content-Disposition": 'attachment; filename="attendance-report.pdf"',
+    });
+
+    res.send(pdf);
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({
+      message: "PDF generation failed",
+    });
+  }
+});
+
+app.post("/download-supervisor-report", async (req, res) => {
+  try {
+    const { report, supervisorName } = req.body;
+
+    const html = await ejs.renderFile(
+      path.join(process.cwd(), "utils", "supervisor-report.ejs"),
+      {
+        report,
+        supervisorName,
+      },
+    );
+
+    const browser = await puppeteer.launch({
+      executablePath:
+        "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
+      headless: true,
+    });
+    const page = await browser.newPage();
+
+    await page.setContent(html, {
+      waitUntil: "networkidle0",
+    });
+
+    const pdf = await page.pdf({
+      format: "A4",
+      printBackground: true,
+    });
+
+    await browser.close();
+
+    res.setHeader("Content-Type", "application/pdf");
+    res.setHeader(
+      "Content-Disposition",
+      'attachment; filename="supervisor-attendance-report.pdf"',
+    );
+
+    res.send(pdf);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      message: "PDF generation failed",
+    });
   }
 });
 

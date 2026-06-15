@@ -198,7 +198,7 @@ const permissions = {
     }).then((result) => {
       if (result.isConfirmed) {
         sessionStorage.removeItem("token");
-        navigate("/admin");
+        navigate("/system-login");
       }
     });
   }

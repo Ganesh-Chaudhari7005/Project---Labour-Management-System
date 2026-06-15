@@ -20,26 +20,28 @@ export default function AboutUs() {
           </p> */}
         </div>
 
-        <div className="row align-items-center g-5">
+        <div className="row align-items-center">
           {/* Left Content */}
           <div className="col-lg-6">
             <p className="re-about-text">
-              Royal Enterprises is a modern construction and finishing company
-              specializing in
-              <b> tile installation</b>, <b>marble work</b>, and premium surface
-              finishing solutions.
+              Royal Enterprises is a trusted contractor firm specializing in
+              professional
+              <b> tile installation</b>, <b> marble flooring</b>, granite
+              fitting, and premium surface finishing services for residential,
+              commercial, and industrial projects.
             </p>
 
             <p className="re-about-text">
-              We combine skilled craftsmanship with high-grade materials to
-              transform ordinary spaces into elegant, durable, and visually
-              stunning environments.
+              With a team of skilled craftsmen and years of hands-on experience,
+              we deliver precision workmanship, flawless finishes, and durable
+              installations that enhance the beauty and value of every space.
             </p>
 
             <p className="re-about-text">
-              Every project is handled with a strong focus on quality control,
-              timeline commitment, and client satisfaction — ensuring results
-              that stand the test of time.
+              At Royal Enterprises, we are committed to timely project
+              completion, transparent communication, and complete customer
+              satisfaction. Our goal is to create surfaces that are not only
+              visually impressive but also built to last for years to come.
             </p>
 
             {/* Feature Cards */}
@@ -82,12 +84,12 @@ export default function AboutUs() {
           <div className="col-lg-6">
             <div className="re-image-grid">
               <div className="re-img-box re-img-big">
-                <img src="https://static.vecteezy.com/system/resources/previews/050/523/691/large_2x/a-large-white-marble-bathtub-sits-in-a-room-with-a-marble-wall-free-photo.jpeg" />
+                <img src="./floorimage.jpg" />
               </div>
 
               <div className="re-img-row">
                 <div className="re-img-box">
-                  <img src="https://static.vecteezy.com/system/resources/thumbnails/047/022/839/small/sunlight-streaming-through-window-onto-white-tiled-floor-in-empty-room-free-photo.jpeg" />
+                  <img src="./download.jfif" />
                 </div>
 
                 <div className="re-img-box">

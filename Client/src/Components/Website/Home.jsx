@@ -348,14 +348,8 @@ export default function Home() {
                   <div className="row g-3">
                     <div className="col-lg-6">
                       <div className="aboutimg-cont">
-                        <img
-                          src="https://static.vecteezy.com/system/resources/thumbnails/047/022/839/small/sunlight-streaming-through-window-onto-white-tiled-floor-in-empty-room-free-photo.jpeg"
-                          class="aboutimg1 mb-3"
-                        />
-                        <img
-                          src="https://static.vecteezy.com/system/resources/previews/050/523/691/large_2x/a-large-white-marble-bathtub-sits-in-a-room-with-a-marble-wall-free-photo.jpeg"
-                          class="aboutimg2"
-                        />
+                        <img src="./floorimage.jpg" class="aboutimg1 mb-3" />
+                        <img src="./download.jfif" class="aboutimg2" />
                       </div>
                     </div>
                     <div className="col-lg-6">
@@ -399,10 +393,7 @@ export default function Home() {
                 {/* Tile Installation */}
                 <div className="col-lg-3 col-md-6">
                   <div className="service-card">
-                    <img
-                      src="/tileinstall.png"
-                      alt="Tile Installation"
-                    />
+                    <img src="/tileinstall.png" alt="Tile Installation" />
                     <div className="service-content">
                       <h5>Tile Installation</h5>
                       <p>
@@ -443,10 +434,7 @@ export default function Home() {
                 {/* Marble Polishing */}
                 <div className="col-lg-3 col-md-6">
                   <div className="service-card">
-                    <img
-                      src="/marblepolish.jfif"
-                      alt="Marble Polishing"
-                    />
+                    <img src="/marblepolish.jfif" alt="Marble Polishing" />
                     <div className="service-content">
                       <h5>Marble Polishing</h5>
                       <p>Restore shine and smooth finish of marble surfaces.</p>
@@ -469,9 +457,9 @@ export default function Home() {
               <div className="col-lg-3 col-md-6">
                 <div className="choose-card text-center p-4">
                   <i className="bi bi-person-check-fill choose-icon"></i>
-                  <h5 className="mt-3">Expert Team</h5>
+                  <h5 className="mt-3">Expert Labours</h5>
                   <p>
-                    Skilled professionals delivering high-quality workmanship.
+                    Skilled workers delivering high-quality workmanship.
                   </p>
                 </div>
               </div>

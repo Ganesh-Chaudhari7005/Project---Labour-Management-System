@@ -16,7 +16,7 @@ export function useApi() {
 
     if (res.status === 401) {
       sessionStorage.removeItem("token");
-      navigate("/admin");
+      navigate("/system-login");
       return {
         success: false,
         message: "Session Expired",
