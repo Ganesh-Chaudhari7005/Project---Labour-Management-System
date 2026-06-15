@@ -143,7 +143,7 @@ const permissions = {
       icon: FaCalendarCheck,
     },
     {
-      label: "Raise Issue",
+      label: "Report Issue",
       path: "report-issue",
       icon: FaQuestionCircle,
     },

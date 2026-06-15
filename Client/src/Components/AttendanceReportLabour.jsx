@@ -2,10 +2,11 @@
 import { useEffect, useState } from "react";
 import { ApiRoute } from "./ApiConfig";
 import {motion} from 'framer-motion'
+import {ToastContainer, toast} from "react-toastify";
 export default function AttendanceReportLabour() {
   const today = new Date();
   const currentMonth = today.toISOString().slice(0, 7);
-
+let [isDownloading , setisDownloading] = useState(false);
   const [labours, setLabours] = useState([]);
 const [selectedLabour] = useState(sessionStorage.getItem("LabourID") || "");  const [month, setMonth] = useState(currentMonth);
   const [fromDate, setFromDate] = useState("");
@@ -84,6 +85,47 @@ const [selectedLabour] = useState(sessionStorage.getItem("LabourID") || "");  co
       setSelectedType("current");
     }
   }, [selectedLabour, selectedLabourType]);
+
+  const downloadPdf = async () => {
+    setisDownloading(true);
+    try {
+      const response = await fetch(`${ApiRoute}download-report`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          report,
+          summary,
+          labourName:
+            labours.find((l) => l.ID.toString() === selectedLabour)?.Name ||
+            "Labour",
+          labourType: selectedLabourType,
+          selectedType,
+        }),
+      });
+
+      const blob = await response.blob();
+
+      const url = window.URL.createObjectURL(blob);
+
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "attendance-report.pdf";
+
+      document.body.appendChild(a);
+      a.click();
+
+      document.body.removeChild(a);
+      window.URL.revokeObjectURL(url);
+      setisDownloading(false);
+      toast.success("Report Downloaded Successfully");
+    } catch (error) {
+      console.error("PDF Download Error:", error);
+      toast.error("Failed to Download Report");
+      setisDownloading(false);
+    }
+  };
   return (
     <motion.div
       initial={{ opacity: 0, y: 10 }}
@@ -128,7 +170,7 @@ const [selectedLabour] = useState(sessionStorage.getItem("LabourID") || "");  co
           </div>
 
           {/* Buttons */}
-          <div className="mb-3 py-3 d-flex gap-2">
+          <div className="mb-3 py-3 d-flex gap-2 flex-wrap">
             <button
               className="btn btn-primary"
               onClick={() => {
@@ -138,14 +180,12 @@ const [selectedLabour] = useState(sessionStorage.getItem("LabourID") || "");  co
             >
               Current Month
             </button>
-
             <button
               className="btn btn-secondary"
               onClick={() => getReport("month")}
             >
               Selected Month
             </button>
-
             <button
               className="btn btn-success"
               onClick={() => getReport("range")}
@@ -211,7 +251,12 @@ const [selectedLabour] = useState(sessionStorage.getItem("LabourID") || "");  co
               </p>
             </div>
           )}
-
+          {report.length > 0 && (
+            <button className="btn btn-primary" onClick={downloadPdf}>
+              <i className="bi bi-download me-2"></i>
+              {isDownloading ? "Downloading..." : "Download PDF"}
+            </button>
+          )}
           {/* Table */}
 
           {report.length > 0
@@ -223,10 +268,10 @@ const [selectedLabour] = useState(sessionStorage.getItem("LabourID") || "");  co
                   <p>Total Money taken : ₹{summary.advance}</p>
 
                   <p>
-                    <strong>This Month Balance: ₹{summary.balance}</strong>
+                    <strong>Total: ₹{summary.balance}</strong>
                   </p>
 
-                  {selectedType === "current" && (
+                  {/* {selectedType === "current" && (
                     <p>
                       Past Month : {summary.pastFlag === "Add" ? "+" : "-"}
                       {summary.previousBalance}
@@ -241,7 +286,7 @@ const [selectedLabour] = useState(sessionStorage.getItem("LabourID") || "");  co
                           : ""}
                       </strong>
                     </p>
-                  )}
+                  )} */}
                 </div>
               )
             : null}

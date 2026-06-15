@@ -539,6 +539,14 @@ export default function AttendanceReport() {
                     >
                       Date Range
                     </button>
+                    {supervisorReportData.length > 0 && (
+                      <button
+                        className="btn btn-primary"
+                        onClick={downloadSupervisorPdf}
+                      >
+                        {isdownloading ? "Downloading..." : "Download Report"}
+                      </button>
+                    )}
                   </div>
                   {loading ? (
                     <div className="text-center py-4">
