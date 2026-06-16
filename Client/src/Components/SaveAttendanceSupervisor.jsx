@@ -267,7 +267,7 @@ useEffect(() => {
                         value={selectedWorkID}
                         onChange={(e) => setSelectedWorkID(e.target.value)}
                         required
-                        disabled={isLabourSelected}
+                        disabled={isLabourSelected || status === "A"}
                       >
                         <option value="">-- Select Work Type --</option>
 

@@ -1,4 +1,5 @@
 import { ApiRoute } from "./ApiConfig.js";
+import { ToastContainer, toast } from "react-toastify";
 const handlePayment = async (bill) => {
   try {
     const response = await fetch(`${ApiRoute}create-order`, {
@@ -16,7 +17,7 @@ const handlePayment = async (bill) => {
     const data = await response.json();
 
     if (!data.success) {
-      alert("Order creation failed");
+      toast.error("Order creation failed");
       return;
     }
 
@@ -53,9 +54,9 @@ const handlePayment = async (bill) => {
           const data = await verifyRes.json();
 
           if (data.success) {
-            alert("Payment Verified & Successful");
+            toast.success("Payment Verified & Successful");
           } else {
-            alert("Payment Verification Failed");
+            toast.error("Payment Verification Failed");
           }
         } catch (err) {
           console.log(err);

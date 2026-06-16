@@ -369,7 +369,7 @@ export default function AdminDashboard() {
 
                             <td>
                               <span className="badge bg-primary">
-                                {bill.ProjectID}
+                                {bill.ProjectName}
                               </span>
                             </td>
 

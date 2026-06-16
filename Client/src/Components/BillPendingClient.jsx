@@ -5,6 +5,7 @@ import { ApiRoute } from './ApiConfig';
 import { BASE_URL } from './BaseUrl';
 import handlePayment from "./RazorpayTest"; 
 import { FaDownload } from "react-icons/fa";
+import {toast, ToastContainer} from "react-toastify";
 export default function BillPendingClient() {
     const [pendingBills , setPendingBills] = useState([]);
     const callApi = useApi();
@@ -49,6 +50,7 @@ export default function BillPendingClient() {
       transition={{ duration: 0.3 }}
       style={{ padding: "10px" }}
     >
+      <ToastContainer/>
       <div className="table-responsive">
         <table className="table table-bordered pendingBillsTable">
           <thead>
@@ -68,7 +70,7 @@ export default function BillPendingClient() {
             {pendingBills.map((bill, index) => (
               <tr key={index}>
                 <td className="text-center">{index + 1}</td>
-                <td>{bill.ProjectName}</td>
+                <td>{bill.ProjectName || "-"}</td>
                 <td>{bill.BillNo}</td>
                 <td>
                   {new Date(bill.billdate).toLocaleDateString("en-GB")}

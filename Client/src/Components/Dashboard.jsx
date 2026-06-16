@@ -138,6 +138,11 @@ const permissions = {
 
   labour: [
     {
+      label: "Profile",
+      path: "profile",
+      icon: FaUserCircle,
+    },
+    {
       label: "Attendance Report",
       path: "lab-attendance-report",
       icon: FaCalendarCheck,
@@ -146,11 +151,6 @@ const permissions = {
       label: "Report Issue",
       path: "report-issue",
       icon: FaQuestionCircle,
-    },
-    {
-      label: "Profile",
-      path: "profile",
-      icon: FaUserCircle,
     },
   ],
 

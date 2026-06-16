@@ -37,7 +37,7 @@ export default function GenerateBill() {
       selected: false,
     }));
     setWorkDetails(updated);
-    GetPendingBillInfo(updated);
+    // GetPendingBillInfo(updated);
   };
 
   const getClientDet_BillNo = async () => {

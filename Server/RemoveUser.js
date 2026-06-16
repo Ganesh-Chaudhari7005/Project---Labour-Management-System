@@ -19,7 +19,7 @@ async function RemoveUser(removeuseremail, role) {
       currenttable = "system_admin";
     } else if (role.toLowerCase() === "supervisor") {
       currenttable = "supervisors";
-    } else if (role.toLowerCase() === "clients") {
+    } else if (role.toLowerCase() === "client") {
       currenttable = "clients";
     } else if (role.toLowerCase() === "labour") {
       currenttable = "labours";

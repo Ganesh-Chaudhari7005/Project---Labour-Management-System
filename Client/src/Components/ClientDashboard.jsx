@@ -356,13 +356,13 @@ const [paidBills, setPaidBills] = useState([]);
                   className="dash-count"
                   style={{ color: "#b91c1c", fontWeight: "800" }}
                 >
-                  <CountUp end={TotalIssues} />
+                  <CountUp end={TotalIssues ||  0 } />
                 </div>
 
-                <div className="dash-sub">Needs attention from admin</div>
+                <div className="dash-sub">{TotalIssues > 0 ? "Needs Your Attention" : "No Issues reported"}</div>
               </motion.div>
             </div>
-            <div
+            {/* <div
               className="mt-4 d-flex align-items-center px-3 py-2 rounded shadow-sm"
               style={{
                 background: "#fff8e1",
@@ -383,7 +383,7 @@ const [paidBills, setPaidBills] = useState([]);
               <marquee behavior="scroll" direction="left" scrollamount="4">
                 New messages
               </marquee>
-            </div>
+            </div> */}
           </div>
         </div>
       </div>

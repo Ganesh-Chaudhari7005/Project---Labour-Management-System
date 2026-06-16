@@ -17,12 +17,20 @@ async function GetCllientPendingBills(ClientId){
     }
 
     try{
-        let [PendingBills] = await db.execute(`
-        SELECT all_bills.*
-        FROM all_bills
-        JOIN projects
-        ON projects.ProjectID = all_bills.ProjectID
-        WHERE projects.ClientID = '${ClientId}' and all_bills.send_to_client = 1 and all_bills.Status = 'Pending' ;`)
+        let [PendingBills] = await db.execute(
+          `
+  SELECT
+    all_bills.*,
+    projects.ProjectName
+  FROM all_bills
+  JOIN projects
+    ON projects.ProjectID = all_bills.ProjectID
+  WHERE projects.ClientID = ?
+    AND all_bills.send_to_client = 1
+    AND all_bills.Status = 'Pending'
+`,
+          [ClientId],
+        );
 
         if(PendingBills.length === 0){
             return{
@@ -30,20 +38,7 @@ async function GetCllientPendingBills(ClientId){
                 message : "No Pending Bills"
             }
         }else{
-            let projectid = PendingBills[0].ProjectID;
-
-            let [getProjectName] = await db.execute(
-              `SELECT ProjectName FROM projects WHERE ProjectID=?`,[projectid]
-            );
-
-
-            let ProjectName = getProjectName[0].ProjectName;
-            console.log(ProjectName);
-
-            PendingBills[0] = {
-                ...PendingBills[0],
-                 ProjectName : ProjectName
-                }
+            
             console.log(PendingBills);
 
             return{

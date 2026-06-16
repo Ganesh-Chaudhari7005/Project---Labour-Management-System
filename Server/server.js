@@ -663,19 +663,22 @@ app.get("/get-issue-count", async (req, res) => {
 app.get("/get-monthly-payments", async (req, res) => {
   try {
     const [rows] = await pool.execute(`
-      SELECT 
-        BillID,
-        BillNo,
-        ProjectID,
-        TotalAmount,
-        BillPaymentDate,
-        PaidBillReceipt,
-        Status
-      FROM all_bills
-      WHERE Status = 'Paid'
-      AND MONTH(BillPaymentDate) = MONTH(CURDATE())
-      AND YEAR(BillPaymentDate) = YEAR(CURDATE())
-      ORDER BY BillPaymentDate DESC
+ SELECT
+    ab.BillID,
+    ab.BillNo,
+    ab.ProjectID,
+    p.ProjectName,
+    ab.TotalAmount,
+    ab.BillPaymentDate,
+    ab.PaidBillReceipt,
+    ab.Status
+FROM all_bills ab
+JOIN projects p
+    ON ab.ProjectID = p.ProjectID
+WHERE ab.Status = 'Paid'
+  AND MONTH(ab.BillPaymentDate) = MONTH(CURDATE())
+  AND YEAR(ab.BillPaymentDate) = YEAR(CURDATE())
+ORDER BY ab.BillPaymentDate DESC;
     `);
 
     res.json(rows);
@@ -806,12 +809,12 @@ app.post("/add-attendance", async (req, res) => {
       });
     }
 
-    if (!data.workDone) {
-      return res.status(400).json({
-        success: false,
-        message: "Enter Work Done",
-      });
-    }
+    // if (!data.workDone) {
+    //   return res.status(400).json({
+    //     success: false,
+    //     message: "Enter Work Done",
+    //   });
+    // }
 
     const result = await insertAttendance(data);
 
@@ -1205,13 +1208,14 @@ app.post("/updateLabourWages", UpdateLabourWages);
 app.post("/create-order", async (req, res) => {
   try {
     const { amount } = req.body;
+    console.log("Amount received:", amount);
 
     const options = {
-      amount: Number(amount) * 100,
+      amount: Math.round(Number(amount) * 100),
       currency: "INR",
       receipt: `receipt_${Date.now()}`,
     };
-
+console.log("Amount sent to Razorpay:", Math.round(Number(amount) * 100)); 
     // 1. Create order in Razorpay
     const order = await razorpay.orders.create(options);
 
@@ -2304,8 +2308,8 @@ app.delete("/delete-feedback/:id", async (req, res) => {
   }
 });
 
-app.use(express.static(path.join(__dirname, "../Client/dist")));
+// app.use(express.static(path.join(__dirname, "../Client/dist")));
 
-app.get(/.*/, (req, res) => {
-  res.sendFile(path.join(__dirname, "../Client/dist/index.html"));
-});
+// app.get(/.*/, (req, res) => {
+//   res.sendFile(path.join(__dirname, "../Client/dist/index.html"));
+// });
