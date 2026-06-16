@@ -60,6 +60,19 @@ export default function CMS() {
               )}
             </NavLink>
           )}
+          {loggedInUser?.UserRole === "Admin" && (
+            <NavLink to="view-client-feedback">
+              {({ isActive }) => (
+                <button
+                  className={
+                    isActive ? "project-tab-btn active-tab" : "project-tab-btn"
+                  }
+                >
+                  Cliet Feedback
+                </button>
+              )}
+            </NavLink>
+          )}
         </div>
       </div>
       <Outlet />

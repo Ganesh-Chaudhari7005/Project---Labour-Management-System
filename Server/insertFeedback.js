@@ -25,7 +25,7 @@ const insertFeedback = async (req, res) => {
     // Insert Feedback
     await db.execute(
       `
-      INSERT INTO Feedback (
+      INSERT INTO feedback (
         ProjectID,
         ClientID,
         Rating,

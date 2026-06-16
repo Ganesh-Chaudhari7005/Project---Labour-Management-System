@@ -82,6 +82,7 @@ import SiteIssueCont from "./Components/SiteIssueCont.jsx";
 import SupReportIssues from "./Components/SupReportIssues.jsx";
 import AllLabSup from "./Components/AllLabSup.jsx";
 import RouteError from "./Components/RouteError.jsx";
+import ViewClientFeedback from "./Components/ViewClientFeedback.jsx";
 const router = createBrowserRouter(
   createRoutesFromElements(
     <>
@@ -159,6 +160,7 @@ const router = createBrowserRouter(
               path="service-req-admin"
               element={<ServiceRequestsAdmin />}
             />
+            <Route path="view-client-feedback" element={<ViewClientFeedback/>}/>
           </Route>
           <Route path="profile" element={<Profile />} />
           <Route path="manage-wages" element={<WageManagement />} />

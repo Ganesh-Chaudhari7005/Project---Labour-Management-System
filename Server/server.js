@@ -1,6 +1,7 @@
 import express from "express";
 import { HandleLogin } from "./HandleLogin.js";
 import cors from "cors";
+import os from "os";
 import ejs from "ejs";
 import { HandleProfileUpdate } from "./HandleProfileUpdate.js";
 import FetchUsers from "./FetchUsers.js";
@@ -1855,7 +1856,6 @@ app.post("/supervisor-attendance-report", async (req, res) => {
   try {
     const { type, supervisorId, month, fromDate, toDate } = req.body;
 
-    
     let query = `
       SELECT
         sa.*,
@@ -2009,9 +2009,9 @@ GROUP BY p.ProjectID, p.ProjectName;;
   }
 });
 
-app.get("/get-all-sup-site-labs/:ID", async(req, res)=>{
-  let {ID} = req.params;
-  
+app.get("/get-all-sup-site-labs/:ID", async (req, res) => {
+  let { ID } = req.params;
+
   const Query = `
       SELECT
     l.ID,
@@ -2034,21 +2034,20 @@ INNER JOIN projects p
 WHERE s.ID = ?;
 `;
 
-let [Lablist] = await pool.execute(Query, [ID]);
+  let [Lablist] = await pool.execute(Query, [ID]);
 
-if(Lablist.length > 0){
-  res.json({
-    success :true,
-    list : Lablist
-  })
-}else{
-  res.json({
-    success: false,
-    message : "No Labours Found"
-  })
-}
+  if (Lablist.length > 0) {
+    res.json({
+      success: true,
+      list: Lablist,
+    });
+  } else {
+    res.json({
+      success: false,
+      message: "No Labours Found",
+    });
+  }
 });
-
 
 app.get("/free-lab-sup-site/:ID", async (req, res) => {
   const { ID } = req.params;
@@ -2124,12 +2123,19 @@ app.post("/download-report", async (req, res) => {
         labourName,
       },
     );
-
-    const browser = await puppeteer.launch({
-      executablePath:
-        "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
+    const launchOptions = {
       headless: true,
-    });
+      args: ["--no-sandbox", "--disable-setuid-sandbox"],
+    };
+
+    if (os.platform() === "win32") {
+      launchOptions.executablePath =
+        "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe";
+    } else {
+      launchOptions.executablePath = "/usr/bin/google-chrome-stable";
+    }
+
+    const browser = await puppeteer.launch(launchOptions);
 
     const page = await browser.newPage();
 
@@ -2170,11 +2176,19 @@ app.post("/download-supervisor-report", async (req, res) => {
       },
     );
 
-    const browser = await puppeteer.launch({
-      executablePath:
-        "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
+    const launchOptions = {
       headless: true,
-    });
+      args: ["--no-sandbox", "--disable-setuid-sandbox"],
+    };
+
+    if (os.platform() === "win32") {
+      launchOptions.executablePath =
+        "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe";
+    } else {
+      launchOptions.executablePath = "/usr/bin/google-chrome-stable";
+    }
+
+    const browser = await puppeteer.launch(launchOptions);
     const page = await browser.newPage();
 
     await page.setContent(html, {
@@ -2199,6 +2213,93 @@ app.post("/download-supervisor-report", async (req, res) => {
     console.error(error);
     res.status(500).json({
       message: "PDF generation failed",
+    });
+  }
+});
+
+app.get("/view-client-feedback", async (req, res) => {
+  try {
+    const query = `
+      SELECT 
+          f.FeedbackID,
+          p.ProjectName,
+          c.Name AS ClientName,
+          f.Feedback,
+          f.Rating
+      FROM feedback f
+      INNER JOIN projects p
+          ON f.ProjectID = p.ProjectID
+      INNER JOIN clients c
+          ON f.ClientID = c.ID
+      ORDER BY f.FeedbackID DESC
+    `;
+
+    const [rows] = await pool.query(query);
+
+    res.status(200).json({
+      success: true,
+      data: rows,
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch feedback",
+    });
+  }
+});
+
+app.post("/add-testimonial", async (req, res) => {
+  try {
+    const { name, message, rating } = req.body;
+
+    await pool.query(
+      `
+      INSERT INTO testimonials
+      (name, message, rating)
+      VALUES (?, ?, ?)
+      `,
+      [name, message, rating],
+    );
+
+    res.status(200).json({
+      success: true,
+      message: "Added to testimonials successfully",
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({
+      success: false,
+      message: "Failed to add testimonial",
+    });
+  }
+});
+
+app.delete("/delete-feedback/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const [result] = await pool.query(
+      "DELETE FROM feedback WHERE FeedbackID = ?",
+      [id],
+    );
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "Feedback not found",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Feedback deleted successfully",
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({
+      success: false,
+      message: "Failed to delete feedback",
     });
   }
 });

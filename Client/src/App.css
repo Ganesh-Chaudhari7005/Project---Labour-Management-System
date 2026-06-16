@@ -175,6 +175,13 @@ td {
   font-weight: 500;
   font-size: 18px;
 }
+.Toastify__toast {
+font-family: 'Montserrat', sans-serif !important;
+}
+
+.Toastify__toast-body {
+  font-family: 'Montserrat', sans-serif !important;
+}
 
 .custom-toast {
   font-family: 'Montserrat', sans-serif !important;
@@ -766,6 +773,23 @@ input[type="checkbox"] {
   border: 1px solid #e9ecef;
 }
 
+button.btn.fd-rm-btn.btn-sm {
+  background-color: #ffafaf;
+  color: red;
+}
+
+button.btn.fd-rm-btn.btn-sm:hover{
+  background-color: #f18c8c;
+}
+
+button.btn.btn-fd-add.btn-sm {
+  background: #a7efa7;
+  color: #006a00;
+}
+
+button.btn.btn-fd-add.btn-sm:hover{
+  background-color: #78e078;
+}
 .no-lab-img {
   width: 110px;
   height: 110px;
@@ -2420,6 +2444,7 @@ a.text-white.adminnavbtn {
     font-size: 38px;
   }
 }
+
 
 .cl-cont-email {
   overflow-wrap: break-word;
