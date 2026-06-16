@@ -8,28 +8,24 @@ import Swal from "sweetalert2";
 
 export default function ViewAllSupervisors() {
   const callapi = useApi();
-
+  const [loading, setLoading] = useState(true);
   const [allSupervisors, setAllSupervisors] = useState([]);
-
-  const [currentSupName, setSupName] = useState("");
-  const [currentSupEmail, setSupEmail] = useState("");
-  const [currentSupPhone, setSupPhone] = useState("");
-  const [currentSupImg, setSupImg] = useState("");
-  const [currentSupAddr, setSupAddr] = useState("");
-const [selectedSupervisor, setSelectedSupervisor] = useState(null);
+  const [selectedSupervisor, setSelectedSupervisor] = useState(null);
   const [search, setSearch] = useState("");
 
-
   const FetchSupervisorsFromDB = async () => {
-    let reqSup = await fetch(`${ApiRoute}fetch-supervisors`);
+    try {
+      setLoading(true);
 
-    console.log(reqSup.status);
+      let reqSup = await fetch(`${ApiRoute}fetch-supervisors`);
+      let res = await reqSup.json();
 
-    let res = await reqSup.json();
-
-    setAllSupervisors(res);
-
-    console.log(res);
+      setAllSupervisors(res);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const OpenFullView = (supervisor) => {
@@ -46,7 +42,6 @@ const [selectedSupervisor, setSelectedSupervisor] = useState(null);
     FetchSupervisorsFromDB();
   }, []);
 
- 
   const toggleVisibility = () => {
     setContisvisible((prev) => !prev);
   };
@@ -90,12 +85,12 @@ const [selectedSupervisor, setSelectedSupervisor] = useState(null);
     }
   };
 
-const filteredSupervisors = allSupervisors.filter((s) => {
-  return (
-    (s.SupervisorName || "").toLowerCase().includes(search.toLowerCase()) ||
-    (s.SupervisorEmail || "").toLowerCase().includes(search.toLowerCase())
-  );
-});
+  const filteredSupervisors = allSupervisors.filter((s) => {
+    return (
+      (s.SupervisorName || "").toLowerCase().includes(search.toLowerCase()) ||
+      (s.SupervisorEmail || "").toLowerCase().includes(search.toLowerCase())
+    );
+  });
 
   return (
     <motion.div
@@ -122,8 +117,6 @@ const filteredSupervisors = allSupervisors.filter((s) => {
           <div className="sup-count-pill">{allSupervisors.length}</div>
         </div>
 
-      
-
         {/* Search */}
         <div className="sup-search-wrapper">
           <i className="bi bi-search"></i>
@@ -136,10 +129,44 @@ const filteredSupervisors = allSupervisors.filter((s) => {
             onChange={(e) => setSearch(e.target.value)}
           />
         </div>
-
-        {/* Cards */}
         <div className="row g-4 mt-1">
-          {filteredSupervisors.length > 0 ? (
+          {loading ? (
+            [...Array(4)].map((_, index) => (
+              <div className="col-lg-6" key={index}>
+                <div className="sup-card">
+                  <div
+                    style={{
+                      width: "70px",
+                      height: "70px",
+                      borderRadius: "50%",
+                      background: "#e5e7eb",
+                    }}
+                  ></div>
+
+                  <div className="sup-content">
+                    <div
+                      style={{
+                        width: "150px",
+                        height: "20px",
+                        background: "#e5e7eb",
+                        borderRadius: "4px",
+                      }}
+                    ></div>
+
+                    <div
+                      style={{
+                        width: "220px",
+                        height: "15px",
+                        background: "#e5e7eb",
+                        borderRadius: "4px",
+                        marginTop: "10px",
+                      }}
+                    ></div>
+                  </div>
+                </div>
+              </div>
+            ))
+          ) : filteredSupervisors.length > 0 ? (
             filteredSupervisors.map((data, index) => (
               <div className="col-lg-6" key={index}>
                 <motion.div
@@ -195,11 +222,8 @@ const filteredSupervisors = allSupervisors.filter((s) => {
             <div className="col-12">
               <div className="sup-empty">
                 <div className="sup-empty-icon">🔍</div>
-
                 <h4>No Supervisor Found</h4>
-
                 <p>Try searching with another name.</p>
-
                 <button className="sup-clear-btn" onClick={() => setSearch("")}>
                   Clear Search
                 </button>

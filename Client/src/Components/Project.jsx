@@ -15,6 +15,8 @@ export default function Project() {
     setLoading(true);
     let res = await fetch(`${ApiRoute}fetch-projects`);
     let data = await res.json();
+    console.log(data);
+    
     setProjects(data);
     setLoading(false);
   };
@@ -130,24 +132,23 @@ export default function Project() {
                     </div>
 
                     <div className="pjx-meta">
-                      Project ID: #{data.ProjectID}
+                      Start Date:{" "}
+                      {new Date(data.StartDate).toLocaleDateString("en-GB")}
                     </div>
 
                     <NavLink to={`manage-project/${data.ProjectID}`}>
-                      <button className="pjx-btn-manage">
-                        Manage Site →
-                      </button>
+                      <button className="pjx-btn-manage">Manage Site →</button>
                     </NavLink>
                   </div>
                 ))}
           </div>
-           {filteredProjects.length === 0 && (
-          <div className="pjx-empty">
-            <div className="pjx-empty-icon">🔍</div>
-            <h4>No matching projects</h4>
-            <p>Try changing filters or search keyword</p>
-          </div>
-        )}
+          {filteredProjects.length === 0 && (
+            <div className="pjx-empty">
+              <div className="pjx-empty-icon">🔍</div>
+              <h4>No matching projects</h4>
+              <p>Try changing filters or search keyword</p>
+            </div>
+          )}
         </div>
       </motion.div>
     </>

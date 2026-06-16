@@ -363,7 +363,7 @@ export default function AdminDashboard() {
                           </td>
                         </tr>
                       ) : (
-                        monthlyPayments.map((bill, index) => (
+                        monthlyPayments.slice(0, 2).map((bill, index) => (
                           <tr key={bill.BillID}>
                             <td>{index + 1}</td>
 

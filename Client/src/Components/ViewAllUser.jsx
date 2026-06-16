@@ -8,15 +8,25 @@ import { uploadUrl } from "../uploadConfig";
 import { useApi } from "./ApiCaller.js";
 import Swal from "sweetalert2";
 export default function ViewAllUsers() {
+  const [loading, setLoading] = useState(true);
   const callpi = useApi();
   const [searchTerm, setSearchTerm] = useState("");
   const [AllUsers, setAllUsers] = useState([]);
-  const FetchUsersFromDB = async () => {
+const FetchUsersFromDB = async () => {
+  try {
+    setLoading(true);
+
     let reqUsers = await fetch(`${ApiRoute}fetch-users`);
     let resAllUsers = await reqUsers.json();
+
     setAllUsers(resAllUsers);
-    console.log(resAllUsers);
-  };
+  } catch (error) {
+    console.error(error);
+    toast.error("Failed to load users");
+  } finally {
+    setLoading(false);
+  }
+};
   useEffect(() => {
     FetchUsersFromDB();
   }, []);
@@ -99,28 +109,56 @@ const filteredUsers = AllUsers.filter(
               </tr>
             </thead>
             <tbody>
-              {filteredUsers.map((user, index) => (
+              {loading ? (
+                [...Array(5)].map((_, index) => (
+                  <tr key={index}>
+                    <td>
+                      <div className="skeleton-box"></div>
+                    </td>
+                    <td>
+                      <div className="skeleton-box"></div>
+                    </td>
+                    <td>
+                      <div className="skeleton-box"></div>
+                    </td>
+                    <td>
+                      <div className="skeleton-box"></div>
+                    </td>
+                    <td>
+                      <div className="skeleton-btn"></div>
+                    </td>
+                  </tr>
+                ))
+              ) : filteredUsers.length > 0 ? (
+                filteredUsers.map((user, index) => (
+                  <tr key={user.User_Email}>
+                    <td>{index + 1}</td>
+                    <td>{user.User_Name}</td>
+                    <td>{user.User_Email}</td>
+                    <td>{user.User_Role}</td>
+                    <td>
+                      <button
+                        className="btn btn-danger"
+                        onClick={() =>
+                          removeUser(
+                            user.User_Email,
+                            user.User_Role,
+                            user.User_Name,
+                          )
+                        }
+                      >
+                        Remove
+                      </button>
+                    </td>
+                  </tr>
+                ))
+              ) : (
                 <tr>
-                  <td>{index + 1}</td>
-                  <td>{user.User_Name}</td>
-                  <td>{user.User_Email}</td>
-                  <td>{user.User_Role}</td>
-                  <td>
-                    <button
-                      className="btn btn-danger"
-                      onClick={() =>
-                        removeUser(
-                          user.User_Email,
-                          user.User_Role,
-                          user.User_Name,
-                        )
-                      }
-                    >
-                      Remove
-                    </button>
+                  <td colSpan="5" className="text-center">
+                    No users found
                   </td>
                 </tr>
-              ))}
+              )}
             </tbody>
           </table>
         </div>

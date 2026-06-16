@@ -11,6 +11,7 @@ ShowLabourDetails;
 export default function ViewAllLabour() {
   const callapi = useApi();
   const [AllLabours, setAllLabours] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [currrentLabName, setLabName] = useState("");
   const [currrentLabEmail, setLabEmail] = useState("");
   const [currrentLabPhone, setLabPhone] = useState("");
@@ -21,14 +22,21 @@ export default function ViewAllLabour() {
   const [search, setSearch] = useState("");
   const [typeFilter, setTypeFilter] = useState("all");
   const [isConVisible, setContisvisible] = useState(false);
-  const FetchLaboursFromDB = async () => {
-    let reqLab = await fetch(`${ApiRoute}fetch-labours`);
-    console.log(reqLab.status);
+const FetchLaboursFromDB = async () => {
+  try {
+    setLoading(true);
 
+    let reqLab = await fetch(`${ApiRoute}fetch-labours`);
     let res = await reqLab.json();
+
     setAllLabours(res);
-    console.log(res);
-  };
+  } catch (error) {
+    console.error(error);
+    toast.error("Failed to load labours");
+  } finally {
+    setLoading(false);
+  }
+};
   useEffect(() => {
     FetchLaboursFromDB();
   }, []);
@@ -144,7 +152,75 @@ export default function ViewAllLabour() {
           </select>
         </div>
         <div className="row g-3">
-          {filteredLabours.length > 0 ? (
+          {loading ? (
+            [...Array(5)].map((_, index) => (
+              <div className="col-12" key={index}>
+                <div className="labour-row-card">
+                  <div
+                    className="skeleton"
+                    style={{
+                      width: "70px",
+                      height: "70px",
+                      borderRadius: "50%",
+                      flexShrink: 0,
+                    }}
+                  ></div>
+
+                  <div className="labour-row-info">
+                    <div
+                      className="skeleton"
+                      style={{
+                        width: "180px",
+                        height: "20px",
+                        borderRadius: "4px",
+                        marginBottom: "10px",
+                      }}
+                    ></div>
+
+                    <div
+                      className="skeleton"
+                      style={{
+                        width: "250px",
+                        height: "15px",
+                        borderRadius: "4px",
+                        marginBottom: "10px",
+                      }}
+                    ></div>
+
+                    <div
+                      className="skeleton"
+                      style={{
+                        width: "80px",
+                        height: "24px",
+                        borderRadius: "20px",
+                      }}
+                    ></div>
+                  </div>
+
+                  <div className="labour-row-actions">
+                    <div
+                      className="skeleton"
+                      style={{
+                        width: "80px",
+                        height: "36px",
+                        borderRadius: "6px",
+                        marginBottom: "8px",
+                      }}
+                    ></div>
+
+                    <div
+                      className="skeleton"
+                      style={{
+                        width: "80px",
+                        height: "36px",
+                        borderRadius: "6px",
+                      }}
+                    ></div>
+                  </div>
+                </div>
+              </div>
+            ))
+          ) : filteredLabours.length > 0 ? (
             filteredLabours.map((data, index) => (
               <div className="col-12" key={index}>
                 <motion.div
@@ -166,7 +242,9 @@ export default function ViewAllLabour() {
                   <div className="labour-row-info">
                     <h5>{data.Name}</h5>
                     <p>{data.Email}</p>
-                    <span className="labour-type-tag">{data.LabType || 'Type'}</span>
+                    <span className="labour-type-tag">
+                      {data.LabType || "Type"}
+                    </span>
                   </div>
 
                   {/* ACTIONS */}
