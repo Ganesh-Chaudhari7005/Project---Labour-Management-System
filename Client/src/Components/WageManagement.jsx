@@ -3,6 +3,8 @@
   import { toast, ToastContainer } from "react-toastify";
   import { motion } from "framer-motion";
   export default function WageManagement() {
+    const [selectedLabour, setSelectedLabour] = useState(null);
+    const [newWage, setNewWage] = useState("");
   const [wagesData, setWagesData] = useState([]);
   const [search, setSearch] = useState("");
   const [labourType, setLabourType] = useState("");
@@ -77,6 +79,17 @@
   const totalMisteri = wagesData
     .filter((item) => item.LabType === "Misteri")
     .reduce((total, item) => total + Number(item.wages || 0), 0);
+
+    const OpenUpdateModal = (item) => {
+      setSelectedLabour(item);
+      setNewWage(item.wages);
+
+      const modal = new window.bootstrap.Modal(
+        document.getElementById("updateWageModal"),
+      );
+
+      modal.show();
+    };
     return (
       <motion.div
         initial={{ opacity: 0, y: 10 }}
@@ -124,7 +137,7 @@
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.2 }}
-                style={{fontWeight : 600, fontSize : "2rem"}}
+                style={{ fontWeight: 600, fontSize: "2rem" }}
               >
                 <span>Total Misteri Wages</span>
 
@@ -179,25 +192,12 @@
 
                       <td>{item.LabType}</td>
 
-                      <td>
-                        <input
-                          type="number"
-                          defaultValue={item.wages}
-                          className="form-control"
-                        />
-                      </td>
+                      <td>₹ {item.wages}</td>
 
                       <td>
                         <button
                           className="pendingBillsViewBtn"
-                          onClick={(e) => {
-                            const value =
-                              e.target.parentElement.parentElement.querySelector(
-                                "input",
-                              ).value;
-
-                            UpdateWages(item.ID, value);
-                          }}
+                          onClick={() => OpenUpdateModal(item)}
                         >
                           Update
                         </button>
@@ -235,6 +235,76 @@
                 )}
               </tbody>
             </table>
+          </div>
+        </div>
+        <div
+          className="modal fade"
+          id="updateWageModal"
+          tabIndex="-1"
+          aria-hidden="true"
+        >
+          <div className="modal-dialog modal-dialog-centered">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h5 className="modal-title">Update Wage</h5>
+
+                <button
+                  type="button"
+                  className="btn-close"
+                  data-bs-dismiss="modal"
+                ></button>
+              </div>
+
+              <div className="modal-body">
+                <div className="mb-3">
+                  <label className="form-label">Labour Name</label>
+
+                  <input
+                    type="text"
+                    className="form-control"
+                    value={selectedLabour?.Name || ""}
+                    disabled
+                  />
+                </div>
+
+                <div className="mb-3">
+                  <label className="form-label">Daily Wage (₹)</label>
+
+                  <input
+                    type="number"
+                    className="form-control"
+                    value={newWage}
+                    onChange={(e) => setNewWage(e.target.value)}
+                  />
+                </div>
+              </div>
+
+              <div className="modal-footer">
+                <button
+                  type="button"
+                  className="btn btn-secondary"
+                  data-bs-dismiss="modal"
+                >
+                  Cancel
+                </button>
+
+                <button
+                  type="button"
+                  className="btn btn-primary"
+                  onClick={() => {
+                    UpdateWages(selectedLabour.ID, newWage);
+
+                    const modal = window.bootstrap.Modal.getInstance(
+                      document.getElementById("updateWageModal"),
+                    );
+
+                    modal.hide();
+                  }}
+                >
+                  Save Changes
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       </motion.div>

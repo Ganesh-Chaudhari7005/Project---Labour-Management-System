@@ -3,8 +3,10 @@ import { ApiRoute } from "../ApiConfig";
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 export default function Home() {
     const [data, setData] = useState([]);
+const navigate = useNavigate();
 
 
 
@@ -399,7 +401,14 @@ export default function Home() {
                       <p>
                         Precision tile work for durable and stylish flooring.
                       </p>
-                      <button className="about-readmore">More Details</button>
+                      <button
+                        className="about-readmore"
+                        onClick={() =>
+                          navigate("/services?accordion=serviceOne")
+                        }
+                      >
+                        More Details
+                      </button>
                     </div>
                   </div>
                 </div>
@@ -411,7 +420,14 @@ export default function Home() {
                     <div className="service-content">
                       <h5>Marble Installation</h5>
                       <p>Elegant marble fitting for premium interiors.</p>
-                      <button className="about-readmore">More Details</button>
+                      <button
+                        className="about-readmore"
+                        onClick={() =>
+                          navigate("/services?accordion=serviceTwo")
+                        }
+                      >
+                        More Details
+                      </button>
                     </div>
                   </div>
                 </div>
@@ -426,7 +442,12 @@ export default function Home() {
                     <div className="service-content">
                       <h5>Paver Block</h5>
                       <p>Strong and attractive outdoor paving solutions.</p>
-                      <button className="about-readmore">More Details</button>
+                      <button
+                        className="about-readmore"
+                        onClick={() => navigate("/services?accordion=serviceFour")}
+                      >
+                        More Details
+                      </button>
                     </div>
                   </div>
                 </div>
@@ -438,7 +459,14 @@ export default function Home() {
                     <div className="service-content">
                       <h5>Marble Polishing</h5>
                       <p>Restore shine and smooth finish of marble surfaces.</p>
-                      <button className="about-readmore">More Details</button>
+                      <button
+                        className="about-readmore"
+                        onClick={() =>
+                          navigate("/services?accordion=serviceThree")
+                        }
+                      >
+                        More Details
+                      </button>
                     </div>
                   </div>
                 </div>
@@ -458,9 +486,7 @@ export default function Home() {
                 <div className="choose-card text-center p-4">
                   <i className="bi bi-person-check-fill choose-icon"></i>
                   <h5 className="mt-3">Expert Labours</h5>
-                  <p>
-                    Skilled workers delivering high-quality workmanship.
-                  </p>
+                  <p>Skilled workers delivering high-quality workmanship.</p>
                 </div>
               </div>
 

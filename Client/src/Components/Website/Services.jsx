@@ -1,9 +1,23 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-
+import { useSearchParams } from "react-router-dom";
 export default function Services() {
   const [activeAccordion, setActiveAccordion] = useState("serviceOne");
+const [searchParams] = useSearchParams();
 
+useEffect(() => {
+  const accordion = searchParams.get("accordion");
+
+  if (accordion) {
+    setActiveAccordion(accordion);
+
+    setTimeout(() => {
+      document
+        .getElementById(accordion)
+        ?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }, 100);
+  }
+}, [searchParams]);
   const toggleAccordion = (id) => {
     setActiveAccordion(activeAccordion === id ? null : id);
   };
@@ -56,7 +70,10 @@ export default function Services() {
                   {...accordionAnimation}
                   style={{ overflow: "hidden" }}
                 >
-                  <div className="accordion-body re-accordion-body">
+                  <div
+                    className="accordion-body re-accordion-body"
+                    id="serviceOne"
+                  >
                     <p className="card-text">
                       We provide expert tile installation for floors, walls,
                       kitchens, and bathrooms. Our team ensures perfect
@@ -129,7 +146,10 @@ export default function Services() {
                   {...accordionAnimation}
                   style={{ overflow: "hidden" }}
                 >
-                  <div className="accordion-body re-accordion-body">
+                  <div
+                    className="accordion-body re-accordion-body"
+                    id="serviceTwo"
+                  >
                     <p className="card-text">
                       We provide premium marble installation services with
                       precise cutting, fitting, and polishing to achieve a
@@ -199,7 +219,10 @@ export default function Services() {
                   {...accordionAnimation}
                   style={{ overflow: "hidden" }}
                 >
-                  <div className="accordion-body re-accordion-body">
+                  <div
+                    className="accordion-body re-accordion-body"
+                    id="serviceThree"
+                  >
                     <p className="card-text">
                       We provide professional marble and granite polishing
                       services that restore shine, enhance appearance, and
@@ -254,7 +277,10 @@ export default function Services() {
                   {...accordionAnimation}
                   style={{ overflow: "hidden" }}
                 >
-                  <div className="accordion-body re-accordion-body">
+                  <div
+                    className="accordion-body re-accordion-body"
+                    id="serviceFour"
+                  >
                     <p className="card-text">
                       We undertake all types of paver block installation
                       projects for residential, commercial, and industrial
