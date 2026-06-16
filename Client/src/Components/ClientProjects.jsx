@@ -133,10 +133,13 @@ export default function ClientProjects() {
                     </div>
 
                     <div className="pjx-meta">
-                      Project ID: #{data.ProjectID}
+                      Start Date:{" "}
+                      {new Date(data.StartDate).toLocaleDateString("en-GB")}
                     </div>
 
-                    <NavLink to={`/dashboard/view-project-client/${data.ProjectID}`}>
+                    <NavLink
+                      to={`/dashboard/view-project-client/${data.ProjectID}`}
+                    >
                       <button className="pjx-btn-manage">View Project →</button>
                     </NavLink>
                   </div>

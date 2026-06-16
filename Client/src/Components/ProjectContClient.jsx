@@ -57,7 +57,7 @@ export default function ProjectContClient() {
             <div className="project-header-left">
               <div className="project-badge">
                 <i className="ri-building-line"></i>
-                Active Project
+                Site
               </div>
 
               <h1>{ProjectName}</h1>
