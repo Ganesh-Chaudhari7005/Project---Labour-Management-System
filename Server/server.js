@@ -2308,8 +2308,8 @@ app.delete("/delete-feedback/:id", async (req, res) => {
   }
 });
 
-// app.use(express.static(path.join(__dirname, "../Client/dist")));
+app.use(express.static(path.join(__dirname, "../Client/dist")));
 
-// app.get(/.*/, (req, res) => {
-//   res.sendFile(path.join(__dirname, "../Client/dist/index.html"));
-// });
+app.get(/.*/, (req, res) => {
+  res.sendFile(path.join(__dirname, "../Client/dist/index.html"));
+});
