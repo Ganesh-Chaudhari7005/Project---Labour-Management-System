@@ -31,6 +31,7 @@ export default function BillPendingClient() {
         
       } else {
         console.log("No pending Bills");
+        setPendingBills([]); 
       }
         
         
@@ -50,7 +51,7 @@ export default function BillPendingClient() {
       transition={{ duration: 0.3 }}
       style={{ padding: "10px" }}
     >
-      <ToastContainer/>
+      <ToastContainer />
       <div className="table-responsive">
         <table className="table table-bordered pendingBillsTable">
           <thead>
@@ -67,75 +68,77 @@ export default function BillPendingClient() {
           </thead>
 
           <tbody>
-            {pendingBills.map((bill, index) => (
-              <tr key={index}>
-                <td className="text-center">{index + 1}</td>
-                <td>{bill.ProjectName || "-"}</td>
-                <td>{bill.BillNo}</td>
-                <td>
-                  {new Date(bill.billdate).toLocaleDateString("en-GB")}
-                </td>{" "}
-                <td>₹ {bill.TotalAmount}</td>
-                <td>
-                  <span className="pendingBillsStatusBadge">{bill.Status}</span>
-                </td>
-                <td>
-                  <button
-                    style={{ marginRight: "15px" }}
-                    className="pendingBillsViewBtn"
-                    onClick={() => {
-                      setPdfUrl(`${BASE_URL}${bill.PDFPath}#toolbar=0`);
-
-                      setShowPDF(true);
-                    }}
-                  >
-                    View Bill
-                  </button>
-                  <FaDownload
-                    style={{ cursor: "pointer" }}
-                    onClick={async () => {
-                      try {
-                        const response = await fetch(
-                          `${BASE_URL}${bill.PDFPath}`,
-                        );
-
-                        const blob = await response.blob();
-
-                        const url = window.URL.createObjectURL(blob);
-
-                        const link = document.createElement("a");
-
-                        link.href = url;
-
-                        link.download = `Bill-${bill.BillNo}.pdf`;
-
-                        document.body.appendChild(link);
-
-                        link.click();
-
-                        link.remove();
-
-                        window.URL.revokeObjectURL(url);
-                      } catch (err) {
-                        console.log(err);
-
-                        toast.error("Failed to download bill");
-                      }
-                    }}
-                  />
-                </td>
-                <td>
+            {pendingBills.length > 0 ? (
+              pendingBills.map((bill, index) => (
+                <tr key={index}>
+                  <td className="text-center">{index + 1}</td>
+                  <td>{bill.ProjectName || "-"}</td>
+                  <td>{bill.BillNo}</td>
+                  <td>{new Date(bill.billdate).toLocaleDateString("en-GB")}</td>
+                  <td>₹ {bill.TotalAmount}</td>
+                  <td>
+                    <span className="pendingBillsStatusBadge">
+                      {bill.Status}
+                    </span>
+                  </td>
                   <td>
                     <button
-                      onClick={() => handlePayment(bill)}
+                      style={{ marginRight: "15px" }}
+                      className="pendingBillsViewBtn"
+                      onClick={() => {
+                        setPdfUrl(`${BASE_URL}${bill.PDFPath}#toolbar=0`);
+                        setShowPDF(true);
+                      }}
+                    >
+                      View Bill
+                    </button>
+
+                    <FaDownload
+                      style={{ cursor: "pointer" }}
+                      onClick={async () => {
+                        try {
+                          const response = await fetch(
+                            `${BASE_URL}${bill.PDFPath}`,
+                          );
+
+                          const blob = await response.blob();
+                          const url = window.URL.createObjectURL(blob);
+
+                          const link = document.createElement("a");
+                          link.href = url;
+                          link.download = `Bill-${bill.BillNo}.pdf`;
+
+                          document.body.appendChild(link);
+                          link.click();
+                          link.remove();
+
+                          window.URL.revokeObjectURL(url);
+                        } catch (err) {
+                          console.log(err);
+                          toast.error("Failed to download bill");
+                        }
+                      }}
+                    />
+                  </td>
+
+                  <td>
+                    <button
+                      onClick={() => handlePayment(bill, getPendingBill)}
                       className="pendingBillsDownloadBtn"
                     >
                       Pay Now
                     </button>
                   </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan="8" className="text-center py-4">
+                  <h5>No Pending Bills Found</h5>
+               
                 </td>
               </tr>
-            ))}
+            )}
           </tbody>
         </table>
       </div>

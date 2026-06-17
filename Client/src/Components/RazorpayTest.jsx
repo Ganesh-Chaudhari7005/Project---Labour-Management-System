@@ -1,6 +1,8 @@
 import { ApiRoute } from "./ApiConfig.js";
 import { ToastContainer, toast } from "react-toastify";
-const handlePayment = async (bill) => {
+import Swal from "sweetalert2";
+
+const handlePayment = async (bill, getPendingBill) => {
   try {
     const response = await fetch(`${ApiRoute}create-order`, {
       method: "POST",
@@ -21,8 +23,7 @@ const handlePayment = async (bill) => {
       return;
     }
 
-      const billid = bill.BillID;
-
+    const billid = bill.BillID;
 
     const options = {
       key: "rzp_test_St8JFvkecQuVR0",
@@ -38,6 +39,15 @@ const handlePayment = async (bill) => {
       order_id: data.order.id,
 
       handler: async function (response) {
+        Swal.fire({
+          title: "Verifying Payment...",
+          text: "Please wait while we verify your payment.",
+          allowOutsideClick: false,
+          didOpen: () => {
+            Swal.showLoading();
+          },
+        });
+
         try {
           const verifyRes = await fetch(`${ApiRoute}verify-payment`, {
             method: "POST",
@@ -45,22 +55,42 @@ const handlePayment = async (bill) => {
               "Content-Type": "application/json",
             },
             body: JSON.stringify({
-              ...response,
+              ...response, 
               billid: billid,
-            
             }),
           });
 
           const data = await verifyRes.json();
 
           if (data.success) {
-            toast.success("Payment Verified & Successful");
+
+             console.log("Payment verified");
+             await getPendingBill();
+             console.log("Bills refreshed");
+
+            Swal.fire({
+              icon: "success",
+              title: "Payment Successful!",
+              text: "Your payment has been verified.",
+              confirmButtonText: "OK",
+            });
+             
           } else {
-            toast.error("Payment Verification Failed");
+            Swal.fire({
+              icon: "error",
+              title: "Verification Failed",
+              text: "Payment could not be verified.",
+            });
           }
         } catch (err) {
           console.log(err);
-        } 
+
+          Swal.fire({
+            icon: "error",
+            title: "Error",
+            text: "Something went wrong while verifying payment.",
+          });
+        }
       },
 
       prefill: {

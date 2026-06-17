@@ -1,28 +1,41 @@
 import puppeteer from "puppeteer-core";
 import ejs from "ejs";
 import path from "path";
+import numberToWords from "number-to-words";
 import fs from "fs";
+import os from 'os';
 import { fileURLToPath } from "url";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const generateInvoice = async (data) => {
-  const browser = await puppeteer.launch({
-    executablePath:
-      "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
+  const launchOptions = {
+        headless: true,
+        args: ["--no-sandbox", "--disable-setuid-sandbox"],
+      };
+  
+      if (os.platform() === "win32") {
+        launchOptions.executablePath =
+          "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe";
+      } else {
+        launchOptions.executablePath = "/usr/bin/google-chrome-stable";
+      }
 
-    headless: true,
+      const browser = await puppeteer.launch(launchOptions);
 
-    args: ["--no-sandbox", "--disable-setuid-sandbox"],
-  });
 
   const page = await browser.newPage();
 
-  const html = await ejs.renderFile(
-    path.join(__dirname, "/invoice.ejs"),
-    data,
-  );
+  const amountInWords =
+    numberToWords
+      .toWords(Math.round(data.grandTotal))
+      .replace(/\b\w/g, (c) => c.toUpperCase()) + " Rupees Only";
+
+  const html = await ejs.renderFile(path.join(__dirname, "/invoice.ejs"), {
+    ...data,
+    amountInWords,
+  });
 
   await page.setContent(html, {
     waitUntil: "networkidle0",

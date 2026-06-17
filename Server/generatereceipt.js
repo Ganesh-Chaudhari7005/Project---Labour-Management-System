@@ -2,6 +2,7 @@ import puppeteer from "puppeteer-core";
 import ejs from "ejs";
 import path from "path";
 import { fileURLToPath } from "url";
+import os from 'os';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -9,14 +10,20 @@ const __dirname = path.dirname(__filename);
 const generateReceipt = async (data) => {
     console.log("data is",data);
     
-  const browser = await puppeteer.launch({
-    executablePath:
-      "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
+ const launchOptions = {
+   headless: true,
+   args: ["--no-sandbox", "--disable-setuid-sandbox"],
+ };
 
-    headless: true,
+ if (os.platform() === "win32") {
+   launchOptions.executablePath =
+     "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe";
+ } else {
+   launchOptions.executablePath = "/usr/bin/google-chrome-stable";
+ }
 
-    args: ["--no-sandbox", "--disable-setuid-sandbox"],
-  });
+ const browser = await puppeteer.launch(launchOptions);
+
 
   const page = await browser.newPage();
 

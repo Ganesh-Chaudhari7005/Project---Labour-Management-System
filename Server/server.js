@@ -1273,7 +1273,7 @@ app.post("/verify-payment", async (req, res) => {
     // Fetch bill details
     const [billRows] = await pool.execute(
       "SELECT * FROM all_bills WHERE BillID=?",
-      [billid],
+      [billid], 
     );
 
     const bill = billRows[0];

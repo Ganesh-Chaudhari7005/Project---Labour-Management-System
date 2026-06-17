@@ -222,7 +222,7 @@ const [paidBills, setPaidBills] = useState([]);
             <motion.div
               className="dash-card"
               style={{
-                paddingBottom: "50px",
+                // paddingBottom: "50px",
                 borderTop: "4px solid #f59e0b",
                 background: "linear-gradient(135deg, #fff7ed, #fff)",
               }}
