@@ -2306,7 +2306,7 @@ app.delete("/delete-feedback/:id", async (req, res) => {
       message: "Failed to delete feedback",
     });
   }
-});
+}); 
 
 app.use(express.static(path.join(__dirname, "../Client/dist")));
 

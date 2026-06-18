@@ -17,17 +17,13 @@ export default function ManageProject() {
   
 
   const getProjectDetails = async () => {
-      console.log("Sending ID:", id, typeof id);
       const reqPrj = await callApi(`${ApiRoute}getProject-details`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({ id }),
-      });
-  
-      console.log(reqPrj);
-  
+      });  
       setProjectName(reqPrj.projectdetails.ProjectName);
     };
   const tabs = [
@@ -53,12 +49,12 @@ export default function ManageProject() {
       icon: "ri-money-rupee-circle-line",
     },
     {
-      name: "Project Details",
+      name: "Site Details",
       path: "project-details",
       icon: "ri-folder-info-line",
     },
     {
-      name: "Project Issues",
+      name: "Site Issues",
       path: "project-issues-cp",
       icon: "ri-folder-info-line",
     },

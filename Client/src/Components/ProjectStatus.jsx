@@ -14,7 +14,6 @@ export default function ProjectStatus() {
   const [filter, setFilter] = useState("ALL");
   const [ProjectName, setProjectName] = useState();
   const getProjectDetails = async () => {
-    console.log("Sending ID:", id, typeof id);
     const reqPrj = await callApi(`${ApiRoute}getProject-details`, {
       method: "POST",
       headers: {
@@ -22,9 +21,6 @@ export default function ProjectStatus() {
       },
       body: JSON.stringify({ id }),
     });
-
-    console.log(reqPrj);
-
     setProjectName(reqPrj.projectdetails.ProjectName);
   };
 
@@ -37,8 +33,6 @@ export default function ProjectStatus() {
       body: JSON.stringify({ id }),
     });
     const res = await reqStatus.json();
-    console.log(res);
-
     setWorkDetails(res);
   };
 

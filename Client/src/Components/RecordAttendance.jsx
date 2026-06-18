@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { ApiRoute } from "./ApiConfig.js";
 import { toast, ToastContainer } from "react-toastify";
+import { motion } from "framer-motion";
 export default function RecordAttendance() {
   const [workList, setWorkList] = useState([]);
   const [assignedProjects, setAssignedProjects] = useState([]);
@@ -179,331 +180,338 @@ export default function RecordAttendance() {
     }
   };
   return (
-    <div className="container mt-4">
-      <ToastContainer />
-      <div>
-        <div className="container-fluid py-3 px-2">
-          <ul
-            className="nav nav-tabs mb-5"
-            style={{ border: "none" }}
-            id="attendanceTabs"
-            role="tablist"
-          >
-            <li
-              className="nav-item att-nav mb-0 py-0"
-              style={{ padding: "10px 0px", alignItems: "normal" }}
-              role="presentation"
+    <motion.div
+      className="issuepage-wrapper"
+      initial={{ opacity: 0, y: 12 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.35 }}
+    >
+      <div className="container mt-4">
+        <ToastContainer />
+        <div>
+          <div className="container-fluid py-3 px-2">
+            <ul
+              className="nav nav-tabs mb-5"
+              style={{ border: "none" }}
+              id="attendanceTabs"
+              role="tablist"
             >
-              <button
-                className="nav-link active att-inner-tab-res"
-                id="labour-tab"
-                data-bs-toggle="tab"
-                data-bs-target="#labour"
-                type="button"
-                role="tab"
-                style={{
-                  border: "none",
-                  padding: "0 0 8px 0",
-                  fontSize: "18px",
-                  fontWeight: "500",
-                  textWrap: "wrap",
-                }}
+              <li
+                className="nav-item att-nav mb-0 py-0"
+                style={{ padding: "10px 0px", alignItems: "normal" }}
+                role="presentation"
               >
-                Labour Attendance
-              </button>
-            </li>
+                <button
+                  className="nav-link active att-inner-tab-res"
+                  id="labour-tab"
+                  data-bs-toggle="tab"
+                  data-bs-target="#labour"
+                  type="button"
+                  role="tab"
+                  style={{
+                    border: "none",
+                    padding: "0 0 8px 0",
+                    fontSize: "18px",
+                    fontWeight: "500",
+                    textWrap: "wrap",
+                  }}
+                >
+                  Labour Attendance
+                </button>
+              </li>
 
-            <li
-              className="nav-item att-nav mb-0 px-0 py-0 mx-0 mx-lg-4"
-              role="presentation"
-            >
-              <button
-                className="nav-link att-inner-tab-res2"
-                id="supervisor-tab"
-                data-bs-toggle="tab"
-                data-bs-target="#supervisor"
-                type="button"
-                role="tab"
-                style={{
-                  border: "none",
-                  padding: "0 0 8px 0",
-                  fontSize: "18px",
-                  fontWeight: "500",
-                  textWrap: "wrap",
-                }}
+              <li
+                className="nav-item att-nav mb-0 px-0 py-0 mx-0 mx-lg-4"
+                role="presentation"
               >
-                Supervisor Attendance
-              </button>
-            </li>
-          </ul>
+                <button
+                  className="nav-link att-inner-tab-res2"
+                  id="supervisor-tab"
+                  data-bs-toggle="tab"
+                  data-bs-target="#supervisor"
+                  type="button"
+                  role="tab"
+                  style={{
+                    border: "none",
+                    padding: "0 0 8px 0",
+                    fontSize: "18px",
+                    fontWeight: "500",
+                    textWrap: "wrap",
+                  }}
+                >
+                  Supervisor Attendance
+                </button>
+              </li>
+            </ul>
 
-          <div className="tab-content">
-            <div
-              className="tab-pane fade show active"
-              id="labour"
-              role="tabpanel"
-            >
-              <h4 className="mb-3">Labour Attendance</h4>
-              <form onSubmit={handleSubmit}>
-                <div className="mb-3">
-                  <label className="form-label">Select Date</label>
+            <div className="tab-content">
+              <div
+                className="tab-pane fade show active"
+                id="labour"
+                role="tabpanel"
+              >
+                <h4 className="mb-3">Labour Attendance</h4>
+                <form onSubmit={handleSubmit}>
+                  <div className="mb-3">
+                    <label className="form-label">Select Date</label>
+
+                    <div className="row">
+                      <div className="col-md-6">
+                        <div className="d-flex align-items-center gap-3">
+                          <button
+                            type="button"
+                            className={`btn ${
+                              date === todayDate
+                                ? "btn-primary"
+                                : "btn-outline-primary"
+                            }`}
+                            onClick={() => setDate(todayDate)}
+                          >
+                            Today
+                          </button>
+
+                          <span className="fw-semibold text-muted">OR</span>
+
+                          <input
+                            type="date"
+                            className="form-control"
+                            style={{ maxWidth: "200px" }}
+                            value={date}
+                            onChange={(e) => setDate(e.target.value)}
+                          />
+
+                          <small className="text-muted">Selected: {date}</small>
+                        </div>
+                      </div>
+                      <div className="col-md-6">
+                        <div>
+                          {selectedLabour?.LabType?.toLowerCase() ===
+                          "misteri" ? (
+                            <>
+                              <label className="form-label">
+                                Total Work Done (Sq. Ft./ R. Ft.)
+                              </label>
+                              <input
+                                type="number"
+                                className="form-control"
+                                value={workDone}
+                                onChange={(e) => setworkdone(e.target.value)}
+                                disabled={status === "A"}
+                              />
+                            </>
+                          ) : (
+                            <>
+                              <label className="form-label">Work Done</label>
+                              <input
+                                type="text"
+                                className="form-control"
+                                value={workDone}
+                                onChange={(e) => setworkdone(e.target.value)}
+                                disabled={isLabourSelected || status === "A"}
+                              />
+                            </>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
 
                   <div className="row">
-                    <div className="col-md-6">
-                      <div className="d-flex align-items-center gap-3">
-                        <button
-                          type="button"
-                          className={`btn ${
-                            date === todayDate
-                              ? "btn-primary"
-                              : "btn-outline-primary"
-                          }`}
-                          onClick={() => setDate(todayDate)}
-                        >
-                          Today
-                        </button>
-
-                        <span className="fw-semibold text-muted">OR</span>
-
-                        <input
-                          type="date"
-                          className="form-control"
-                          style={{ maxWidth: "200px" }}
-                          value={date}
-                          onChange={(e) => setDate(e.target.value)}
-                        />
-
-                        <small className="text-muted">Selected: {date}</small>
-                      </div>
-                    </div>
-                    <div className="col-md-6">
-                      <div>
-                        {selectedLabour?.LabType?.toLowerCase() ===
-                        "misteri" ? (
-                          <>
-                            <label className="form-label">
-                              Total Work Done (Sq. Ft./ R. Ft.)
-                            </label>
-                            <input
-                              type="number"
-                              className="form-control"
-                              value={workDone}
-                              onChange={(e) => setworkdone(e.target.value)}
-                              disabled={status === "A"}
-                            />
-                          </>
-                        ) : (
-                          <>
-                            <label className="form-label">Work Done</label>
-                            <input
-                              type="text"
-                              className="form-control"
-                              value={workDone}
-                              onChange={(e) => setworkdone(e.target.value)}
-                              disabled={isLabourSelected || status === "A"}
-                            />
-                          </>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="row">
-                  <div className="col-md-6 mb-3">
-                    <label className="form-label">Select Labour</label>
-                    <select
-                      className="form-select mb-3"
-                      value={selectedLabour?.ID || ""}
-                      onChange={(e) => {
-                        const selected = AlllabourList.find(
-                          (l) => l.ID === e.target.value,
-                        );
-
-                        console.log(selected);
-
-                        setSelectedLabour(selected);
-                        setSelectedProjectID(selected?.ProjectID || "");
-                        setIsLabourSelected(false);
-                      }}
-                      required
-                    >
-                      <option value="">-- Select Labour --</option>
-
-                      {AlllabourList.map((data) => (
-                        <option key={data.ID} value={data.ID}>
-                          {data.Name} ({data.LabType})
-                        </option>
-                      ))}
-                    </select>
-
-                    {selectedLabour?.ProjectName && (
-                      <div className="project-info-box">
-                        <strong>Currently Working on Site : </strong>{" "}
-                        {selectedLabour.ProjectName}
-                      </div>
-                    )}
-
-                    <label className="form-label">Status</label>
-                    <select
-                      className="form-select"
-                      value={status}
-                      onChange={(e) => setStatus(e.target.value)}
-                      required
-                      disabled={isLabourSelected}
-                    >
-                      <option value="">-- Select Status --</option>
-                      <option value="P">Present (P)</option>
-                      <option value="A">Absent (A)</option>
-                      <option value="H">Half Day (H)</option>
-                      <option value="PH">Present 1.5 Hajari(PH)</option>
-                      <option value="PP">Present 2 Hajari (PP)</option>
-                    </select>
-                    {selectedLabour?.LabType?.toLowerCase() === "misteri" ? (
-                      <>
-                        <label className="py-3">Select work Type</label>
-                        <select
-                          className="form-select"
-                          value={selectedWorkID}
-                          onChange={(e) => setSelectedWorkID(e.target.value)}
-                          required
-                          disabled={isLabourSelected}
-                        >
-                          <option value="">-- Select Work Type --</option>
-
-                          {workList.map((data) => (
-                            <option key={data.WorkID} value={data.WorkID}>
-                              {data.WorkName}
-                            </option>
-                          ))}
-                        </select>
-                      </>
-                    ) : (
-                      ""
-                    )}
-                  </div>
-
-                  <div className="col-md-6 mb-3">
-                    <label className="form-label">Advance (₹)</label>
-                    <input
-                      type="number"
-                      className="form-control mb-3"
-                      value={advance}
-                      onChange={(e) => setAdvance(e.target.value)}
-                      disabled={isLabourSelected}
-                    />
-
-                    <label className="form-label">Payment Mode</label>
-                    <select
-                      className="form-select"
-                      value={mode}
-                      onChange={(e) => setMode(e.target.value)}
-                      disabled={!advance}
-                    >
-                      <option value="">-- Select Mode --</option>
-                      <option value="cash">Cash</option>
-                      <option value="online">Online</option>
-                    </select>
-                  </div>
-                </div>
-
-                <div className="text-end">
-                  <button className="btn btn-primary  px-4" type="submit">
-                    Save Attendance
-                  </button>
-                </div>
-              </form>
-            </div>
-
-            <div className="tab-pane fade" id="supervisor" role="tabpanel">
-              <div className="card-body">
-                <form onSubmit={saveAttendance}>
-                  <div className="row g-3">
-                    <h4 className="mb-3">Supervisor Attendance</h4>
-                    <div className="col-md-6">
-                      <label className="form-label">Supervisor</label>
-
+                    <div className="col-md-6 mb-3">
+                      <label className="form-label">Select Labour</label>
                       <select
-                        className="form-select"
-                        value={formData.SupervisorID}
-                        onChange={handleSupervisorChange}
-                      >
-                        <option value="">Select Supervisor</option>
+                        className="form-select mb-3"
+                        value={selectedLabour?.ID || ""}
+                        onChange={(e) => {
+                          const selected = AlllabourList.find(
+                            (l) => l.ID === e.target.value,
+                          );
 
-                        {supervisors.map((sup) => (
-                          <option key={sup.ID} value={sup.ID}>
-                            {sup.Name}
+                          console.log(selected);
+
+                          setSelectedLabour(selected);
+                          setSelectedProjectID(selected?.ProjectID || "");
+                          setIsLabourSelected(false);
+                        }}
+                        required
+                      >
+                        <option value="">-- Select Labour --</option>
+
+                        {AlllabourList.map((data) => (
+                          <option key={data.ID} value={data.ID}>
+                            {data.Name} ({data.LabType})
                           </option>
                         ))}
                       </select>
 
-                      {assignedProjects.length > 0 && (
-                        <div
-                          style={{
-                            marginTop: "10px",
-                            padding: "12px",
-                            background: "#f8f9fa",
-                            borderRadius: "8px",
-                            border: "1px solid #dee2e6",
-                          }}
-                        >
-                          <strong>Assigned Sites:</strong>
-
-                          <div className="mt-2">
-                            {assignedProjects.map((p) => (
-                              <span
-                                key={p.ProjectID}
-                                className="badge bg-secondary me-2 mb-2"
-                              >
-                                {p.ProjectName}
-                              </span>
-                            ))}
-                          </div>
+                      {selectedLabour?.ProjectName && (
+                        <div className="project-info-box">
+                          <strong>Currently Working on Site : </strong>{" "}
+                          {selectedLabour.ProjectName}
                         </div>
+                      )}
+
+                      <label className="form-label">Status</label>
+                      <select
+                        className="form-select"
+                        value={status}
+                        onChange={(e) => setStatus(e.target.value)}
+                        required
+                        disabled={isLabourSelected}
+                      >
+                        <option value="">-- Select Status --</option>
+                        <option value="P">Present (P)</option>
+                        <option value="A">Absent (A)</option>
+                        <option value="H">Half Day (H)</option>
+                        <option value="PH">Present 1.5 Hajari(PH)</option>
+                        <option value="PP">Present 2 Hajari (PP)</option>
+                      </select>
+                      {selectedLabour?.LabType?.toLowerCase() === "misteri" ? (
+                        <>
+                          <label className="py-3">Select work Type</label>
+                          <select
+                            className="form-select"
+                            value={selectedWorkID}
+                            onChange={(e) => setSelectedWorkID(e.target.value)}
+                            required
+                            disabled={isLabourSelected}
+                          >
+                            <option value="">-- Select Work Type --</option>
+
+                            {workList.map((data) => (
+                              <option key={data.WorkID} value={data.WorkID}>
+                                {data.WorkName}
+                              </option>
+                            ))}
+                          </select>
+                        </>
+                      ) : (
+                        ""
                       )}
                     </div>
 
-                    <div className="col-md-6">
-                      <label className="form-label">Date</label>
-
+                    <div className="col-md-6 mb-3">
+                      <label className="form-label">Advance (₹)</label>
                       <input
-                        type="date"
-                        className="form-control"
-                        name="AttendanceDate"
-                        value={formData.AttendanceDate}
-                        onChange={handleChange}
+                        type="number"
+                        className="form-control mb-3"
+                        value={advance}
+                        onChange={(e) => setAdvance(e.target.value)}
+                        disabled={isLabourSelected}
                       />
-                    </div>
 
-                    <div className="col-md-6">
-                      <label className="form-label">Status</label>
-
+                      <label className="form-label">Payment Mode</label>
                       <select
                         className="form-select"
-                        name="Status"
-                        value={formData.Status}
-                        onChange={handleChange}
+                        value={mode}
+                        onChange={(e) => setMode(e.target.value)}
+                        disabled={!advance}
                       >
-                        <option value="P">Present</option>
-
-                        <option value="A">Absent</option>
+                        <option value="">-- Select Mode --</option>
+                        <option value="cash">Cash</option>
+                        <option value="online">Online</option>
                       </select>
                     </div>
+                  </div>
 
-                    <div className="col-12">
-                      <div className="d-flex justify-content-end mt-4">
-                        <button className="btn btn-primary" type="submit">
-                          Save Attendance
-                        </button>
-                      </div>
-                    </div>
+                  <div className="text-end">
+                    <button className="btn btn-primary  px-4" type="submit">
+                      Save Attendance
+                    </button>
                   </div>
                 </form>
+              </div>
+
+              <div className="tab-pane fade" id="supervisor" role="tabpanel">
+                <div className="card-body">
+                  <form onSubmit={saveAttendance}>
+                    <div className="row g-3">
+                      <h4 className="mb-3">Supervisor Attendance</h4>
+                      <div className="col-md-6">
+                        <label className="form-label">Supervisor</label>
+
+                        <select
+                          className="form-select"
+                          value={formData.SupervisorID}
+                          onChange={handleSupervisorChange}
+                        >
+                          <option value="">Select Supervisor</option>
+
+                          {supervisors.map((sup) => (
+                            <option key={sup.ID} value={sup.ID}>
+                              {sup.Name}
+                            </option>
+                          ))}
+                        </select>
+
+                        {assignedProjects.length > 0 && (
+                          <div
+                            style={{
+                              marginTop: "10px",
+                              padding: "12px",
+                              background: "#f8f9fa",
+                              borderRadius: "8px",
+                              border: "1px solid #dee2e6",
+                            }}
+                          >
+                            <strong>Assigned Sites:</strong>
+
+                            <div className="mt-2">
+                              {assignedProjects.map((p) => (
+                                <span
+                                  key={p.ProjectID}
+                                  className="badge bg-secondary me-2 mb-2"
+                                >
+                                  {p.ProjectName}
+                                </span>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+
+                      <div className="col-md-6">
+                        <label className="form-label">Date</label>
+
+                        <input
+                          type="date"
+                          className="form-control"
+                          name="AttendanceDate"
+                          value={formData.AttendanceDate}
+                          onChange={handleChange}
+                        />
+                      </div>
+
+                      <div className="col-md-6">
+                        <label className="form-label">Status</label>
+
+                        <select
+                          className="form-select"
+                          name="Status"
+                          value={formData.Status}
+                          onChange={handleChange}
+                        >
+                          <option value="P">Present</option>
+
+                          <option value="A">Absent</option>
+                        </select>
+                      </div>
+
+                      <div className="col-12">
+                        <div className="d-flex justify-content-end mt-4">
+                          <button className="btn btn-primary" type="submit">
+                            Save Attendance
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </form>
+                </div>
               </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 }

@@ -28,7 +28,6 @@ export default function AdminDashboard() {
   const getProjectCounts = async () => {
     let req = await fetch(`${ApiRoute}get-project-count`);
     let res = await req.json();
-    console.log(res);
 
     setTotalProjectCount(res.TotalProjectCount);
     SetCompletedProjectCount(res.CompletedCount);
@@ -38,7 +37,6 @@ export default function AdminDashboard() {
   const getUsersCounts = async () => {
     let req = await fetch(`${ApiRoute}get-Users-count`);
     let res = await req.json();
-    console.log(res);
 
     SetTotalUsersCount(res.TotalUsersCount);
     SetTotalAdminCount(res.AdminCount);
@@ -50,7 +48,6 @@ export default function AdminDashboard() {
   const getLaboursCounts = async () => {
     let req = await fetch(`${ApiRoute}get-labours-count`);
     let res = await req.json();
-    console.log(res);
 
     SetTotalLaboursCount(res.TotalLabourCount);
     SetTotalMisteriCount(res.MisteriCount);
@@ -60,11 +57,7 @@ export default function AdminDashboard() {
   const getSupCounts = async () => {
     let req = await fetch(`${ApiRoute}get-sup-count`);
     let res = await req.json();
-    console.log(res);
-
     SetTotalSupCount(res.TotalSupCount);
-    //  SetTotalMisteriCount(res.MisteriCount);
-    //  SetTotalHelperCount(res.HelperCount);
   };
 
   const getLast30DaysPayment = async () => {
@@ -84,7 +77,6 @@ export default function AdminDashboard() {
   const getIssueCount = async () => {
     let req = await fetch(`${ApiRoute}get-issue-count`);
     let res = await req.json();
-    console.log(res);
 
     setTotalIssues(res.TotalPendingIssues);
   };
@@ -263,18 +255,21 @@ export default function AdminDashboard() {
                 transition={{ type: "spring", stiffness: 200 }}
                 className="dash-card"
                 style={{
-                  borderTop: "4px solid #dc2626",
+                  borderTop: "4px solid #2651dc",
                   background:
-                    "linear-gradient(135deg, rgba(220,38,38,0.08), #fff)",
+                    "linear-gradient(135deg, rgba(38, 96, 220, 0.08), #fff)",
                 }}
               >
                 <div className="dash-title">New Service Requests</div>
-
                 <div
                   className="dash-count"
-                  style={{ color: "#dc2626", fontWeight: "700" }}
+                  style={{ color: "#2651dc", fontWeight: "700" }}
                 >
-                  <CountUp end={TotalServiceRequests || "-"} />
+                  {TotalServiceRequests != null ? (
+                    <CountUp end={TotalServiceRequests} />
+                  ) : (
+                    "-"
+                  )}
                 </div>
 
                 <div className="d-flex align-items-center gap-2">

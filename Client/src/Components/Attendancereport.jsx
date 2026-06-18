@@ -462,7 +462,7 @@ export default function AttendanceReport() {
 
               {report.length > 0 && (
                 <button className="btn btn-primary" onClick={downloadPdf}>
-                  {isdownloading ? "Dowloading..." : "Download PDF"}
+                  {isdownloading ? "Dowloading..." : "Download Report PDF"}
                 </button>
               )}
             </div>

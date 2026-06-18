@@ -14,9 +14,7 @@ export default function Project() {
   const fetchProjects = async () => {
     setLoading(true);
     let res = await fetch(`${ApiRoute}fetch-projects`);
-    let data = await res.json();
-    console.log(data);
-    
+    let data = await res.json();    
     setProjects(data);
     setLoading(false);
   };

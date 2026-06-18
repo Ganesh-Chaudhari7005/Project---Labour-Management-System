@@ -1,10 +1,10 @@
-import React, { useContext, useState , useEffect } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import LoginContext from "../Context/LoginContext";
 import { motion } from "framer-motion";
 import { toast, ToastContainer } from "react-toastify";
 import { ApiRoute } from "./ApiConfig";
 import { useApi } from "./ApiCaller";
-import {BASE_URL} from "./BaseUrl.js"
+import { BASE_URL } from "./BaseUrl.js";
 export default function Profile() {
   const callApi = useApi();
   const { loggedInUser, setLoggedInUser } = useContext(LoginContext);
@@ -15,22 +15,22 @@ export default function Profile() {
   const [profileEmail, setProfileEmail] = useState("");
   const [profilePhone, setProfilePhone] = useState("");
   const [profileAddr, setProfileAddr] = useState("");
-  const[profileImage2 , setProfileImage] = useState('');
-   const[isUpdating, setupdating] = useState(false);
+  const [profileImage2, setProfileImage] = useState("");
+  const [isUpdating, setupdating] = useState(false);
 
-    useEffect(() => {
-      if (loggedInUser) {
-        setProfileName(loggedInUser.UserName);
-        setProfileEmail(loggedInUser.UserEmail);
-        setProfilePhone(loggedInUser.Phone);
-        setProfileAddr(loggedInUser.Address);
-        setProfileImage(loggedInUser.UserImgPath);
-      }
-    }, [loggedInUser]);
-
-    if (!loggedInUser) {
-      return <div>Loading</div>;
+  useEffect(() => {
+    if (loggedInUser) {
+      setProfileName(loggedInUser.UserName);
+      setProfileEmail(loggedInUser.UserEmail);
+      setProfilePhone(loggedInUser.Phone);
+      setProfileAddr(loggedInUser.Address);
+      setProfileImage(loggedInUser.UserImgPath);
     }
+  }, [loggedInUser]);
+
+  if (!loggedInUser) {
+    return <div>Loading</div>;
+  }
 
   const HandleFormStatus = () => {
     setDisabled((prev) => !prev);
@@ -45,9 +45,9 @@ export default function Profile() {
 
     if (!trimProfilename || !trimEmail || !trimePhone || !trimAddr) {
       toast.error("Fill All Details");
-    } else if(trimePhone.length > 10 || trimePhone.length < 10){
-        toast.error("Enter a Valid Phone Number");
-    }else {
+    } else if (trimePhone.length > 10 || trimePhone.length < 10) {
+      toast.error("Enter a Valid Phone Number");
+    } else {
       HandleProfileUpdate();
     }
   };
@@ -72,31 +72,28 @@ export default function Profile() {
       body: formData,
     });
 
-    console.log(resjsondata);
     if (resjsondata.success) {
-      if (resjsondata.UpdatedImgPath){    
-      setLoggedInUser({
-        ...loggedInUser,
-        UserName: profilename,
-        Address: profileAddr,
-        Phone: profilePhone,
-        UserEmail: profileEmail,
-        UserImgPath: resjsondata.UpdatedImgPath,
-      });
-      console.log("relog" ,loggedInUser);
-      const user = {  
-        UserEmail: profileEmail,
-        UserName: profilename,
-        Address: profileAddr,
-        Phone: profilePhone,
-        UserRole: roleInfo,
-        UserImgPath: resjsondata.UpdatedImgPath,
-      };
+      if (resjsondata.UpdatedImgPath) {
+        setLoggedInUser({
+          ...loggedInUser,
+          UserName: profilename,
+          Address: profileAddr,
+          Phone: profilePhone,
+          UserEmail: profileEmail,
+          UserImgPath: resjsondata.UpdatedImgPath,
+        });
+        console.log("relog", loggedInUser);
+        const user = {
+          UserEmail: profileEmail,
+          UserName: profilename,
+          Address: profileAddr,
+          Phone: profilePhone,
+          UserRole: roleInfo,
+          UserImgPath: resjsondata.UpdatedImgPath,
+        };
 
-      sessionStorage.setItem("user", JSON.stringify(user));
-
-
-      }else{
+        sessionStorage.setItem("user", JSON.stringify(user));
+      } else {
         setLoggedInUser({
           ...loggedInUser,
           UserName: profilename,
@@ -113,9 +110,8 @@ export default function Profile() {
           UserRole: roleInfo,
         };
 
-      sessionStorage.setItem("user", JSON.stringify(user));
-
-      } 
+        sessionStorage.setItem("user", JSON.stringify(user));
+      }
       toast.success(resjsondata.message);
       setupdating(false);
     } else {
@@ -125,18 +121,16 @@ export default function Profile() {
   };
 
   const setSaveBtnState = () => {
-    setSavebtn((prev) => prev =true);
+    setSavebtn((prev) => (prev = true));
   };
 
-  console.log(`${BASE_URL}${loggedInUser.UserImgPath}`);
-  
   return (
     <motion.div
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
     >
-      <ToastContainer/>
+      <ToastContainer />
       <div className="project-top-section">
         <div className="project-header-card">
           <div className="project-header-left">
@@ -272,7 +266,7 @@ export default function Profile() {
                 onClick={(e) => ValProfileUpdate(e)}
                 className="save-prof-btn mt-5"
               >
-                {isUpdating ? 'Updating..' : "Save Changes"}
+                {isUpdating ? "Updating.." : "Save Changes"}
               </button>
             </form>
           </div>
